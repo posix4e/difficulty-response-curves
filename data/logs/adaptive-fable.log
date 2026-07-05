@@ -1,0 +1,25 @@
+[19:28:16] 4/4 done, $158.06 spent ($0.00 reserved)
+[adaptive] probe level 7 (alpha=3.8): pass 0.00 -> bracket [0,6]
+[19:29:04] 4/4 done, $158.92 spent ($0.00 reserved)
+[adaptive] probe level 3 (alpha=2.7714): pass 0.00 -> bracket [0,2]
+[19:29:41] 4/4 done, $159.29 spent ($0.00 reserved)
+[adaptive] probe level 1 (alpha=2.2571): pass 0.25 -> bracket [0,0]
+[19:30:24] 8/8 done, $160.82 spent ($0.00 reserved)
+[adaptive] batch at level 0: b=1.899 se=0.260 calls=20
+[19:31:01] 8/8 done, $162.04 spent ($0.00 reserved)
+[adaptive] batch at level 0: b=2.092 se=0.135 calls=28
+[19:31:37] 8/8 done, $163.41 spent ($0.00 reserved)
+[adaptive] batch at level 0: b=2.069 se=0.124 calls=36
+[19:32:37] 8/8 done, $164.95 spent ($0.00 reserved)
+[adaptive] batch at level 0: b=2.160 se=0.091 calls=44
+{
+  "model": "anthropic/claude-fable-5",
+  "stage": "adaptive-claude-fable-5",
+  "b": 2.1597307165060506,
+  "a": 3.1985399518692983,
+  "x50": 2.15341448859534,
+  "se_b": 0.09145430474406899,
+  "calls_used": 44,
+  "spent_usd": 6.6382
+}
+written to /Users/posix4e/src/difficulty-response-curves/data/adaptive-claude-fable-5.json

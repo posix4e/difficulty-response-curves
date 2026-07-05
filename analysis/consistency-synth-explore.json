@@ -1,0 +1,12 @@
+{
+  "mode": "explore",
+  "set": "codepilot2",
+  "n_scored": 46,
+  "n_wrong": 40,
+  "n_right": 6,
+  "n_pairs": 0,
+  "recall": 0.95,
+  "fpr": 0.333,
+  "escalation_rate": 0.87,
+  "auc_reported": null
+}

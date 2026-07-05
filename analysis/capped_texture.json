@@ -1,0 +1,125 @@
+{
+  "uncapped": {
+    "x50": 6.58,
+    "n_traced": 77,
+    "n_levels": 14,
+    "peaks": {
+      "tokens": {
+        "peak_alpha": 4.57,
+        "offset_from_x50": -2.01
+      },
+      "backtrack": {
+        "peak_alpha": 5.34,
+        "offset_from_x50": -1.24
+      },
+      "loops": {
+        "peak_alpha": 5.09,
+        "offset_from_x50": -1.49
+      }
+    },
+    "levels": [
+      2.0,
+      2.51,
+      2.77,
+      3.03,
+      3.29,
+      3.54,
+      3.8,
+      4.06,
+      4.31,
+      4.57,
+      4.83,
+      5.09,
+      5.34,
+      5.6
+    ]
+  },
+  "uncapped_incl_trunc": {
+    "x50": 6.58,
+    "n_traced": 77,
+    "n_levels": 14,
+    "peaks": {
+      "tokens": {
+        "peak_alpha": 4.57,
+        "offset_from_x50": -2.01
+      },
+      "backtrack": {
+        "peak_alpha": 5.34,
+        "offset_from_x50": -1.24
+      },
+      "loops": {
+        "peak_alpha": 5.09,
+        "offset_from_x50": -1.49
+      }
+    },
+    "levels": [
+      2.0,
+      2.51,
+      2.77,
+      3.03,
+      3.29,
+      3.54,
+      3.8,
+      4.06,
+      4.31,
+      4.57,
+      4.83,
+      5.09,
+      5.34,
+      5.6
+    ]
+  },
+  "capped_32k": {
+    "x50": 3.6,
+    "n_traced": 51,
+    "n_levels": 5,
+    "peaks": {
+      "tokens": {
+        "peak_alpha": 4.5,
+        "offset_from_x50": 0.9
+      },
+      "backtrack": {
+        "peak_alpha": 4.5,
+        "offset_from_x50": 0.9
+      },
+      "loops": {
+        "peak_alpha": 3.9,
+        "offset_from_x50": 0.3
+      }
+    },
+    "levels": [
+      3.3,
+      3.6,
+      3.9,
+      4.2,
+      4.5
+    ]
+  },
+  "capped_32k_incl_trunc": {
+    "x50": 3.6,
+    "n_traced": 107,
+    "n_levels": 6,
+    "peaks": {
+      "tokens": {
+        "peak_alpha": 3.9,
+        "offset_from_x50": 0.3
+      },
+      "backtrack": {
+        "peak_alpha": 4.2,
+        "offset_from_x50": 0.6
+      },
+      "loops": {
+        "peak_alpha": 3.9,
+        "offset_from_x50": 0.3
+      }
+    },
+    "levels": [
+      3.3,
+      3.6,
+      3.9,
+      4.2,
+      4.5,
+      5.1
+    ]
+  }
+}

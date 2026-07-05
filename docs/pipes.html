@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding 6: The Pipes — Difficulty–Response Curves</title>
+<meta name="description" content="Gateway bugs, provider drift, a vendor fix that wasn't — and why the card survives its own plumbing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:#faf9f4; --card:#ffffff; --ink:#1c1b17; --ink-2:#5d5b51; --rule:#d8d5c8;
+  --green:#12421f; --green-2:#1d5c30; --accent:#b8860b;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper:#151713; --card:#1d201b; --ink:#f0eee6; --ink-2:#a5a294; --rule:#3a3d35;
+           --green:#8fc9a0; --green-2:#6fae82; --accent:#d9a441; }
+  img.fig { background:#fcfcfb; border-radius:6px; padding:10px; }
+}
+* { box-sizing:border-box; margin:0; }
+html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+body {
+  background:var(--paper); color:var(--ink);
+  font-family:"Newsreader", Georgia, serif; font-size:17px; line-height:1.55;
+}
+.wrap { max-width:920px; margin:0 auto; padding:0 20px; }
+.disp { font-family:"Barlow Condensed", "Arial Narrow", sans-serif; }
+.mono { font-family:"Spline Sans Mono", ui-monospace, monospace; }
+
+/* masthead */
+header { border-bottom:3px double var(--rule); padding:26px 0 18px; }
+.wip { background:var(--accent); color:var(--paper); padding:3px 10px; border-radius:3px; font-weight:600; }
+.race-meta { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2); }
+h1 { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:clamp(34px,6vw,58px);
+  line-height:1.02; text-transform:uppercase; letter-spacing:.01em; margin:14px 0 8px; color:var(--ink); }
+h1 .thin { font-weight:500; color:var(--green); }
+.standfirst { font-size:19px; max-width:64ch; color:var(--ink); font-style:italic; }
+.links { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.links a { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:14px;
+  color:var(--paper); background:var(--green); text-decoration:none; padding:7px 14px; border-radius:3px; }
+.links a.ghost { background:transparent; color:var(--green); border:1px solid var(--green); }
+.links a:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+.explainer { margin-top:18px; padding:14px 16px; background:var(--card); border:1px solid var(--rule);
+  border-left:4px solid var(--green); border-radius:4px; font-size:15.5px; max-width:76ch; }
+.explainer p { margin:0; }
+/* multi-page chrome */
+.pagenav { margin-top:16px; display:flex; flex-wrap:wrap; gap:2px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.08em; text-transform:uppercase; }
+.pagenav a { color:var(--green-2); text-decoration:none; padding:6px 12px; border:1px solid var(--rule);
+  border-bottom:none; border-radius:4px 4px 0 0; background:var(--card); }
+.pagenav a.active { background:var(--green); color:var(--paper); border-color:var(--green); }
+.pagenav a:hover { color:var(--accent); }
+header.compact { padding-bottom:0; border-bottom:none; }
+header.compact h1 { margin-bottom:2px; }
+header.compact + section { border-top:3px double var(--rule); padding-top:18px; margin-top:0; }
+.teasers { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:14px; }
+.teaser { display:block; background:var(--card); border:1px solid var(--rule); border-left:4px solid var(--green);
+  border-radius:4px; padding:14px 16px; text-decoration:none; color:var(--ink); }
+.teaser:hover { border-left-color:var(--accent); }
+.teaser strong { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--green); display:block; margin-bottom:4px; }
+.teaser span { font-size:14px; color:var(--ink-2); }
+.journal { margin-top:14px; }
+.jentry { display:flex; gap:18px; padding:14px 0; border-bottom:1px dotted var(--rule); }
+.jdate { flex:0 0 130px; font-family:"Barlow Condensed",sans-serif; text-transform:uppercase;
+  letter-spacing:.06em; font-size:14px; color:var(--accent); padding-top:2px; }
+.jbody p { max-width:66ch; }
+.toc { margin-top:16px; display:flex; flex-wrap:wrap; gap:4px 14px;
+  font-family:"Barlow Condensed",sans-serif; font-size:13.5px; letter-spacing:.08em; text-transform:uppercase; }
+.toc a { color:var(--green-2); text-decoration:none; border-bottom:1px dotted var(--rule); }
+.toc a:hover { color:var(--accent); }
+
+/* race card */
+.card { background:var(--card); border:1px solid var(--rule); border-radius:6px; margin:30px 0 8px;
+  overflow-x:auto; box-shadow:0 1px 0 var(--rule); }
+.card table { border-collapse:collapse; width:100%; min-width:680px; }
+.card caption { text-align:left; padding:14px 16px 4px;
+  font-family:"Barlow Condensed",sans-serif; font-size:18px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--green); }
+.card th { font-family:"Barlow Condensed",sans-serif; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-2); text-align:left; padding:10px 12px 6px; border-bottom:2px solid var(--ink); font-weight:600; }
+.card td { padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+.card tr:last-child td { border-bottom:none; }
+.pos { font-family:"Barlow Condensed",sans-serif; font-size:22px; font-weight:700; color:var(--ink-2); width:2ch; }
+.swatch { display:inline-block; width:16px; height:16px; border-radius:3px; margin-top:4px; }
+.runner strong { display:block; font-size:16px; }
+.runner .mono { font-size:11.5px; color:var(--ink-2); }
+td.num { font-family:"Spline Sans Mono",monospace; font-size:14.5px; white-space:nowrap; }
+td.num .ci { display:block; font-size:11px; color:var(--ink-2); }
+.card-note { font-size:13.5px; color:var(--ink-2); margin:6px 2px 0; }
+.leadout { font-style:italic; color:var(--ink-2); border-top:1px dotted var(--rule); padding-top:10px;
+  margin-top:18px; max-width:64ch; }
+.explainer.thesis { border-left-color:var(--accent); font-size:17px; }
+.card.late { margin-top:22px; border-left:4px solid var(--accent); }
+.card.late td { font-size:14.5px; }
+.datafiles { margin:8px 0 8px 22px; line-height:1.9; }
+.cartoon { margin:22px 0; }
+.cartoon svg { width:100%; max-width:640px; height:auto; display:block; background:var(--card);
+  border:1px solid var(--rule); border-radius:6px; padding:8px; }
+.cartoon figcaption { font-size:13px; color:var(--ink-2); margin-top:6px; max-width:70ch; }
+.tracequote { border-left:3px solid var(--green); margin:12px 0; padding:10px 16px; background:var(--card);
+  font-family:"Spline Sans Mono",monospace; font-size:13px; color:var(--ink); max-width:72ch; }
+.datafiles .mono, .datafiles a { font-size:15px; }
+
+/* signals */
+.signal { margin:54px 0; }
+.flag { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.flag .t { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:20px; color:var(--paper);
+  background:var(--green); width:44px; height:44px; display:grid; place-items:center; border-radius:3px; flex:none; }
+.flag h2 { font-family:"Barlow Condensed",sans-serif; font-size:26px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+.flag .dies { margin-left:auto; font-size:12.5px; color:var(--ink-2); font-style:italic; max-width:34ch; text-align:right; }
+.signal p { max-width:70ch; margin:10px 0; }
+img.fig { width:100%; height:auto; margin:14px 0 4px; }
+.headline { font-family:"Barlow Condensed",sans-serif; font-size:20px; font-weight:600; color:var(--green); }
+.plain { font-size:17px; }
+th .sub { font-weight:400; font-size:10.5px; letter-spacing:.04em; text-transform:none; color:var(--ink-2); }
+
+/* tools */
+pre { background:var(--card); border:1px solid var(--rule); border-radius:6px; padding:16px;
+  overflow-x:auto; font-family:"Spline Sans Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--ink); }
+.notclaim { border-top:3px double var(--rule); margin-top:60px; padding:26px 0 10px; font-style:italic; color:var(--ink-2); max-width:70ch; }
+footer { padding:20px 0 44px; font-size:13.5px; color:var(--ink-2); }
+footer a { color:var(--green-2); }
+a { color:var(--green-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="compact">
+  <div class="race-meta">
+    <span class="wip">&#9888; working notes &mdash; what we've learnt so far · updated 8 July 2026</span>
+    <span><a href="index.html" style="color:inherit;text-decoration:none">difficulty&ndash;response curves</a></span>
+  </div>
+  <h1 style="font-size:clamp(26px,4vw,40px)">Finding 6 · The pipes are part of the experiment</h1>
+  <nav class="pagenav" aria-label="Pages"><a href="index.html">Overview</a><a href="method.html">The Method</a><a href="findings.html">Findings 1–4</a><a href="traces.html">5 · Traces</a><a href="pipes.html" class="active">6 · The Pipes</a><a href="router.html">7 · The Router</a><a href="routing2.html">8 · No Referee</a><a href="consistency.html">9 · Ask Twice</a><a href="journal.html">Journal</a></nav>
+</header>
+<section class="signal" id="f6">
+  <div class="flag"><span class="t">6</span><h2>The pipes are part of the experiment</h2></div>
+  <p class="plain">Every measurement travels through a gateway and a serving provider before it reaches a
+  model, and this campaign kept catching the plumbing red-handed. Treat this section as the safety leaflet.</p>
+  <p><strong>The bug:</strong> our gateway (TrustedRouter) silently drops the
+  <span class="mono">max_completion_tokens</span> parameter when translating requests for several providers;
+  reply length then falls to each provider's default &mdash; 4,096 tokens on some. Every truncation artefact in
+  this project traced to that one bug. It made Fable 5 look broken (billed for thinking, delivered nothing)
+  and framed an innocent provider (baseten happily delivers 30,000 tokens when the limit is phrased as
+  <span class="mono">max_tokens</span>). Fix on our side: send both spellings. Verified same-day.</p>
+  <p><strong>Vendor response:</strong> we reported it; TrustedRouter credited the account $20 and reported it
+  fixed. Re-verified with the same differential probe on 6 July: <strong>not fixed</strong> &mdash; the
+  parameter still returns exactly 4,096 tokens and an empty reply. A second $20 credit and a second claimed
+  fix arrived on 7 July, and this one held: the same probe now sails past the wall (7,217 and 10,855 billed
+  tokens, natural stops, answers delivered &mdash; and both <em>scored passes</em> on fresh hard instances at
+  &alpha; 5.0 and 5.6). The model this route once made unmeasurable now solves hard SAT through it. The probe
+  ships in the toolkit; run it before trusting any gateway with a reasoning workload &mdash; and run it again
+  after every "fixed".</p>
+  <p><strong>What this means for the card:</strong> passes can't be faked (every pass is a checked
+  certificate), so plumbing failures only ever make models look <em>worse</em>, and they announce themselves
+  as truncations and empties &mdash; which we count, disclose per row, and purge as artefacts when the pipe
+  (not the model) was at fault. The endpoint that served every call is recorded in the released data.</p>
+</section>
+
+<footer>
+  <p>alex newman · <a href="https://github.com/posix4e/difficulty-response-curves">github.com/posix4e/difficulty-response-curves</a>
+  · every number regenerable via <span class="mono">analysis/run_analysis.py</span> · <a href="paper.pdf">paper (PDF)</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+mitchell1992hard:
+  type: article
+  title: Hard and Easy Distributions of SAT Problems
+  author: ["Mitchell, David", "Selman, Bart", "Levesque, Hector"]
+  date: 1992
+  parent:
+    type: proceedings
+    title: Proceedings of the Tenth National Conference on Artificial Intelligence (AAAI-92)
+
+cheeseman1991really:
+  type: article
+  title: Where the Really Hard Problems Are
+  author: ["Cheeseman, Peter", "Kanefsky, Bob", "Taylor, William M."]
+  date: 1991
+  parent:
+    type: proceedings
+    title: Proceedings of the Twelfth International Joint Conference on Artificial Intelligence (IJCAI-91)
+
+birnbaum1968:
+  type: chapter
+  title: Some Latent Trait Models and Their Use in Inferring an Examinee's Ability
+  author: ["Birnbaum, Allan"]
+  date: 1968
+  parent:
+    type: book
+    title: Statistical Theories of Mental Test Scores
+    author: ["Lord, Frederic M.", "Novick, Melvin R."]
+    publisher: Addison-Wesley
+
+lord1980:
+  type: book
+  title: Applications of Item Response Theory to Practical Testing Problems
+  author: ["Lord, Frederic M."]
+  date: 1980
+  publisher: Lawrence Erlbaum
+
+vanderlinden2010:
+  type: book
+  title: Elements of Adaptive Testing
+  editor: ["van der Linden, Wim J.", "Glas, Cees A. W."]
+  date: 2010
+  publisher: Springer
+
+shojaee2025illusion:
+  type: article
+  title: "The Illusion of Thinking: Understanding the Strengths and Limitations of Reasoning Models via the Lens of Problem Complexity"
+  author: ["Shojaee, Parshin", "Mirzadeh, Iman", "Alizadeh, Keivan", "Horton, Maxwell", "Bengio, Samy", "Farajtabar, Mehrdad"]
+  date: 2025
+  parent:
+    type: repository
+    title: arXiv
+  serial-number: "2506.06941"

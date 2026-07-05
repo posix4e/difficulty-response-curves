@@ -1,0 +1,44 @@
+{
+  "model": "openai/gpt-5.5",
+  "stage": "adaptive-gpt-5.5-ext",
+  "b": 8.2,
+  "a": 2.630327517253432,
+  "x50": 8.192319318721717,
+  "se_b": 0.07119946780438746,
+  "calls_used": 28,
+  "spent_usd": 8.8169,
+  "history": [
+    {
+      "phase": 1,
+      "level": 7,
+      "rate": 1.0,
+      "calls": 4
+    },
+    {
+      "phase": 1,
+      "level": 11,
+      "rate": 1.0,
+      "calls": 8
+    },
+    {
+      "phase": 1,
+      "level": 13,
+      "rate": 1.0,
+      "calls": 12
+    },
+    {
+      "phase": 2,
+      "level": 14,
+      "b": 8.2,
+      "se": 0.1600068478556606,
+      "calls": 20
+    },
+    {
+      "phase": 2,
+      "level": 14,
+      "b": 8.2,
+      "se": 0.07119946780438746,
+      "calls": 28
+    }
+  ]
+}

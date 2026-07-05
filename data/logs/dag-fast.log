@@ -1,0 +1,32 @@
+stage dag-fast: 480 calls to run (cap $16.00)
+[10:56:06] 25/480 done, $126.61 spent ($0.31 reserved)
+[10:56:53] 50/480 done, $126.95 spent ($0.27 reserved)
+[11:01:34] 75/480 done, $124.11 spent ($0.21 reserved)
+[11:03:43] 100/480 done, $124.56 spent ($0.04 reserved)
+[11:05:30] 125/480 done, $124.98 spent ($0.06 reserved)
+[11:06:35] 150/480 done, $125.23 spent ($0.10 reserved)
+[11:07:09] 175/480 done, $125.46 spent ($0.13 reserved)
+[11:08:21] 200/480 done, $125.71 spent ($0.18 reserved)
+[11:09:31] 225/480 done, $126.05 spent ($0.18 reserved)
+[11:10:08] 250/480 done, $126.26 spent ($0.10 reserved)
+[11:10:54] 275/480 done, $126.48 spent ($0.14 reserved)
+[11:11:42] 300/480 done, $126.61 spent ($0.15 reserved)
+[11:12:44] 325/480 done, $126.94 spent ($0.16 reserved)
+[11:13:37] 350/480 done, $127.08 spent ($0.18 reserved)
+[11:14:48] 375/480 done, $127.26 spent ($0.18 reserved)
+[11:15:35] 400/480 done, $127.48 spent ($0.02 reserved)
+[11:16:56] 425/480 done, $127.78 spent ($0.07 reserved)
+[11:17:34] 450/480 done, $128.17 spent ($0.11 reserved)
+[11:18:10] 475/480 done, $128.42 spent ($0.09 reserved)
+[11:18:27] 480/480 done, $128.55 spent ($0.00 reserved)
+{
+  "done": 480,
+  "total": 480,
+  "stopped": {},
+  "spent": {
+    "spent_usd": 128.545155,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 290.0
+  }
+}

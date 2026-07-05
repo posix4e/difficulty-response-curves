@@ -1,0 +1,20 @@
+stage dag-ext-fast: 200 calls to run (cap $10.00)
+[11:47:03] 25/200 done, $135.78 spent ($0.56 reserved)
+[11:55:37] 50/200 done, $136.69 spent ($0.17 reserved)
+[11:59:20] 75/200 done, $138.19 spent ($0.14 reserved)
+[12:01:32] 100/200 done, $138.97 spent ($0.24 reserved)
+[12:03:01] 125/200 done, $139.64 spent ($0.38 reserved)
+[12:03:59] 150/200 done, $140.23 spent ($0.45 reserved)
+[12:05:04] 175/200 done, $140.99 spent ($0.24 reserved)
+[12:06:52] 200/200 done, $141.91 spent ($0.00 reserved)
+{
+  "done": 200,
+  "total": 200,
+  "stopped": {},
+  "spent": {
+    "spent_usd": 141.906098,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 272.0
+  }
+}

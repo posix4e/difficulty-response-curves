@@ -1,0 +1,34 @@
+stage retest-fast: 672 calls to run (cap $26.00)
+[10:21:25] 25/672 done, $101.18 spent ($0.86 reserved)
+[10:22:30] 50/672 done, $102.43 spent ($1.28 reserved)
+[10:23:19] 75/672 done, $103.81 spent ($1.89 reserved)
+[10:24:05] 100/672 done, $105.01 spent ($1.97 reserved)
+[10:24:46] 125/672 done, $106.36 spent ($2.19 reserved)
+[10:25:31] 150/672 done, $107.65 spent ($2.20 reserved)
+[10:26:12] 175/672 done, $108.72 spent ($2.36 reserved)
+[10:26:54] 200/672 done, $109.96 spent ($2.43 reserved)
+[10:27:36] 225/672 done, $111.26 spent ($2.61 reserved)
+[10:28:17] 250/672 done, $112.56 spent ($2.60 reserved)
+[10:28:59] 275/672 done, $113.85 spent ($2.61 reserved)
+[10:29:43] 300/672 done, $115.18 spent ($2.56 reserved)
+[10:30:27] 325/672 done, $116.78 spent ($2.62 reserved)
+[10:31:02] 350/672 done, $118.07 spent ($2.67 reserved)
+[10:31:44] 375/672 done, $119.41 spent ($2.70 reserved)
+[10:32:29] 400/672 done, $120.66 spent ($2.71 reserved)
+[10:33:12] 425/672 done, $121.87 spent ($2.71 reserved)
+[10:33:53] 450/672 done, $123.30 spent ($2.65 reserved)
+[10:34:53] 475/672 done, $124.66 spent ($1.63 reserved)
+[budget] openai/o4-mini stopped: stage 'retest-fast' cap $26.00 reached (spent $24.34)
+{
+  "done": 493,
+  "total": 672,
+  "stopped": {
+    "openai/o4-mini": "stage 'retest-fast' cap $26.00 reached (spent $24.34)"
+  },
+  "spent": {
+    "spent_usd": 126.190345,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 290.0
+  }
+}

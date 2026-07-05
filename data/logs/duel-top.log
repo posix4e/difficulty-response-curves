@@ -1,0 +1,19 @@
+stage duel-top: 180 calls to run (cap $34.00)
+[06:46:32] 25/180 done, $206.24 spent ($7.85 reserved)
+[06:49:35] 50/180 done, $217.48 spent ($10.47 reserved)
+[budget] anthropic/claude-fable-5 stopped: stage 'duel-top' cap $34.00 reached (spent $22.77)
+[budget] openai/gpt-5.5 stopped: stage 'duel-top' cap $34.00 reached (spent $23.13)
+{
+  "done": 74,
+  "total": 180,
+  "stopped": {
+    "anthropic/claude-fable-5": "stage 'duel-top' cap $34.00 reached (spent $22.77)",
+    "openai/gpt-5.5": "stage 'duel-top' cap $34.00 reached (spent $23.13)"
+  },
+  "spent": {
+    "spent_usd": 229.805707,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 272.0
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "availability": [
+    {
+      "model": "anthropic/claude-fable-5",
+      "route": "anthropic/prepaid",
+      "n": 84,
+      "avg_billed_tokens": 11169,
+      "delivered_share": 0.027
+    },
+    {
+      "model": "anthropic/claude-haiku-4.5",
+      "route": "anthropic-messages",
+      "n": 1731,
+      "avg_billed_tokens": 6817,
+      "delivered_share": 0.056
+    },
+    {
+      "model": "deepseek/deepseek-r1-0528",
+      "route": "novita/prepaid",
+      "n": 152,
+      "avg_billed_tokens": 13799,
+      "delivered_share": 0.634
+    },
+    {
+      "model": "minimax/minimax-m2.5",
+      "route": "novita/prepaid",
+      "n": 9,
+      "avg_billed_tokens": 25538,
+      "delivered_share": 0.001
+    },
+    {
+      "model": "minimax/minimax-m2.5",
+      "route": "parasail/prepaid",
+      "n": 128,
+      "avg_billed_tokens": 29234,
+      "delivered_share": 0.766
+    },
+    {
+      "model": "openai/gpt-5.5",
+      "route": "openai/prepaid",
+      "n": 83,
+      "avg_billed_tokens": 9330,
+      "delivered_share": 0.004
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "route": "cerebras/prepaid",
+      "n": 61,
+      "avg_billed_tokens": 13838,
+      "delivered_share": 0.002
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "route": "novita/prepaid",
+      "n": 36,
+      "avg_billed_tokens": 12932,
+      "delivered_share": 0.002
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "route": "novita/prepaid",
+      "n": 26,
+      "avg_billed_tokens": 19481,
+      "delivered_share": 0.002
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "route": "parasail/prepaid",
+      "n": 880,
+      "avg_billed_tokens": 28395,
+      "delivered_share": 0.001
+    },
+    {
+      "model": "openai/o4-mini",
+      "route": "openai/prepaid",
+      "n": 1189,
+      "avg_billed_tokens": 9966,
+      "delivered_share": 0.004
+    },
+    {
+      "model": "or/claude-fable-5",
+      "route": "openrouter/Anthropic",
+      "n": 6,
+      "avg_billed_tokens": 35908,
+      "delivered_share": 0.008
+    },
+    {
+      "model": "or/gpt-5.5",
+      "route": "openrouter/OpenAI",
+      "n": 13,
+      "avg_billed_tokens": 22833,
+      "delivered_share": 0.004
+    },
+    {
+      "model": "qwen/qwen3-235b-a22b-thinking-2507",
+      "route": "novita/prepaid",
+      "n": 29,
+      "avg_billed_tokens": 19521,
+      "delivered_share": 0.61
+    }
+  ],
+  "texture": {
+    "deepseek/deepseek-r1-0528": {
+      "x50": 3.78,
+      "n_traced": 132,
+      "peaks": {
+        "tokens": {
+          "peak_alpha": 5.6,
+          "offset_from_x50": 1.82
+        },
+        "backtrack": {
+          "peak_alpha": 5.34,
+          "offset_from_x50": 1.56
+        },
+        "loops": {
+          "peak_alpha": 4.31,
+          "offset_from_x50": 0.53
+        }
+      }
+    },
+    "qwen/qwen3-235b-a22b-thinking-2507": {
+      "x50": 4.19,
+      "n_traced": 29,
+      "peaks": {
+        "tokens": {
+          "peak_alpha": 5.6,
+          "offset_from_x50": 1.41
+        },
+        "backtrack": {
+          "peak_alpha": 2.0,
+          "offset_from_x50": -2.19
+        },
+        "loops": {
+          "peak_alpha": 4.06,
+          "offset_from_x50": -0.13
+        }
+      }
+    },
+    "minimax/minimax-m2.5": {
+      "x50": 6.58,
+      "n_traced": 128,
+      "peaks": {
+        "tokens": {
+          "peak_alpha": 4.57,
+          "offset_from_x50": -2.01
+        },
+        "backtrack": {
+          "peak_alpha": 4.5,
+          "offset_from_x50": -2.08
+        },
+        "loops": {
+          "peak_alpha": 5.09,
+          "offset_from_x50": -1.49
+        }
+      }
+    }
+  }
+}

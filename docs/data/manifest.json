@@ -1,0 +1,22 @@
+{
+  "instances.jsonl.gz": {
+    "sha256": "321952000e02fb9712b00436484caf657a7828cb35331bd0d5120862968c8785",
+    "bytes": 368327
+  },
+  "calls.jsonl.gz": {
+    "sha256": "5040998f7f952a8e02c72dc25ced268a0e374f043032dbc4712682d5d0cf3016",
+    "bytes": 6055592
+  },
+  "fits.jsonl.gz": {
+    "sha256": "50139851d53ef6bba61d693eeac091671b63dc52d48c31ed3ae998d638f575d0",
+    "bytes": 36
+  },
+  "drc.sqlite.gz": {
+    "sha256": "6f6ebfbf216e0c955d8bb649e2d1ebb8c27e5290ed3ce1d02e96cb932519fd1e",
+    "bytes": 6558261
+  },
+  "ledger.txt": {
+    "sha256": "e2888b0ac9fb87dadea8d8c775e94af5ce695807970b6be4db3dce02b67bd40d",
+    "bytes": 4662
+  }
+}

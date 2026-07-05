@@ -1,0 +1,19 @@
+[11:47:06] 4/4 done, $135.89 spent ($0.00 reserved)
+[adaptive] probe level 7 (alpha=3.8): pass 0.00 -> bracket [0,6]
+[11:56:06] 4/4 done, $136.86 spent ($0.00 reserved)
+[adaptive] probe level 3 (alpha=2.7714): pass 1.00 -> bracket [4,6]
+[11:56:56] 4/4 done, $137.19 spent ($0.00 reserved)
+[adaptive] probe level 5 (alpha=3.2857): pass 0.50 -> bracket [6,6]
+[11:57:42] 8/8 done, $137.73 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.147 se=0.105 calls=20
+{
+  "model": "anthropic/claude-haiku-4.5",
+  "stage": "adaptive-claude-haiku-4.5",
+  "b": 3.1466142396596974,
+  "a": 3.603134771594336,
+  "x50": 3.1410072589059412,
+  "se_b": 0.10494197033726058,
+  "calls_used": 20,
+  "spent_usd": 1.0334
+}
+written to /Users/posix4e/src/difficulty-response-curves/data/adaptive-claude-haiku-4.5.json

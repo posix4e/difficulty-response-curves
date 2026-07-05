@@ -1,0 +1,15 @@
+stage dag-xxl-haiku: 64 calls to run (cap $7.00)
+[12:27:24] 25/64 done, $144.28 spent ($0.94 reserved)
+[12:29:33] 50/64 done, $146.47 spent ($1.11 reserved)
+[12:30:55] 64/64 done, $147.70 spent ($0.00 reserved)
+{
+  "done": 64,
+  "total": 64,
+  "stopped": {},
+  "spent": {
+    "spent_usd": 147.698504,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 272.0
+  }
+}

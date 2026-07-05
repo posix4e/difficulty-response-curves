@@ -1,0 +1,16 @@
+stage percall-minimax: 90 calls to run (cap $5.00)
+[12:56:22] 25/90 done, $258.98 spent ($0.48 reserved)
+[13:12:10] 50/90 done, $259.96 spent ($0.48 reserved)
+[13:26:06] 75/90 done, $260.81 spent ($0.48 reserved)
+[13:35:26] 90/90 done, $261.35 spent ($0.00 reserved)
+{
+  "done": 90,
+  "total": 90,
+  "stopped": {},
+  "spent": {
+    "spent_usd": 261.346161,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 278.0
+  }
+}

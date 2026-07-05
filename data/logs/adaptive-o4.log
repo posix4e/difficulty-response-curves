@@ -1,0 +1,35 @@
+[12:25:33] 4/4 done, $142.67 spent ($0.00 reserved)
+[adaptive] probe level 7 (alpha=3.8): pass 0.25 -> bracket [0,6]
+[12:26:58] 4/4 done, $143.92 spent ($0.00 reserved)
+[adaptive] probe level 3 (alpha=2.7714): pass 0.75 -> bracket [4,6]
+[12:28:28] 4/4 done, $145.23 spent ($0.00 reserved)
+[adaptive] probe level 5 (alpha=3.2857): pass 0.25 -> bracket [4,4]
+[12:30:26] 8/8 done, $147.49 spent ($0.00 reserved)
+[adaptive] batch at level 4: b=3.280 se=0.196 calls=20
+[12:33:06] 8/8 done, $148.23 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.285 se=0.172 calls=28
+[12:35:42] 8/8 done, $148.84 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.135 se=0.119 calls=36
+[12:38:05] 8/8 done, $149.33 spent ($0.00 reserved)
+[adaptive] batch at level 4: b=3.227 se=0.107 calls=44
+[12:41:20] 8/8 done, $149.98 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.181 se=0.087 calls=52
+[12:43:25] 8/8 done, $150.38 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.197 se=0.097 calls=60
+[12:45:04] 8/8 done, $150.69 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.253 se=0.098 calls=68
+[12:47:03] 8/8 done, $151.14 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.218 se=0.098 calls=76
+[12:49:26] 8/8 done, $151.65 spent ($0.00 reserved)
+[adaptive] batch at level 5: b=3.209 se=0.076 calls=84
+{
+  "model": "openai/o4-mini",
+  "stage": "adaptive-o4-mini",
+  "b": 3.2085743368262074,
+  "a": 3.0038958495618377,
+  "x50": 3.2018488349016097,
+  "se_b": 0.0757731913371358,
+  "calls_used": 84,
+  "spent_usd": 4.6222
+}
+written to /Users/posix4e/src/difficulty-response-curves/data/adaptive-o4-mini.json

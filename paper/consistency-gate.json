@@ -1,0 +1,14 @@
+{
+  "mode": "gate",
+  "set": "congate",
+  "n_scored": 118,
+  "n_wrong": 75,
+  "n_right": 43,
+  "n_pairs": 309,
+  "recall": 0.92,
+  "fpr": 0.163,
+  "escalation_rate": 0.644,
+  "auc_reported": 0.822,
+  "preregistered": "recall >= 0.9 AND fpr <= 0.25, one look",
+  "clears_gate": true
+}

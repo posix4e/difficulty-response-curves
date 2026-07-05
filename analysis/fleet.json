@@ -1,0 +1,15 @@
+{
+  "_provenance": "phase 1 probe audit 2026-07-07 + phase 0 confirmatory judge calibration; closer=gpt-5.5@or (fable-5@tr content-filtered the SAT probe, TR r1/qwen doors 502'd); judge threshold = Youden J on 96 R1 confirmatory traced calls (TPR 0.36, FPR 0.11, flag_rate 0.27)",
+  "cheap": {"gateway": "or", "model": "deepseek/deepseek-r1-0528", "pin": "deepinfra", "max_tokens": 32768},
+  "closer": {"gateway": "or", "model": "openai/gpt-5.5", "pin": null, "max_tokens": 32768},
+  "judge": {"feature": "hedge_tail", "threshold": 1.29},
+  "retries": 1,
+  "cap_usd": 30.0,
+  "prices": {
+    "deepseek/deepseek-r1-0528": [0.5, 2.18],
+    "openai/gpt-5.5": [5.5, 33.0]
+  },
+  "sat_levels": [3.0, 3.6, 4.2, 4.8, 5.3],
+  "code_levels": [1, 2, 3, 4, 5],
+  "per_level": 4
+}

@@ -1,0 +1,196 @@
+{
+  "a1_self_signal": {
+    "anthropic/claude-haiku-4.5": {
+      "n_fail": 481,
+      "n_pass": 389,
+      "auc_tokens": 0.627
+    },
+    "openai/o4-mini": {
+      "n_fail": 220,
+      "n_pass": 236,
+      "auc_tokens": 0.534
+    },
+    "openai/gpt-oss-120b": {
+      "n_fail": 3,
+      "n_pass": 4,
+      "auc_tokens": 0.5
+    },
+    "openai/gpt-oss-20b": {
+      "n_fail": 328,
+      "n_pass": 388,
+      "auc_tokens": 0.497
+    },
+    "deepseek/deepseek-r1-0528": {
+      "n_fail": 29,
+      "n_pass": 31,
+      "auc_tokens": 0.436,
+      "auc_loops": 0.387,
+      "n_traced": 54
+    },
+    "minimax/minimax-m2.5": {
+      "n_fail": 0,
+      "n_pass": 0,
+      "auc_tokens": null
+    }
+  },
+  "a2_transfer": {
+    "gpt-oss-20b->o4-mini": {
+      "n_shared_instances": 131,
+      "n_escalation_needed": 53,
+      "auc_cheap_tokens_predict_escalation": 0.62,
+      "strong_solves_when_cheap_fails": "11/53"
+    },
+    "gpt-oss-20b->claude-haiku-4.5": {
+      "n_shared_instances": 158,
+      "n_escalation_needed": 63,
+      "auc_cheap_tokens_predict_escalation": 0.587,
+      "strong_solves_when_cheap_fails": "17/63"
+    },
+    "deepseek-r1-0528->claude-haiku-4.5": {
+      "n_shared_instances": 95,
+      "n_escalation_needed": 53,
+      "auc_cheap_tokens_predict_escalation": 0.431,
+      "strong_solves_when_cheap_fails": "26/53"
+    }
+  },
+  "a3_replay": {
+    "gpt-oss-20b->o4-mini": {
+      "pair": "openai/gpt-oss-20b -> openai/o4-mini",
+      "n_shared_instances": 131,
+      "policies": {
+        "always_cheap": {
+          "solve_rate": 0.65,
+          "cost_per_instance_usd": 0.00577,
+          "cost_per_solved_usd": 0.00888
+        },
+        "always_strong": {
+          "solve_rate": 0.363,
+          "cost_per_instance_usd": 0.05612,
+          "cost_per_solved_usd": 0.15475
+        },
+        "cheap_retry3": {
+          "solve_rate": 0.776,
+          "cost_per_instance_usd": 0.01048,
+          "cost_per_solved_usd": 0.0135
+        },
+        "cascade_on_verify": {
+          "solve_rate": 0.692,
+          "cost_per_instance_usd": 0.02733,
+          "cost_per_solved_usd": 0.0395
+        },
+        "cascade_on_token_signal_no_verifier": {
+          "solve_rate": 0.582,
+          "cost_per_instance_usd": 0.01997,
+          "cost_per_solved_usd": 0.03429
+        },
+        "cascade_signal_plus_verifier": {
+          "solve_rate": 0.733,
+          "cost_per_instance_usd": 0.02556,
+          "cost_per_solved_usd": 0.03487
+        }
+      }
+    },
+    "gpt-oss-20b->claude-haiku-4.5": {
+      "pair": "openai/gpt-oss-20b -> anthropic/claude-haiku-4.5",
+      "n_shared_instances": 158,
+      "policies": {
+        "always_cheap": {
+          "solve_rate": 0.656,
+          "cost_per_instance_usd": 0.00576,
+          "cost_per_solved_usd": 0.00878
+        },
+        "always_strong": {
+          "solve_rate": 0.401,
+          "cost_per_instance_usd": 0.04663,
+          "cost_per_solved_usd": 0.11626
+        },
+        "cheap_retry3": {
+          "solve_rate": 0.774,
+          "cost_per_instance_usd": 0.01026,
+          "cost_per_solved_usd": 0.01326
+        },
+        "cascade_on_verify": {
+          "solve_rate": 0.702,
+          "cost_per_instance_usd": 0.02284,
+          "cost_per_solved_usd": 0.03253
+        },
+        "cascade_on_token_signal_no_verifier": {
+          "solve_rate": 0.584,
+          "cost_per_instance_usd": 0.01778,
+          "cost_per_solved_usd": 0.03043
+        },
+        "cascade_signal_plus_verifier": {
+          "solve_rate": 0.743,
+          "cost_per_instance_usd": 0.02174,
+          "cost_per_solved_usd": 0.02925
+        }
+      }
+    },
+    "deepseek-r1-0528->claude-haiku-4.5": {
+      "pair": "deepseek/deepseek-r1-0528 -> anthropic/claude-haiku-4.5",
+      "n_shared_instances": 95,
+      "policies": {
+        "always_cheap": {
+          "solve_rate": 0.493,
+          "cost_per_instance_usd": 0.03892,
+          "cost_per_solved_usd": 0.07899
+        },
+        "always_strong": {
+          "solve_rate": 0.412,
+          "cost_per_instance_usd": 0.0472,
+          "cost_per_solved_usd": 0.11455
+        },
+        "cheap_retry3": {
+          "solve_rate": 0.541,
+          "cost_per_instance_usd": 0.07979,
+          "cost_per_solved_usd": 0.14738
+        },
+        "cascade_on_verify": {
+          "solve_rate": 0.602,
+          "cost_per_instance_usd": 0.06393,
+          "cost_per_solved_usd": 0.10619
+        },
+        "cascade_on_token_signal_no_verifier": {
+          "solve_rate": 0.456,
+          "cost_per_instance_usd": 0.05075,
+          "cost_per_solved_usd": 0.11129
+        },
+        "cascade_signal_plus_verifier": {
+          "solve_rate": 0.617,
+          "cost_per_instance_usd": 0.07707,
+          "cost_per_solved_usd": 0.12491
+        }
+      }
+    }
+  },
+  "verdict": {
+    "median_self_auc_tokens": 0.5,
+    "kill_condition_triggered": true
+  },
+  "live_eval": {
+    "design": "25 fresh instances, levels [3.0, 3.6, 4.2, 4.8, 5.3], via OpenRouter",
+    "results": {
+      "always_gpt_oss_20b": {
+        "solved": "12/25",
+        "solve_rate": 0.48,
+        "cost_usd": 0.089,
+        "cost_per_solved_usd": 0.0074
+      },
+      "always_o4_mini": {
+        "solved": "9/25",
+        "solve_rate": 0.36,
+        "cost_usd": 1.291,
+        "cost_per_solved_usd": 0.1434
+      },
+      "formguide_router": {
+        "solved": "24/25",
+        "solve_rate": 0.96,
+        "cost_usd": 4.45,
+        "cost_per_solved_usd": 0.1854
+      }
+    },
+    "total_spend_usd": 5.963,
+    "complete": true,
+    "note": "single complete run; an accidental concurrent duplicate re-measured leg A at 10/25 and leg B at 6/25 before being killed (same instances, fresh calls) - the mist, live"
+  }
+}

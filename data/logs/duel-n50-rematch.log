@@ -1,0 +1,58 @@
+stage duel-n50-rematch: 40 calls to run (cap $80.00)
+[budget] or/gpt-5.5 stopped: soft stop: spent=257.82 near global cap $300.0
+[budget] or/claude-fable-5 stopped: soft stop: spent=257.82 near global cap $300.0
+[08:34:34] 25/40 done, $257.82 spent ($6.00 reserved)
+Traceback (most recent call last):
+  File [35m"<frozen runpy>"[0m, line [35m203[0m, in [35m_run_module_as_main[0m
+  File [35m"<frozen runpy>"[0m, line [35m88[0m, in [35m_run_code[0m
+  File [35m"/Users/posix4e/src/difficulty-response-curves/src/drc/cli.py"[0m, line [35m308[0m, in [35m<module>[0m
+    sys.exit([31mmain[0m[1;31m()[0m)
+             [31m~~~~[0m[1;31m^^[0m
+  File [35m"/Users/posix4e/src/difficulty-response-curves/src/drc/cli.py"[0m, line [35m304[0m, in [35mmain[0m
+    return [31margs.fn[0m[1;31m(args)[0m
+           [31m~~~~~~~[0m[1;31m^^^^^^[0m
+  File [35m"/Users/posix4e/src/difficulty-response-curves/src/drc/cli.py"[0m, line [35m66[0m, in [35mcmd_run_stage[0m
+    [31masyncio.run[0m[1;31m(client.aclose())[0m
+    [31m~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/runners.py"[0m, line [35m204[0m, in [35mrun[0m
+    return [31mrunner.run[0m[1;31m(main)[0m
+           [31m~~~~~~~~~~[0m[1;31m^^^^^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/runners.py"[0m, line [35m127[0m, in [35mrun[0m
+    return [31mself._loop.run_until_complete[0m[1;31m(task)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py"[0m, line [35m719[0m, in [35mrun_until_complete[0m
+    return [31mfuture.result[0m[1;31m()[0m
+           [31m~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/Users/posix4e/src/difficulty-response-curves/src/drc/runner/client.py"[0m, line [35m58[0m, in [35maclose[0m
+    await self.http.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpx/_client.py"[0m, line [35m1985[0m, in [35maclose[0m
+    await self._transport.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpx/_transports/default.py"[0m, line [35m406[0m, in [35maclose[0m
+    await self._pool.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpcore/_async/connection_pool.py"[0m, line [35m353[0m, in [35maclose[0m
+    await self._close_connections(closing_connections)
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpcore/_async/connection_pool.py"[0m, line [35m345[0m, in [35m_close_connections[0m
+    await connection.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpcore/_async/connection.py"[0m, line [35m173[0m, in [35maclose[0m
+    await self._connection.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpcore/_async/http11.py"[0m, line [35m258[0m, in [35maclose[0m
+    await self._network_stream.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/httpcore/_backends/anyio.py"[0m, line [35m53[0m, in [35maclose[0m
+    await self._stream.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/anyio/streams/tls.py"[0m, line [35m236[0m, in [35maclose[0m
+    await self.transport_stream.aclose()
+  File [35m"/Users/posix4e/src/difficulty-response-curves/.venv/lib/python3.14/site-packages/anyio/_backends/_asyncio.py"[0m, line [35m1374[0m, in [35maclose[0m
+    [31mself._transport.close[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/selector_events.py"[0m, line [35m1216[0m, in [35mclose[0m
+    [31msuper().close[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/selector_events.py"[0m, line [35m869[0m, in [35mclose[0m
+    [31mself._loop.call_soon[0m[1;31m(self._call_connection_lost, None)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py"[0m, line [35m827[0m, in [35mcall_soon[0m
+    [31mself._check_closed[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py"[0m, line [35m550[0m, in [35m_check_closed[0m
+    raise RuntimeError('Event loop is closed')
+[1;35mRuntimeError[0m: [35mEvent loop is closed[0m

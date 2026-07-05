@@ -1,0 +1,22 @@
+{
+  "deepseek/deepseek-r1-0528": {
+    "center_level_idx": 8,
+    "x50": 3.78
+  },
+  "minimax/minimax-m2.5": {
+    "center_level_idx": 6,
+    "x50": 3.6
+  },
+  "qwen/qwen3-235b-a22b-thinking-2507": {
+    "center_level_idx": 9,
+    "x50": 4.19
+  },
+  "or/minimax-m2.5": {
+    "center_level_idx": 12,
+    "x50": 6.58
+  },
+  "or/deepseek-r1-0528": {
+    "center_level_idx": 8,
+    "x50": 3.78
+  }
+}

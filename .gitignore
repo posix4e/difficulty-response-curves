@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+data/*.sqlite
+data/*.sqlite-wal
+data/*.sqlite-shm
+.pytest_cache/
+.DS_Store
+paper/*.pdf.tmp

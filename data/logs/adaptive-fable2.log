@@ -1,0 +1,45 @@
+[21:01:38] 4/4 done, $172.94 spent ($0.00 reserved)
+[adaptive] probe level 7 (alpha=3.8): pass 1.00 -> bracket [8,14]
+[21:05:02] 4/4 done, $175.09 spent ($0.00 reserved)
+[adaptive] probe level 11 (alpha=4.8286): pass 0.75 -> bracket [12,14]
+[21:07:44] 4/4 done, $177.54 spent ($0.00 reserved)
+[adaptive] probe level 13 (alpha=5.3429): pass 1.00 -> bracket [14,14]
+[21:09:34] 8/8 done, $181.29 spent ($0.00 reserved)
+[adaptive] batch at level 14: b=6.600 se=0.171 calls=20
+[21:11:36] 8/8 done, $184.42 spent ($0.00 reserved)
+[adaptive] batch at level 14: b=6.442 se=0.199 calls=28
+[21:14:03] 8/8 done, $188.81 spent ($0.00 reserved)
+[adaptive] batch at level 14: b=6.530 se=0.181 calls=36
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $16.74)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=44
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=52
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=60
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=68
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=76
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=84
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=92
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=100
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=108
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=116
+[budget] anthropic/claude-fable-5 stopped: stage 'adaptive-claude-fable-5' cap $20.00 reached (spent $19.19)
+[adaptive] batch at level 14: b=6.354 se=0.213 calls=124
+{
+  "model": "anthropic/claude-fable-5",
+  "stage": "adaptive-claude-fable-5",
+  "b": 6.3540419134217725,
+  "a": 1.7825472881992956,
+  "x50": 6.342708296944238,
+  "se_b": 0.21340176066246572,
+  "calls_used": 124,
+  "spent_usd": 19.1909
+}
+written to /Users/posix4e/src/difficulty-response-curves/data/adaptive-claude-fable-5.json

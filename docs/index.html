@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Difficulty–Response Curves: A Form Guide for Reasoning Models</title>
+<meta name="description" content="Item response theory pointed at language models: measured frontiers with confidence intervals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:#faf9f4; --card:#ffffff; --ink:#1c1b17; --ink-2:#5d5b51; --rule:#d8d5c8;
+  --green:#12421f; --green-2:#1d5c30; --accent:#b8860b;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper:#151713; --card:#1d201b; --ink:#f0eee6; --ink-2:#a5a294; --rule:#3a3d35;
+           --green:#8fc9a0; --green-2:#6fae82; --accent:#d9a441; }
+  img.fig { background:#fcfcfb; border-radius:6px; padding:10px; }
+}
+* { box-sizing:border-box; margin:0; }
+html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+body {
+  background:var(--paper); color:var(--ink);
+  font-family:"Newsreader", Georgia, serif; font-size:17px; line-height:1.55;
+}
+.wrap { max-width:920px; margin:0 auto; padding:0 20px; }
+.disp { font-family:"Barlow Condensed", "Arial Narrow", sans-serif; }
+.mono { font-family:"Spline Sans Mono", ui-monospace, monospace; }
+
+/* masthead */
+header { border-bottom:3px double var(--rule); padding:26px 0 18px; }
+.wip { background:var(--accent); color:var(--paper); padding:3px 10px; border-radius:3px; font-weight:600; }
+.race-meta { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2); }
+h1 { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:clamp(34px,6vw,58px);
+  line-height:1.02; text-transform:uppercase; letter-spacing:.01em; margin:14px 0 8px; color:var(--ink); }
+h1 .thin { font-weight:500; color:var(--green); }
+.standfirst { font-size:19px; max-width:64ch; color:var(--ink); font-style:italic; }
+.links { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.links a { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:14px;
+  color:var(--paper); background:var(--green); text-decoration:none; padding:7px 14px; border-radius:3px; }
+.links a.ghost { background:transparent; color:var(--green); border:1px solid var(--green); }
+.links a:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+.explainer { margin-top:18px; padding:14px 16px; background:var(--card); border:1px solid var(--rule);
+  border-left:4px solid var(--green); border-radius:4px; font-size:15.5px; max-width:76ch; }
+.explainer p { margin:0; }
+/* multi-page chrome */
+.pagenav { margin-top:16px; display:flex; flex-wrap:wrap; gap:2px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.08em; text-transform:uppercase; }
+.pagenav a { color:var(--green-2); text-decoration:none; padding:6px 12px; border:1px solid var(--rule);
+  border-bottom:none; border-radius:4px 4px 0 0; background:var(--card); }
+.pagenav a.active { background:var(--green); color:var(--paper); border-color:var(--green); }
+.pagenav a:hover { color:var(--accent); }
+header.compact { padding-bottom:0; border-bottom:none; }
+header.compact h1 { margin-bottom:2px; }
+header.compact + section { border-top:3px double var(--rule); padding-top:18px; margin-top:0; }
+.teasers { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:14px; }
+.teaser { display:block; background:var(--card); border:1px solid var(--rule); border-left:4px solid var(--green);
+  border-radius:4px; padding:14px 16px; text-decoration:none; color:var(--ink); }
+.teaser:hover { border-left-color:var(--accent); }
+.teaser strong { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--green); display:block; margin-bottom:4px; }
+.teaser span { font-size:14px; color:var(--ink-2); }
+.journal { margin-top:14px; }
+.jentry { display:flex; gap:18px; padding:14px 0; border-bottom:1px dotted var(--rule); }
+.jdate { flex:0 0 130px; font-family:"Barlow Condensed",sans-serif; text-transform:uppercase;
+  letter-spacing:.06em; font-size:14px; color:var(--accent); padding-top:2px; }
+.jbody p { max-width:66ch; }
+.toc { margin-top:16px; display:flex; flex-wrap:wrap; gap:4px 14px;
+  font-family:"Barlow Condensed",sans-serif; font-size:13.5px; letter-spacing:.08em; text-transform:uppercase; }
+.toc a { color:var(--green-2); text-decoration:none; border-bottom:1px dotted var(--rule); }
+.toc a:hover { color:var(--accent); }
+
+/* race card */
+.card { background:var(--card); border:1px solid var(--rule); border-radius:6px; margin:30px 0 8px;
+  overflow-x:auto; box-shadow:0 1px 0 var(--rule); }
+.card table { border-collapse:collapse; width:100%; min-width:680px; }
+.card caption { text-align:left; padding:14px 16px 4px;
+  font-family:"Barlow Condensed",sans-serif; font-size:18px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--green); }
+.card th { font-family:"Barlow Condensed",sans-serif; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-2); text-align:left; padding:10px 12px 6px; border-bottom:2px solid var(--ink); font-weight:600; }
+.card td { padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+.card tr:last-child td { border-bottom:none; }
+.pos { font-family:"Barlow Condensed",sans-serif; font-size:22px; font-weight:700; color:var(--ink-2); width:2ch; }
+.swatch { display:inline-block; width:16px; height:16px; border-radius:3px; margin-top:4px; }
+.runner strong { display:block; font-size:16px; }
+.runner .mono { font-size:11.5px; color:var(--ink-2); }
+td.num { font-family:"Spline Sans Mono",monospace; font-size:14.5px; white-space:nowrap; }
+td.num .ci { display:block; font-size:11px; color:var(--ink-2); }
+.card-note { font-size:13.5px; color:var(--ink-2); margin:6px 2px 0; }
+.leadout { font-style:italic; color:var(--ink-2); border-top:1px dotted var(--rule); padding-top:10px;
+  margin-top:18px; max-width:64ch; }
+.explainer.thesis { border-left-color:var(--accent); font-size:17px; }
+.card.late { margin-top:22px; border-left:4px solid var(--accent); }
+.card.late td { font-size:14.5px; }
+.datafiles { margin:8px 0 8px 22px; line-height:1.9; }
+.cartoon { margin:22px 0; }
+.cartoon svg { width:100%; max-width:640px; height:auto; display:block; background:var(--card);
+  border:1px solid var(--rule); border-radius:6px; padding:8px; }
+.cartoon figcaption { font-size:13px; color:var(--ink-2); margin-top:6px; max-width:70ch; }
+.tracequote { border-left:3px solid var(--green); margin:12px 0; padding:10px 16px; background:var(--card);
+  font-family:"Spline Sans Mono",monospace; font-size:13px; color:var(--ink); max-width:72ch; }
+.datafiles .mono, .datafiles a { font-size:15px; }
+
+/* signals */
+.signal { margin:54px 0; }
+.flag { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.flag .t { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:20px; color:var(--paper);
+  background:var(--green); width:44px; height:44px; display:grid; place-items:center; border-radius:3px; flex:none; }
+.flag h2 { font-family:"Barlow Condensed",sans-serif; font-size:26px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+.flag .dies { margin-left:auto; font-size:12.5px; color:var(--ink-2); font-style:italic; max-width:34ch; text-align:right; }
+.signal p { max-width:70ch; margin:10px 0; }
+img.fig { width:100%; height:auto; margin:14px 0 4px; }
+.headline { font-family:"Barlow Condensed",sans-serif; font-size:20px; font-weight:600; color:var(--green); }
+.plain { font-size:17px; }
+th .sub { font-weight:400; font-size:10.5px; letter-spacing:.04em; text-transform:none; color:var(--ink-2); }
+
+/* tools */
+pre { background:var(--card); border:1px solid var(--rule); border-radius:6px; padding:16px;
+  overflow-x:auto; font-family:"Spline Sans Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--ink); }
+.notclaim { border-top:3px double var(--rule); margin-top:60px; padding:26px 0 10px; font-style:italic; color:var(--ink-2); max-width:70ch; }
+footer { padding:20px 0 44px; font-size:13.5px; color:var(--ink-2); }
+footer a { color:var(--green-2); }
+a { color:var(--green-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="race-meta">
+    <span class="wip">&#9888; working notes &mdash; what we've learnt so far · updated 8 July 2026</span>
+    <span>going: procedurally generated · surface: random 3-SAT</span>
+  </div>
+  <h1>Difficulty&ndash;Response Curves<br><span class="thin">A form guide for reasoning models</span></h1>
+  <p class="standfirst">Nobody at the races asks whether a horse is good. They ask what distance,
+  what going, and does it fade in the straight. This is that card, for reasoning models &mdash; a living
+  document where the corrections are part of the findings.</p>
+  <div class="explainer">
+    <p><strong>What is this?</strong> We generated thousands of logic puzzles with a
+    <em>difficulty dial</em> (random 3-SAT: find true/false values satisfying a list of
+    constraints; more constraints = harder), tested ten AI models repeatedly across the dial, and
+    plotted each model's success rate as difficulty rises. Every model produces an S-shaped curve,
+    summarised by two numbers: the <strong>frontier x&#8325;&#8320;</strong> (the difficulty where it
+    succeeds half the time) and the <strong>sharpness a</strong> (how suddenly success collapses).
+    Psychometricians have fitted these curves to human test-takers since the 1950s &mdash; item response
+    theory &mdash; and this project points the same instrument at machines: fresh unmemorisable puzzles,
+    mechanically checkable answers, error bars on everything, all data and tools released below.</p>
+  </div>
+  <div class="links">
+    <a href="paper.pdf">Read the paper (PDF)</a>
+    <a class="ghost" href="https://github.com/posix4e/difficulty-response-curves">Code &amp; generators</a>
+    <a class="ghost" href="index.html#data">Raw data</a>
+    <a class="ghost" href="index.html#tools">Measure your own model</a>
+  </div>
+  <nav class="pagenav" aria-label="Pages"><a href="index.html" class="active">Overview</a><a href="method.html">The Method</a><a href="findings.html">Findings 1–4</a><a href="traces.html">5 · Traces</a><a href="pipes.html">6 · The Pipes</a><a href="router.html">7 · The Router</a><a href="routing2.html">8 · No Referee</a><a href="consistency.html">9 · Ask Twice</a><a href="journal.html">Journal</a></nav></header>
+<section class="signal" id="tour">
+  <div class="flag"><span class="t">&#9776;</span><h2>The tour</h2></div>
+  <div class="teasers">
+    <a class="teaser" href="method.html"><strong>The method</strong><span>What a difficulty dial is, the
+      SAT comic, why this puzzle beats maths benchmarks, and how this differs from leaderboards and arenas.</span></a>
+    <a class="teaser" href="findings.html"><strong>Findings 1&ndash;4</strong><span>The frontier is mist; the
+      measurement repeats but models drift; budgets move frontiers; and a $0.36 probe finds any of it.</span></a>
+    <a class="teaser" href="traces.html"><strong>Finding 5 &middot; Traces</strong><span>The thinking you pay
+      for but rarely see &mdash; with cartoons, real scratchpad excerpts, and the loops that mark the cliff.</span></a>
+    <a class="teaser" href="pipes.html"><strong>Finding 6 &middot; The pipes</strong><span>The router bug that
+      framed two innocents, the vendor fix that wasn't, and why the card survives its own plumbing.</span></a>
+    <a class="teaser" href="router.html"><strong>Finding 7 &middot; The router</strong><span>The practical
+      payoff: a LiteLLM router driven by the card &mdash; retries beat escalation, and premium &ne; stronger.</span></a>
+    <a class="teaser" href="journal.html"><strong>The journal</strong><span>The whole campaign, dated: outages,
+      credit walls, convictions, corrections, and what each cost.</span></a>
+  </div>
+</section>
+
+<div id="card" class="card">
+  <table>
+    <caption>The card &mdash; each model's measured breaking point (random 3-SAT, 20 variables)</caption>
+    <thead>
+      <tr><th></th><th>silks</th><th>runner</th><th>breaking point<br><span class="sub">frontier x&#8325;&#8320; [95% CI]</span></th><th>how sudden<br><span class="sub">sharpness a</span></th><th>re-measured<br><span class="sub">retest x&#8325;&#8320;</span></th><th>easy slips<br><span class="sub">lapse</span></th><th>format / cut-off<br><span class="sub">fail rates</span></th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pos">1</td>
+        <td class="silks"><span class="swatch" style="background:#eda100"></span></td>
+        <td class="runner"><strong>MiniMax-M2.5</strong><span class="mono">minimax/minimax-m2.5</span></td>
+        <td class="num"><strong>6.58</strong><span class="ci">[5.59, 6.59]</span></td>
+        <td class="num">0.76<span class="ci">[0.60, 1.36]</span></td>
+        <td class="num">&mdash;</td>
+        <td class="num">0.007</td>
+        <td class="num">0.013 / 0.000</td>
+      </tr>
+      <tr>
+        <td class="pos">2</td>
+        <td class="silks"><span class="swatch" style="background:#2a78d6"></span></td>
+        <td class="runner"><strong>gpt-oss-20b</strong><span class="mono">openai/gpt-oss-20b</span></td>
+        <td class="num"><strong>4.63</strong><span class="ci">[4.45, 4.78]</span></td>
+        <td class="num">0.99<span class="ci">[0.82, 1.17]</span></td>
+        <td class="num">&mdash;</td>
+        <td class="num">0.007</td>
+        <td class="num">0.005 / 0.001</td>
+      </tr>
+      <tr>
+        <td class="pos">3</td>
+        <td class="silks"><span class="swatch" style="background:#1baf7a"></span></td>
+        <td class="runner"><strong>gpt-oss-120b</strong><span class="mono">openai/gpt-oss-120b</span></td>
+        <td class="num"><strong>4.23</strong><span class="ci">[3.94, 4.54]</span></td>
+        <td class="num">2.06<span class="ci">[1.60, 3.03]</span></td>
+        <td class="num">&mdash;</td>
+        <td class="num">0.007</td>
+        <td class="num">0.000 / 0.229</td>
+      </tr>
+      <tr>
+        <td class="pos">4</td>
+        <td class="silks"><span class="swatch" style="background:#4a3aa7"></span></td>
+        <td class="runner"><strong>DeepSeek-R1-0528</strong><span class="mono">deepseek/deepseek-r1-0528</span></td>
+        <td class="num"><strong>3.78</strong><span class="ci">[3.53, 4.05]</span></td>
+        <td class="num">1.75<span class="ci">[1.38, 2.37]</span></td>
+        <td class="num">&mdash;</td>
+        <td class="num">0.007</td>
+        <td class="num">0.022 / 0.000</td>
+      </tr>
+      <tr>
+        <td class="pos">5</td>
+        <td class="silks"><span class="swatch" style="background:#eb6834"></span></td>
+        <td class="runner"><strong>Haiku-4.5-Think</strong><span class="mono">anthropic/claude-haiku-4.5</span></td>
+        <td class="num"><strong>3.39</strong><span class="ci">[3.28, 3.51]</span></td>
+        <td class="num">2.17<span class="ci">[1.81, 2.66]</span></td>
+        <td class="num">3.52</td>
+        <td class="num">0.006</td>
+        <td class="num">0.001 / 0.006</td>
+      </tr>
+      <tr>
+        <td class="pos">6</td>
+        <td class="silks"><span class="swatch" style="background:#e34948"></span></td>
+        <td class="runner"><strong>o4-mini</strong><span class="mono">openai/o4-mini</span></td>
+        <td class="num"><strong>3.28</strong><span class="ci">[3.17, 3.41]</span></td>
+        <td class="num">2.09<span class="ci">[1.72, 2.58]</span></td>
+        <td class="num">3.29</td>
+        <td class="num">0.008</td>
+        <td class="num">0.012 / 0.000</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p class="card-note"><strong>How to read the card:</strong> the <em>breaking point</em> is the difficulty-dial
+setting where the model succeeds on exactly half its attempts &mdash; higher means it survives harder puzzles.
+<em>How sudden</em> is the slope of the collapse: a big number means a cliff, a small one a long fade.
+<em>Re-measured</em> is the breaking point found again on completely fresh puzzles.
+<em>Easy slips</em> is how often the model fumbles puzzles it should trivially solve.
+Every reading was taken at a stated thinking-token budget (<a href="findings.html#f3">finding 3</a> explains why that matters), and
+MiniMax's row comes from an extended dial after it beat the standard range outright.
+Total spend for every number on this page: $156.90 of a $300 cap, ledger below.</p>
+
+<div class="card late">
+  <table>
+    <caption>Late entries &mdash; premium models, single adaptive runs (not full sweeps)</caption>
+    <thead><tr><th>runner</th><th>verdict</th><th>cost of the reading</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="runner"><strong>GPT-5.5</strong><span class="mono">openai/gpt-5.5</span></td>
+        <td>Breaking point <strong>beyond 7.2</strong> &mdash; ran off the end of even the extended track;
+        no 20-variable puzzle we can generate is hard enough. On the bigger 50-variable track (<a href="findings.html#f4">finding 4</a>)
+        it finally lands: &alpha; &asymp; 4.6&ndash;5.0, solving within practical budgets, joint top of the card.</td>
+        <td class="num">48 calls<br>$14.52</td>
+      </tr>
+      <tr>
+        <td class="runner"><strong>Claude Fable 5</strong><span class="mono">anthropic/claude-fable-5</span></td>
+        <td>Breaking point <strong>beyond 7.2</strong> &mdash; joint top with GPT-5.5, after a saga: a router
+        bug made it look broken (<a href="pipes.html">finding 6</a>), its fitted 6.34 replicated perfectly and was then falsified by
+        direct test (10/10 at &alpha; = 7.2 &mdash; a track-edge extrapolation; precision is not truth), and at
+        n = 50 it out-thinks every budget we could buy (<a href="findings.html#f3">finding 3</a>).</td>
+        <td class="num">337 calls<br>$56</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="signal" id="thesis">
+  <div class="flag"><span class="t">&#9733;</span><h2>So what is a frontier?</h2></div>
+  <div class="explainer thesis">
+    <p>Six findings, one sentence: <strong>a model's breaking point is not a constant &mdash; it is a
+    coin-flip zone (1), measured on a date (2), at a thinking budget (3), on one task family (F),
+    through a particular pipe (6) &mdash; and the only reason any of that is workable is that re-measuring
+    costs pocket change (4), with the model's own stutter as a second opinion where the pipe allows (5).</strong>
+    The card above states its family, budgets, dates, and pipes. Any capability number that doesn't is a rumour
+    with confidence intervals missing.</p>
+  </div>
+</section>
+
+<section class="signal" id="data">
+  <div class="flag"><span class="t">&#9633;</span><h2>The raw data, right here</h2></div>
+  <p class="plain">Every API call this project made &mdash; prompt hashes, full response text, token counts,
+  cost in microdollars, and the provider endpoint that actually served it &mdash; downloadable directly:</p>
+  <ul class="datafiles">
+    <li><a href="data/calls.jsonl.gz">calls.jsonl.gz</a> &mdash; every scored call (one JSON object per line)</li>
+    <li><a href="data/instances.jsonl.gz">instances.jsonl.gz</a> &mdash; every generated puzzle, with its solution witness</li>
+    <li><a href="data/drc.sqlite.gz">drc.sqlite.gz</a> &mdash; the complete database, the exact file the analysis reads</li>
+    <li><a href="data/ledger.txt">ledger.txt</a> &mdash; the spend ledger, stage by stage</li>
+    <li><a href="data/manifest.json">manifest.json</a> &mdash; sha256 hashes and byte sizes for all of the above</li>
+  </ul>
+  <p>Reanalysis from scratch: <span class="mono">gunzip drc.sqlite.gz &rarr; data/drc.sqlite</span>, then
+  <span class="mono">python analysis/run_analysis.py</span> in the repo regenerates every number on this
+  page and in the paper.</p>
+</section>
+
+<section class="signal" id="tools">
+  <div class="flag"><span class="t">&sect;</span><h2>Measure your own model</h2></div>
+  <p>The whole instrument is released: generators, runner, fitting code, raw per-call records.
+  Point it at any OpenAI-compatible endpoint. The dollar cap is enforced per call, not estimated.</p>
+  <pre>python3 -m venv .venv &amp;&amp; .venv/bin/pip install -e .
+export TRUSTEDROUTER_API_KEY=sk-tr-...
+
+.venv/bin/drc sweep --model your/model --grid sat-n20-main --instances 15 --k 4 --cap 2.0
+.venv/bin/drc fit   --model your/model --sets adhoc --stages adhoc --bootstrap 2000 --gof
+.venv/bin/drc adaptive --model your/model --cap 2.0   # the fast way to x50
+.venv/bin/drc budget                                  # where every microdollar went</pre>
+</section>
+<p class="notclaim">What this site does not claim: no mechanism, no physics vocabulary, nobody's water is
+freezing, no reading of trace contents beyond what is measured, no early-warning prophecy.
+The restraint is the brand.</p>
+<footer>
+  <p>alex newman · <a href="https://github.com/posix4e/difficulty-response-curves">github.com/posix4e/difficulty-response-curves</a>
+  · every number regenerable via <span class="mono">analysis/run_analysis.py</span> · <a href="paper.pdf">paper (PDF)</a></p>
+</footer>
+</div>
+</body>
+</html>

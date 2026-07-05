@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding 5: Traces — Difficulty–Response Curves</title>
+<meta name="description" content="Reasoning traces: billed everywhere, delivered rarely, and where delivered, the loops mark the cliff.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:#faf9f4; --card:#ffffff; --ink:#1c1b17; --ink-2:#5d5b51; --rule:#d8d5c8;
+  --green:#12421f; --green-2:#1d5c30; --accent:#b8860b;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper:#151713; --card:#1d201b; --ink:#f0eee6; --ink-2:#a5a294; --rule:#3a3d35;
+           --green:#8fc9a0; --green-2:#6fae82; --accent:#d9a441; }
+  img.fig { background:#fcfcfb; border-radius:6px; padding:10px; }
+}
+* { box-sizing:border-box; margin:0; }
+html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+body {
+  background:var(--paper); color:var(--ink);
+  font-family:"Newsreader", Georgia, serif; font-size:17px; line-height:1.55;
+}
+.wrap { max-width:920px; margin:0 auto; padding:0 20px; }
+.disp { font-family:"Barlow Condensed", "Arial Narrow", sans-serif; }
+.mono { font-family:"Spline Sans Mono", ui-monospace, monospace; }
+
+/* masthead */
+header { border-bottom:3px double var(--rule); padding:26px 0 18px; }
+.wip { background:var(--accent); color:var(--paper); padding:3px 10px; border-radius:3px; font-weight:600; }
+.race-meta { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2); }
+h1 { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:clamp(34px,6vw,58px);
+  line-height:1.02; text-transform:uppercase; letter-spacing:.01em; margin:14px 0 8px; color:var(--ink); }
+h1 .thin { font-weight:500; color:var(--green); }
+.standfirst { font-size:19px; max-width:64ch; color:var(--ink); font-style:italic; }
+.links { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.links a { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:14px;
+  color:var(--paper); background:var(--green); text-decoration:none; padding:7px 14px; border-radius:3px; }
+.links a.ghost { background:transparent; color:var(--green); border:1px solid var(--green); }
+.links a:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+.explainer { margin-top:18px; padding:14px 16px; background:var(--card); border:1px solid var(--rule);
+  border-left:4px solid var(--green); border-radius:4px; font-size:15.5px; max-width:76ch; }
+.explainer p { margin:0; }
+/* multi-page chrome */
+.pagenav { margin-top:16px; display:flex; flex-wrap:wrap; gap:2px;
+  font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.08em; text-transform:uppercase; }
+.pagenav a { color:var(--green-2); text-decoration:none; padding:6px 12px; border:1px solid var(--rule);
+  border-bottom:none; border-radius:4px 4px 0 0; background:var(--card); }
+.pagenav a.active { background:var(--green); color:var(--paper); border-color:var(--green); }
+.pagenav a:hover { color:var(--accent); }
+header.compact { padding-bottom:0; border-bottom:none; }
+header.compact h1 { margin-bottom:2px; }
+header.compact + section { border-top:3px double var(--rule); padding-top:18px; margin-top:0; }
+.teasers { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:14px; }
+.teaser { display:block; background:var(--card); border:1px solid var(--rule); border-left:4px solid var(--green);
+  border-radius:4px; padding:14px 16px; text-decoration:none; color:var(--ink); }
+.teaser:hover { border-left-color:var(--accent); }
+.teaser strong { font-family:"Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--green); display:block; margin-bottom:4px; }
+.teaser span { font-size:14px; color:var(--ink-2); }
+.journal { margin-top:14px; }
+.jentry { display:flex; gap:18px; padding:14px 0; border-bottom:1px dotted var(--rule); }
+.jdate { flex:0 0 130px; font-family:"Barlow Condensed",sans-serif; text-transform:uppercase;
+  letter-spacing:.06em; font-size:14px; color:var(--accent); padding-top:2px; }
+.jbody p { max-width:66ch; }
+.toc { margin-top:16px; display:flex; flex-wrap:wrap; gap:4px 14px;
+  font-family:"Barlow Condensed",sans-serif; font-size:13.5px; letter-spacing:.08em; text-transform:uppercase; }
+.toc a { color:var(--green-2); text-decoration:none; border-bottom:1px dotted var(--rule); }
+.toc a:hover { color:var(--accent); }
+
+/* race card */
+.card { background:var(--card); border:1px solid var(--rule); border-radius:6px; margin:30px 0 8px;
+  overflow-x:auto; box-shadow:0 1px 0 var(--rule); }
+.card table { border-collapse:collapse; width:100%; min-width:680px; }
+.card caption { text-align:left; padding:14px 16px 4px;
+  font-family:"Barlow Condensed",sans-serif; font-size:18px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--green); }
+.card th { font-family:"Barlow Condensed",sans-serif; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-2); text-align:left; padding:10px 12px 6px; border-bottom:2px solid var(--ink); font-weight:600; }
+.card td { padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+.card tr:last-child td { border-bottom:none; }
+.pos { font-family:"Barlow Condensed",sans-serif; font-size:22px; font-weight:700; color:var(--ink-2); width:2ch; }
+.swatch { display:inline-block; width:16px; height:16px; border-radius:3px; margin-top:4px; }
+.runner strong { display:block; font-size:16px; }
+.runner .mono { font-size:11.5px; color:var(--ink-2); }
+td.num { font-family:"Spline Sans Mono",monospace; font-size:14.5px; white-space:nowrap; }
+td.num .ci { display:block; font-size:11px; color:var(--ink-2); }
+.card-note { font-size:13.5px; color:var(--ink-2); margin:6px 2px 0; }
+.leadout { font-style:italic; color:var(--ink-2); border-top:1px dotted var(--rule); padding-top:10px;
+  margin-top:18px; max-width:64ch; }
+.explainer.thesis { border-left-color:var(--accent); font-size:17px; }
+.card.late { margin-top:22px; border-left:4px solid var(--accent); }
+.card.late td { font-size:14.5px; }
+.datafiles { margin:8px 0 8px 22px; line-height:1.9; }
+.cartoon { margin:22px 0; }
+.cartoon svg { width:100%; max-width:640px; height:auto; display:block; background:var(--card);
+  border:1px solid var(--rule); border-radius:6px; padding:8px; }
+.cartoon figcaption { font-size:13px; color:var(--ink-2); margin-top:6px; max-width:70ch; }
+.tracequote { border-left:3px solid var(--green); margin:12px 0; padding:10px 16px; background:var(--card);
+  font-family:"Spline Sans Mono",monospace; font-size:13px; color:var(--ink); max-width:72ch; }
+.datafiles .mono, .datafiles a { font-size:15px; }
+
+/* signals */
+.signal { margin:54px 0; }
+.flag { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.flag .t { font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:20px; color:var(--paper);
+  background:var(--green); width:44px; height:44px; display:grid; place-items:center; border-radius:3px; flex:none; }
+.flag h2 { font-family:"Barlow Condensed",sans-serif; font-size:26px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+.flag .dies { margin-left:auto; font-size:12.5px; color:var(--ink-2); font-style:italic; max-width:34ch; text-align:right; }
+.signal p { max-width:70ch; margin:10px 0; }
+img.fig { width:100%; height:auto; margin:14px 0 4px; }
+.headline { font-family:"Barlow Condensed",sans-serif; font-size:20px; font-weight:600; color:var(--green); }
+.plain { font-size:17px; }
+th .sub { font-weight:400; font-size:10.5px; letter-spacing:.04em; text-transform:none; color:var(--ink-2); }
+
+/* tools */
+pre { background:var(--card); border:1px solid var(--rule); border-radius:6px; padding:16px;
+  overflow-x:auto; font-family:"Spline Sans Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--ink); }
+.notclaim { border-top:3px double var(--rule); margin-top:60px; padding:26px 0 10px; font-style:italic; color:var(--ink-2); max-width:70ch; }
+footer { padding:20px 0 44px; font-size:13.5px; color:var(--ink-2); }
+footer a { color:var(--green-2); }
+a { color:var(--green-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="compact">
+  <div class="race-meta">
+    <span class="wip">&#9888; working notes &mdash; what we've learnt so far · updated 8 July 2026</span>
+    <span><a href="index.html" style="color:inherit;text-decoration:none">difficulty&ndash;response curves</a></span>
+  </div>
+  <h1 style="font-size:clamp(26px,4vw,40px)">Finding 5 · Traces: the thinking you pay for but rarely see</h1>
+  <nav class="pagenav" aria-label="Pages"><a href="index.html">Overview</a><a href="method.html">The Method</a><a href="findings.html">Findings 1–4</a><a href="traces.html" class="active">5 · Traces</a><a href="pipes.html">6 · The Pipes</a><a href="router.html">7 · The Router</a><a href="routing2.html">8 · No Referee</a><a href="consistency.html">9 · Ask Twice</a><a href="journal.html">Journal</a></nav>
+</header>
+<section class="signal" id="f5">
+  <div class="flag"><span class="t">5</span><h2>Traces: the thinking you pay for but rarely see</h2></div>
+  <p class="plain">A reasoning model doesn't just answer. First it fills a private scratchpad &mdash;
+  often ten to forty thousand words of trying things, checking clauses, muttering "wait" &mdash; and
+  <em>then</em> writes the short answer you see. That scratchpad is called a <strong>trace</strong>.
+  Every word of it lands on your bill. Whether the words themselves are handed back to you is,
+  it turns out, a lottery decided by the pipe.</p>
+  <figure class="cartoon">
+    <svg viewBox="0 0 560 190" role="img" aria-label="Robot at a desk with an enormous thinking pile and a tiny answer note">
+      <rect x="30" y="130" width="500" height="6" rx="3" fill="var(--rule)"/>
+      <g stroke="var(--ink)" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <rect x="255" y="62" width="44" height="36" rx="8" fill="var(--card)"/>
+        <circle cx="269" cy="76" r="3.5" fill="var(--ink)" stroke="none"/>
+        <circle cx="285" cy="76" r="3.5" fill="var(--ink)" stroke="none"/>
+        <path d="M266 89 q11 7 22 0"/>
+        <line x1="277" y1="62" x2="277" y2="50"/><circle cx="277" cy="47" r="4" fill="var(--accent)" stroke="none"/>
+        <rect x="248" y="98" width="58" height="32" rx="6" fill="var(--card)"/>
+        <line x1="248" y1="112" x2="212" y2="104"/><line x1="306" y1="112" x2="352" y2="118"/>
+      </g>
+      <g>
+        <rect x="60" y="52" width="130" height="12" rx="2" fill="var(--green)" opacity="0.25" transform="rotate(-4 125 58)"/>
+        <rect x="55" y="66" width="140" height="12" rx="2" fill="var(--green)" opacity="0.35" transform="rotate(3 125 72)"/>
+        <rect x="62" y="80" width="128" height="12" rx="2" fill="var(--green)" opacity="0.45" transform="rotate(-2 126 86)"/>
+        <rect x="57" y="94" width="138" height="12" rx="2" fill="var(--green)" opacity="0.55"/>
+        <rect x="60" y="108" width="132" height="12" rx="2" fill="var(--green)" opacity="0.7"/>
+        <rect x="56" y="122" width="140" height="10" rx="2" fill="var(--green)" opacity="0.85"/>
+        <text x="126" y="160" text-anchor="middle" font-size="12" fill="var(--ink-2)">THINKING &middot; 14,000 words</text>
+        <text x="126" y="175" text-anchor="middle" font-size="11" fill="var(--accent)" font-style="italic">(you pay for every one)</text>
+      </g>
+      <g>
+        <rect x="365" y="106" width="82" height="26" rx="3" fill="#fff6c9" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="406" y="123" text-anchor="middle" font-size="10" fill="var(--ink)">ANSWER: x1=T&hellip;</text>
+        <text x="406" y="160" text-anchor="middle" font-size="12" fill="var(--ink-2)">THE ANSWER &middot; 20 words</text>
+      </g>
+      <g>
+        <path d="M310 45 q40 -18 90 -6" stroke="var(--ink-2)" stroke-width="1.2" fill="none"/>
+        <ellipse cx="435" cy="34" rx="95" ry="20" fill="var(--card)" stroke="var(--ink-2)" stroke-width="1.2"/>
+        <text x="435" y="39" text-anchor="middle" font-size="11.5" font-style="italic" fill="var(--ink)">it's around here somewhere&hellip;</text>
+      </g>
+    </svg>
+    <figcaption>Fig. T5a &mdash; what a reasoning model actually produces. You are billed by the pile, not the sticky note.</figcaption>
+  </figure>
+  <p>Here is a real slice of one, from DeepSeek-R1 solving one of our puzzles (we hold ~130 of these in full):</p>
+  <blockquote class="tracequote">&hellip;so we need x8 to be T for the clause to be true. So x8 must be T.
+  Similarly, clause 47: (NOT x8 OR NOT x5 OR x4), x5 T, so NOT x8 OR x4 must be true? <strong>Wait.</strong>
+  (NOT x8 OR NOT x5 OR x4), x5 T, NOT x5 F, so NOT x8 OR x4 must be true&hellip;</blockquote>
+  <p class="plain">Now the lottery. Ask three different companies for the scratchpad and you get three
+  very different experiences at the counter:</p>
+  <figure class="cartoon">
+    <svg viewBox="0 0 560 235" role="img" aria-label="Three service counters: open models hand over everything, OpenAI hands a receipt, Claude depends on the door">
+      <g stroke="var(--ink)" stroke-width="2" fill="var(--card)">
+        <rect x="18" y="24" width="160" height="150" rx="8"/>
+        <rect x="200" y="24" width="160" height="150" rx="8"/>
+        <rect x="382" y="24" width="160" height="150" rx="8"/>
+      </g>
+      <text x="98" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--green)">DEEPSEEK &middot; QWEN &middot; MINIMAX</text>
+      <text x="280" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--green)">OPENAI</text>
+      <text x="462" y="45" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--green)">CLAUDE</text>
+      <g>
+        <rect x="45" y="70" width="105" height="10" rx="2" fill="var(--green)" opacity="0.3" transform="rotate(-3 98 75)"/>
+        <rect x="42" y="83" width="110" height="10" rx="2" fill="var(--green)" opacity="0.5" transform="rotate(2 98 88)"/>
+        <rect x="46" y="96" width="104" height="10" rx="2" fill="var(--green)" opacity="0.7"/>
+        <rect x="43" y="109" width="108" height="10" rx="2" fill="var(--green)" opacity="0.9"/>
+        <text x="98" y="140" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--ink)">"everything. even the typos."</text>
+      </g>
+      <g>
+        <rect x="245" y="65" width="70" height="34" rx="4" fill="var(--ink)" opacity="0.85"/>
+        <text x="280" y="86" text-anchor="middle" font-size="9" fill="var(--paper)">SHREDDER</text>
+        <line x1="252" y1="104" x2="250" y2="120" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <line x1="266" y1="104" x2="268" y2="122" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <line x1="282" y1="104" x2="279" y2="119" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <line x1="297" y1="104" x2="300" y2="121" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <rect x="252" y="126" width="58" height="22" rx="2" fill="#fff" stroke="var(--ink)" stroke-width="1.2"/>
+        <text x="281" y="140" text-anchor="middle" font-size="8.5" fill="var(--ink)">RECEIPT: 14,373 tokens</text>
+        <text x="280" y="163" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--ink)">"you had to be there."</text>
+      </g>
+      <g>
+        <rect x="398" y="62" width="40" height="14" rx="2" fill="var(--green)" opacity="0.7"/>
+        <text x="418" y="90" text-anchor="middle" font-size="9.5" fill="var(--ink)">direct: full pile</text>
+        <path d="M492 62 l18 0 l0 14 l-18 0 z M492 62 l9 8 l9 -8" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="501" y="90" text-anchor="middle" font-size="9.5" fill="var(--ink)">OpenRouter:</text>
+        <text x="501" y="101" text-anchor="middle" font-size="9.5" fill="var(--ink)">side window</text>
+        <path d="M448 108 l24 0 l-3 26 l-18 0 z" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="446" y1="108" x2="474" y2="108" stroke="var(--ink)" stroke-width="2"/>
+        <text x="460" y="150" text-anchor="middle" font-size="9.5" fill="var(--accent)">TrustedRouter: bin</text>
+        <text x="460" y="161" text-anchor="middle" font-size="9" font-style="italic" fill="var(--accent)">(billed anyway)</text>
+      </g>
+      <text x="280" y="205" text-anchor="middle" font-size="12" fill="var(--ink-2)">same product. three counters. measured numbers in the table below.</text>
+    </svg>
+    <figcaption>Fig. T5b &mdash; trace delivery in practice. The open models hand it all over; OpenAI shreds it and gives you the count (on <em>every</em> route, including their own); Claude's depends entirely on which door you knock at.</figcaption>
+  </figure>
+  <div class="card"><table>
+    <caption>The receipts &mdash; billed thinking vs delivered text, measured from our own calls</caption>
+    <thead><tr><th>model</th><th>route</th><th>billed tok/call</th><th>delivered</th><th>verdict</th></tr></thead>
+    <tbody>
+      <tr><td class="runner"><strong>minimax-m2.5</strong></td><td>TrustedRouter &rarr; parasail</td>
+        <td class="num">29,234</td><td class="num">77%</td><td>full trace delivered</td></tr>
+      <tr><td class="runner"><strong>deepseek-r1-0528</strong></td><td>TrustedRouter &rarr; novita</td>
+        <td class="num">13,799</td><td class="num">63%</td><td>full trace delivered</td></tr>
+      <tr><td class="runner"><strong>qwen3-235b-a22b-thinking-2507</strong></td><td>TrustedRouter &rarr; novita</td>
+        <td class="num">19,521</td><td class="num">61%</td><td>full trace delivered</td></tr>
+      <tr><td class="runner"><strong>claude-haiku-4.5</strong></td><td>TrustedRouter &rarr; Anthropic Messages (native)</td>
+        <td class="num">6,817</td><td class="num">6%</td><td>mostly withheld</td></tr>
+      <tr><td class="runner"><strong>claude-fable-5</strong></td><td>TrustedRouter &rarr; Anthropic (chat translation)</td>
+        <td class="num">11,169</td><td class="num">3%</td><td>mostly withheld</td></tr>
+      <tr><td class="runner"><strong>claude-fable-5</strong></td><td>OpenRouter &rarr; Anthropic</td>
+        <td class="num">35,908</td><td class="num">1%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-5.5</strong></td><td>TrustedRouter &rarr; OpenAI</td>
+        <td class="num">9,330</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>o4-mini</strong></td><td>TrustedRouter &rarr; OpenAI</td>
+        <td class="num">9,966</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-5.5</strong></td><td>OpenRouter &rarr; OpenAI</td>
+        <td class="num">22,833</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-oss-120b</strong></td><td>TrustedRouter &rarr; cerebras</td>
+        <td class="num">13,838</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-oss-120b</strong></td><td>TrustedRouter &rarr; novita</td>
+        <td class="num">12,932</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-oss-20b</strong></td><td>TrustedRouter &rarr; novita</td>
+        <td class="num">19,481</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>minimax-m2.5</strong></td><td>TrustedRouter &rarr; novita</td>
+        <td class="num">25,538</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+      <tr><td class="runner"><strong>gpt-oss-20b</strong></td><td>TrustedRouter &rarr; parasail</td>
+        <td class="num">28,395</td><td class="num">0%</td><td>count only &mdash; text withheld</td></tr>
+    </tbody>
+  </table></div>
+  <p class="card-note">The strangest row is gpt-oss: those models are <em>open weights</em> and emit reasoning
+  by design, yet every serving stack we used strips it. Open weights &ne; open traces.</p>
+  <p class="plain">And the payoff question: where you <em>do</em> get the scratchpad, is reading it better
+  than counting it? Yes &mdash; because of what stress sounds like:</p>
+  <figure class="cartoon">
+    <svg viewBox="0 0 560 225" role="img" aria-label="Three robots on ground ending in a cliff: calm work, looping at the edge, long doomed monologue past it">
+      <path d="M20 170 L420 170 L420 210 L555 210" stroke="var(--ink)" stroke-width="2.5" fill="none"/>
+      <text x="428" y="196" font-size="10" fill="var(--ink-2)">the cliff</text>
+      <g stroke="var(--ink)" stroke-width="2" fill="var(--card)">
+        <rect x="70" y="138" width="26" height="22" rx="5"/>
+        <rect x="330" y="138" width="26" height="22" rx="5"/>
+        <rect x="470" y="178" width="26" height="22" rx="5" transform="rotate(14 483 189)"/>
+      </g>
+      <g fill="var(--ink)"><circle cx="78" cy="146" r="2"/><circle cx="88" cy="146" r="2"/>
+        <circle cx="338" cy="146" r="2"/><circle cx="348" cy="146" r="2"/></g>
+      <ellipse cx="86" cy="102" rx="66" ry="21" fill="var(--card)" stroke="var(--ink-2)" stroke-width="1.2"/>
+      <text x="86" y="99" text-anchor="middle" font-size="10">x1=T, x2=F, x3=T&hellip;</text>
+      <text x="86" y="112" text-anchor="middle" font-size="10">done &#10003;</text>
+      <text x="86" y="185" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">easy: steady work</text>
+      <ellipse cx="343" cy="95" rx="78" ry="27" fill="var(--card)" stroke="var(--accent)" stroke-width="1.6"/>
+      <text x="343" y="88" text-anchor="middle" font-size="10">wait, try x3&hellip; wait,</text>
+      <text x="343" y="101" text-anchor="middle" font-size="10">try x3&hellip; wait, try x3&hellip;</text>
+      <path d="M394 68 a14 14 0 1 1 4 22" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+      <path d="M396 88 l4 6 l-8 1 z" fill="var(--accent)"/>
+      <text x="343" y="185" text-anchor="middle" font-size="10.5" font-weight="bold" fill="var(--accent)">loops = it is AT the wall</text>
+      <path d="M496 176 q30 -30 20 -68 q-6 -26 -40 -30" stroke="var(--ink-2)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="452" cy="62" rx="100" ry="24" fill="var(--card)" stroke="var(--ink-2)" stroke-width="1.2"/>
+      <text x="452" y="58" text-anchor="middle" font-size="9.5" font-style="italic">&hellip;reconsidering clause 197</text>
+      <text x="452" y="70" text-anchor="middle" font-size="9.5" font-style="italic">from first principles&hellip; (word 31,000)</text>
+      <text x="480" y="222" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">past it: the long doomed monologue</text>
+    </svg>
+    <figcaption>Fig. T5c &mdash; what we measured in the traces. Repetition ("wait, try x3&hellip;" on loop) spikes
+    <em>exactly at</em> each model's breaking point (within 0.5 dial units for R1, dead-on for Qwen); sheer
+    length peaks well <em>past</em> it (+1.4 to +1.8). MiniMax is the exception that proves it: its giant
+    scratchpads barely repeat &mdash; that's genuine search, not circling.</figcaption>
+  </figure>
+  <p><span class="headline">Working conclusion: count tokens to find the cliff anywhere; listen for the
+  stutter to find it precisely &mdash; on the rare pipes that let you listen at all.</span></p>
+  <p class="leadout">"The rare pipes that let you" is doing a lot of work in that sentence. Time to talk about <a href="pipes.html">the pipes</a>.</p>
+</section>
+
+<footer>
+  <p>alex newman · <a href="https://github.com/posix4e/difficulty-response-curves">github.com/posix4e/difficulty-response-curves</a>
+  · every number regenerable via <span class="mono">analysis/run_analysis.py</span> · <a href="paper.pdf">paper (PDF)</a></p>
+</footer>
+</div>
+</body>
+</html>

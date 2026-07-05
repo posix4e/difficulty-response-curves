@@ -1,0 +1,20 @@
+stage retest-fast: 179 calls to run (cap $34.00)
+[11:12:11] 25/179 done, $126.86 spent ($0.11 reserved)
+[11:26:51] 50/179 done, $129.93 spent ($0.33 reserved)
+[11:34:19] 75/179 done, $131.74 spent ($0.55 reserved)
+[11:38:54] 100/179 done, $133.30 spent ($0.97 reserved)
+[budget] openai/o4-mini stopped: stage 'retest-fast' cap $34.00 reached (spent $32.74)
+[11:42:11] 125/179 done, $134.58 spent ($1.06 reserved)
+{
+  "done": 134,
+  "total": 179,
+  "stopped": {
+    "openai/o4-mini": "stage 'retest-fast' cap $34.00 reached (spent $32.74)"
+  },
+  "spent": {
+    "spent_usd": 135.090408,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 290.0
+  }
+}

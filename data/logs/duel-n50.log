@@ -1,0 +1,16 @@
+stage duel-n50: 40 calls to run (cap $46.00)
+[07:50:35] 25/40 done, $257.45 spent ($0.30 reserved)
+[budget] openai/gpt-5.5 stopped: soft stop: spent=278.04 near global cap $300.0
+{
+  "done": 27,
+  "total": 40,
+  "stopped": {
+    "openai/gpt-5.5": "soft stop: spent=278.04 near global cap $300.0"
+  },
+  "spent": {
+    "spent_usd": 280.90239,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 278.0
+  }
+}

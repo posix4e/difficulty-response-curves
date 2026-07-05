@@ -1,0 +1,34 @@
+{
+  "openai/gpt-oss-20b": {
+    "center_level_idx": 11,
+    "x50": 4.715774008612257
+  },
+  "openai/gpt-oss-120b": {
+    "center_level_idx": 9,
+    "x50": 4.238412667784464
+  },
+  "minimax/minimax-m2.5": {
+    "center_level_idx": 14,
+    "x50": "inf"
+  },
+  "qwen/qwen3-235b-a22b-thinking-2507": {
+    "center_level_idx": 9,
+    "x50": 4.1857868811461065
+  },
+  "deepseek/deepseek-r1-0528": {
+    "center_level_idx": 7,
+    "x50": 3.783112120236752
+  },
+  "openai/o4-mini": {
+    "center_level_idx": 5,
+    "x50": 3.180129018364095
+  },
+  "anthropic/claude-haiku-4.5": {
+    "center_level_idx": 5,
+    "x50": 3.4094197932496915
+  },
+  "z-ai/glm-5": {
+    "center_level_idx": 10,
+    "x50": 4.504644423675388
+  }
+}

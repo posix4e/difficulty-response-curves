@@ -1,0 +1,21 @@
+stage percall-r1: 90 calls to run (cap $5.00)
+stage percall-r1: 79 calls to run (cap $5.00)
+[21:26:47] 25/79 done, $262.52 spent ($0.05 reserved)
+[23:39:38] 50/79 done, $263.65 spent ($0.06 reserved)
+[02:15:58] 75/79 done, $264.73 spent ($0.06 reserved)
+[02:41:32] 79/79 done, $264.91 spent ($0.00 reserved)
+{
+  "done": 79,
+  "total": 79,
+  "stopped": {},
+  "spent": {
+    "spent_usd": 264.914743,
+    "inflight_reserved_usd": 0.0,
+    "global_cap_usd": 300.0,
+    "soft_stop_usd": 278.0
+  }
+}
+stage percall-qwen: 90 calls to run (cap $8.00)
+[03:09:43] 25/90 done, $266.64 spent ($0.69 reserved)
+[04:14:27] 50/90 done, $268.73 spent ($0.11 reserved)
+[07:03:20] 75/90 done, $270.51 spent ($0.11 reserved)

@@ -1,0 +1,113 @@
+{
+  "qwen3-235b@or-auto": {
+    "provider": "DeepInfra",
+    "latency_s": 423.8,
+    "out_tokens": 28098,
+    "content_chars": 118,
+    "reasoning_field_chars": 55145,
+    "think_tags_in_content": false,
+    "delivered_share": 0.532,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "qwen3-coder@or": {
+    "provider": "Alibaba",
+    "latency_s": 4.9,
+    "out_tokens": 163,
+    "content_chars": 628,
+    "reasoning_field_chars": 0,
+    "think_tags_in_content": false,
+    "delivered_share": 1.041,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "glm-5@or-auto": {
+    "provider": "DigitalOcean",
+    "latency_s": 828.3,
+    "out_tokens": 3067,
+    "content_chars": 0,
+    "reasoning_field_chars": 11419,
+    "think_tags_in_content": false,
+    "delivered_share": 1.006,
+    "finish": "error",
+    "answer_line": false
+  },
+  "kimi-k2-think@or": {
+    "provider": "Google",
+    "latency_s": 98.2,
+    "out_tokens": 28284,
+    "content_chars": 118,
+    "reasoning_field_chars": 70515,
+    "think_tags_in_content": false,
+    "delivered_share": 0.675,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "r1-0528@or-auto": {
+    "provider": "DeepInfra",
+    "latency_s": 236.1,
+    "out_tokens": 11686,
+    "content_chars": 1435,
+    "reasoning_field_chars": 28522,
+    "think_tags_in_content": false,
+    "delivered_share": 0.693,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "r1-0528@or-nebius": {
+    "error": "{'message': 'No allowed providers are available for the selected model.', 'code': 404, 'metadata': {'available_providers': ['deepinfra', 'siliconflow', 'streamlake', 'novita'], 'requested_providers': ",
+    "latency_s": 0.3
+  },
+  "minimax@or-parasail": {
+    "provider": "Parasail",
+    "latency_s": 572.3,
+    "out_tokens": 32768,
+    "content_chars": 0,
+    "reasoning_field_chars": 103184,
+    "think_tags_in_content": false,
+    "delivered_share": 0.851,
+    "finish": "length",
+    "answer_line": false
+  },
+  "haiku@tr-chat": {
+    "provider": "anthropic/claude-haiku-4.5@anthropic/prepaid",
+    "latency_s": 8.6,
+    "out_tokens": 1035,
+    "content_chars": 2451,
+    "reasoning_field_chars": 0,
+    "think_tags_in_content": false,
+    "delivered_share": 0.64,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "r1@tr-chat": {
+    "error": "{'message': 'provider error', 'source': 'provider', 'status': 502}",
+    "latency_s": 604.8
+  },
+  "qwen@tr-chat": {
+    "error": "{'message': 'provider error', 'source': 'provider', 'status': 502}",
+    "latency_s": 605.0
+  },
+  "gpt-5.5@or": {
+    "provider": "OpenAI",
+    "latency_s": 63.5,
+    "out_tokens": 5557,
+    "content_chars": 118,
+    "reasoning_field_chars": 1129,
+    "think_tags_in_content": false,
+    "delivered_share": 0.061,
+    "finish": "stop",
+    "answer_line": true
+  },
+  "fable-5@tr-chat": {
+    "provider": "anthropic/claude-fable-5@anthropic/prepaid",
+    "latency_s": 6.3,
+    "out_tokens": 5,
+    "content_chars": 0,
+    "reasoning_field_chars": 0,
+    "think_tags_in_content": false,
+    "delivered_share": 0.0,
+    "finish": "content_filter",
+    "answer_line": false
+  }
+}

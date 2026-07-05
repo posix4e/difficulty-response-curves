@@ -1,0 +1,762 @@
+{
+  "live_consistency": {
+    "results": {
+      "always_cheap": {
+        "solved": "6/25",
+        "solve_rate": 0.24,
+        "cost_usd": 1.112,
+        "cost_per_solved_usd": 0.1853,
+        "n_escalated": 0
+      },
+      "always_premium": {
+        "solved": "17/25",
+        "solve_rate": 0.68,
+        "cost_usd": 8.418,
+        "cost_per_solved_usd": 0.4952,
+        "n_escalated": 0
+      },
+      "consistency_router": {
+        "solved": "17/25",
+        "solve_rate": 0.68,
+        "cost_usd": 11.697,
+        "cost_per_solved_usd": 0.688,
+        "n_escalated": 18
+      },
+      "quota_random": {
+        "solved": "11/25",
+        "solve_rate": 0.44,
+        "cost_usd": 7.44,
+        "cost_per_solved_usd": 0.6764,
+        "n_escalated": 18
+      }
+    },
+    "records": [
+      {
+        "arm": "always_cheap",
+        "iid": "5f01e7ccef52b618",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "6272e0b325cb2edc",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "ba99e7dedd3d8e2d",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "36e1f5c4063012d0",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "959f3d373d2ca746",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "6c21ada182e4002b",
+        "level": 2.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "086fd496109b3463",
+        "level": 2.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "75bc40bf4d4340ce",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "3d4247e8aff255ee",
+        "level": 2.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "dd5b72ccd41a535c",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "93b0fe5a1f832d97",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "df727052d02b5e3c",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "22a543b65cab119e",
+        "level": 2.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "9d67a2960ef271f3",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "780267bd5a715d96",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "097cfc76713d26bc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "23962f19a783271c",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "5a9caf33fbcec9ba",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "7d2534608a70fad1",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "695153f14c4f0c2b",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "a3b11a220f99b5cc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "b63eb588fc93bce0",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "9894b7a1222f3946",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "3a188ba6e6ead348",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_cheap",
+        "iid": "98c169d5ae662594",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "ba99e7dedd3d8e2d",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "5f01e7ccef52b618",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "36e1f5c4063012d0",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "6272e0b325cb2edc",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "959f3d373d2ca746",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "086fd496109b3463",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "75bc40bf4d4340ce",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "22a543b65cab119e",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "6c21ada182e4002b",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "dd5b72ccd41a535c",
+        "level": 3.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "3d4247e8aff255ee",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "780267bd5a715d96",
+        "level": 3.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "93b0fe5a1f832d97",
+        "level": 3.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "23962f19a783271c",
+        "level": 4.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "9d67a2960ef271f3",
+        "level": 3.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "7d2534608a70fad1",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "df727052d02b5e3c",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "b63eb588fc93bce0",
+        "level": 5.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "5a9caf33fbcec9ba",
+        "level": 4.0,
+        "pass": true,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "097cfc76713d26bc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "a3b11a220f99b5cc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "3a188ba6e6ead348",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "695153f14c4f0c2b",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "9894b7a1222f3946",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "always_premium",
+        "iid": "98c169d5ae662594",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "ba99e7dedd3d8e2d",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "5f01e7ccef52b618",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "959f3d373d2ca746",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "36e1f5c4063012d0",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "6272e0b325cb2edc",
+        "level": 1.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "22a543b65cab119e",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "086fd496109b3463",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "75bc40bf4d4340ce",
+        "level": 2.0,
+        "pass": true,
+        "escalated": false,
+        "agree": true
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "3d4247e8aff255ee",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "dd5b72ccd41a535c",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "6c21ada182e4002b",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "9d67a2960ef271f3",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "93b0fe5a1f832d97",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "780267bd5a715d96",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "df727052d02b5e3c",
+        "level": 3.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "097cfc76713d26bc",
+        "level": 4.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "5a9caf33fbcec9ba",
+        "level": 4.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "7d2534608a70fad1",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "23962f19a783271c",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "b63eb588fc93bce0",
+        "level": 5.0,
+        "pass": true,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "a3b11a220f99b5cc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "3a188ba6e6ead348",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "695153f14c4f0c2b",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "9894b7a1222f3946",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "consistency_router",
+        "iid": "98c169d5ae662594",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true,
+        "agree": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "5f01e7ccef52b618",
+        "level": 1.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "36e1f5c4063012d0",
+        "level": 1.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "959f3d373d2ca746",
+        "level": 1.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "6272e0b325cb2edc",
+        "level": 1.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "3d4247e8aff255ee",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "22a543b65cab119e",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "75bc40bf4d4340ce",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "ba99e7dedd3d8e2d",
+        "level": 1.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "6c21ada182e4002b",
+        "level": 2.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "086fd496109b3463",
+        "level": 2.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "9d67a2960ef271f3",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "780267bd5a715d96",
+        "level": 3.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "93b0fe5a1f832d97",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "7d2534608a70fad1",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "a3b11a220f99b5cc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "dd5b72ccd41a535c",
+        "level": 3.0,
+        "pass": true,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "b63eb588fc93bce0",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "097cfc76713d26bc",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "9894b7a1222f3946",
+        "level": 5.0,
+        "pass": false,
+        "escalated": false
+      },
+      {
+        "arm": "quota_random",
+        "iid": "5a9caf33fbcec9ba",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "23962f19a783271c",
+        "level": 4.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "df727052d02b5e3c",
+        "level": 3.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "695153f14c4f0c2b",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "3a188ba6e6ead348",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true
+      },
+      {
+        "arm": "quota_random",
+        "iid": "98c169d5ae662594",
+        "level": 5.0,
+        "pass": false,
+        "escalated": true
+      }
+    ],
+    "total_spend_usd": 28.667
+  }
+}
