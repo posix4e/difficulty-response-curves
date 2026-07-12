@@ -11,6 +11,7 @@ logistic difficulty–response curves. Each model gets a datasheet: a frontier
 **x50** (the difficulty where its pass rate crosses one half) and a sharpness
 **a**, both with cluster-bootstrap confidence intervals.
 
+- **Living research programme**: [`research/program.md`](research/program.md) · **Frozen MiniMax protocol**: [`research/studies/minimax-confidence-v1.md`](research/studies/minimax-confidence-v1.md)
 - **Paper**: [`paper/paper.pdf`](paper/paper.pdf) · **Site**: https://posix4e.github.io/difficulty-response-curves/
 - **Raw data**: every API call, released as JSONL.gz in [Releases](../../releases) with a sha256 manifest.
 - **Everything below is reproducible**: `analysis/run_analysis.py` regenerates
@@ -79,4 +80,6 @@ provider endpoint that actually served it.
 
 ## License
 
-MIT. Cite the paper if you use the instrument.
+Code is MIT licensed. Research text and released study data are CC BY 4.0,
+subject to provider terms. See [`LICENSE`](LICENSE) and
+[`LICENSE-RESEARCH.md`](LICENSE-RESEARCH.md).
