@@ -76,7 +76,7 @@
     ]
   },
   "provenance": {
-    "code_git_sha": "ce04076c74c9480efe1a66e72383462908e84edb",
+    "code_git_sha": "7cca5c9e8bc79397926a1a6fb159ecca51ad3363",
     "traces": "data/exports/minimax-confidence-v1-traces.jsonl.gz",
     "traces_sha256": "1502f7186117ab8c83e650a84214a966b6692f2801e3dc07567c52771f51fcbc",
     "compact": "data/exports/minimax-confidence-v1.jsonl.gz",
