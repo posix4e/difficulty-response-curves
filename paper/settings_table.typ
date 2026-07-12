@@ -17,6 +17,8 @@
   [`anthropic/claude-fable-5`], [anthropic], [chat completions], [cap 32768], [9.9], [49.5],
   [`or/claude-fable-5`], [unpinned], [chat completions], [cap 65536], [9.9], [49.5],
   [`or/gpt-5.5`], [unpinned], [chat completions], [cap 65536], [5.5], [33.0],
+  [`or/glm-5`], [unpinned], [chat completions], [cap 65536], [0.6], [1.92],
+  [`or/grok-4-fast`], [unpinned], [chat completions], [cap 65536], [0.2], [0.5],
   [`or/minimax-m2.5`], [parasail], [chat completions], [cap 65536], [0.3], [1.2],
   [`or/deepseek-r1-0528`], [unpinned], [chat completions], [cap 32768], [0.77], [2.75],
 )

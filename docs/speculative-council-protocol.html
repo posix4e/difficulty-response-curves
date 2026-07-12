@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alex Newman" />
+  <meta name="dcterms.date" content="2026-07-12" />
+  <title>Difficulty-Response
+Curves – Trace-Triggered Speculative Councils: Protocol v0</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; }
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; }
+code span.at { color: #7d9029; }
+code span.bn { color: #40a070; }
+code span.bu { color: #008000; }
+code span.cf { color: #007020; font-weight: bold; }
+code span.ch { color: #4070a0; }
+code span.cn { color: #880000; }
+code span.co { color: #60a0b0; font-style: italic; }
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; }
+code span.do { color: #ba2121; font-style: italic; }
+code span.dt { color: #902000; }
+code span.dv { color: #40a070; }
+code span.er { color: #ff0000; font-weight: bold; }
+code span.ex { }
+code span.fl { color: #40a070; }
+code span.fu { color: #06287e; }
+code span.im { color: #008000; font-weight: bold; }
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; }
+code span.kw { color: #007020; font-weight: bold; }
+code span.op { color: #666666; }
+code span.ot { color: #007020; }
+code span.pp { color: #bc7a00; }
+code span.sc { color: #4070a0; }
+code span.ss { color: #bb6688; }
+code span.st { color: #4070a0; }
+code span.va { color: #19177c; }
+code span.vs { color: #4070a0; }
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
+</style>
+  <style type="text/css">:root {
+--ink: #14211d;
+--muted: #52615b;
+--paper: #fbfaf5;
+--card: #ffffff;
+--rule: #d5d8d2;
+--accent: #176b51;
+}
+html { background: var(--paper); color: var(--ink); }
+body { max-width: 860px; margin: 0 auto; padding: 40px 28px 80px; font: 18px/1.58 Georgia, serif; }
+h1, h2, h3 { color: var(--ink); line-height: 1.15; }
+h1 { font-size: 2.5rem; margin-bottom: .25em; }
+h2 { border-top: 1px solid var(--rule); padding-top: 1em; margin-top: 2em; }
+a { color: var(--accent); }
+blockquote { border-left: 4px solid var(--accent); margin-left: 0; padding: .65em 1.1em; background: var(--card); }
+table { border-collapse: collapse; width: 100%; font-size: .93em; }
+th, td { border-bottom: 1px solid var(--rule); padding: .65em; text-align: left; vertical-align: top; }
+code { font-size: .88em; background: #edf0ec; padding: .1em .28em; border-radius: 3px; }
+header#title-block-header { margin-bottom: 2.2em; }
+.subtitle, .author, .date { color: var(--muted); }
+@media (max-width: 640px) { body { padding: 24px 18px 60px; font-size: 16px; } h1 { font-size: 2rem; } }
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Trace-Triggered Speculative Councils: Protocol v0</h1>
+<p class="subtitle">A registered design for confidence as a control
+signal</p>
+<p class="author">Alex Newman</p>
+<p class="date">12 July 2026</p>
+</header>
+<blockquote>
+<p><strong>Prospective design; no live result.</strong> This document
+registers a proposed comparison and an executable harness. It does not
+claim that the trace trigger, the named model order, or cancellation
+economics work. The frozen MiniMax confidence study is unchanged and
+continues under its own budget.</p>
+</blockquote>
+<h2 id="research-question">Research question</h2>
+<p>For non-trivial tasks with an independently checkable completion
+condition, can a live trace-risk policy launch backup models early
+enough to preserve the quality of an always-on model council while
+reducing latency and billed work?</p>
+<p>This is <strong>speculative execution</strong>, not ordinary answer
+ensembling. A model council normally obtains several completed answers
+and ranks, votes, or fuses them. The proposed controller begins with one
+observable primary, launches challengers only after persistent evidence
+of trouble, accepts the first candidate that passes an external
+verifier, and requests cancellation of the losers. Council synthesis is
+an exception path after the race produces no acceptable candidate.</p>
+<figure>
+<img role="img" aria-label="Trace-triggered speculative execution." src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NjAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgOTYwIDUwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgogIDx0aXRsZSBpZD0idGl0bGUiPlRyYWNlLXRyaWdnZXJlZCBzcGVjdWxhdGl2ZSBleGVjdXRpb24gYXJjaGl0ZWN0dXJlPC90aXRsZT4KICA8ZGVzYyBpZD0iZGVzYyI+QSBHTE0gcHJpbWFyeSBzdHJlYW1zIHRocm91Z2ggYSByaXNrIG1vbml0b3IuIFNhZmUgdHJhY2VzIGNvbnRpbnVlIHRvIHZlcmlmaWNhdGlvbi4gUGVyc2lzdGVudCByaXNrIHBhdXNlcyBzaWRlIGVmZmVjdHMgYW5kIGxhdW5jaGVzIEdyb2sgYW5kIE9wZW5BSSBjaGFsbGVuZ2Vycy4gVGhlIGZpcnN0IHZlcmlmaWVkIGFuc3dlciB3aW5zIGFuZCByZW1haW5pbmcgY2FsbHMgYXJlIGNhbmNlbGxlZC4gSWYgbm9uZSB2ZXJpZmllcywgYSBjb3VuY2lsIGp1ZGdlIGlzIHVzZWQuPC9kZXNjPgogIDxkZWZzPgogICAgPG1hcmtlciBpZD0iYXJyb3ciIG1hcmtlcldpZHRoPSIxMCIgbWFya2VySGVpZ2h0PSI4IiByZWZYPSI5IiByZWZZPSI0IiBvcmllbnQ9ImF1dG8iPgogICAgICA8cGF0aCBkPSJNMCwwIEwxMCw0IEwwLDggeiIgZmlsbD0iIzUxNjA2ZiIvPgogICAgPC9tYXJrZXI+CiAgICA8c3R5bGU+CiAgICAgIC5ub2Rle2ZpbGw6I2ZmZjtzdHJva2U6IzUxNjA2ZjtzdHJva2Utd2lkdGg6MjtyeDoxMn0KICAgICAgLnByaW1hcnl7ZmlsbDojZWVmNmZmO3N0cm9rZTojMmI2Y2IwfQogICAgICAucmlza3tmaWxsOiNmZmY3ZTg7c3Ryb2tlOiNiNzc5MWZ9CiAgICAgIC5oZWRnZXtmaWxsOiNlZGY5ZjQ7c3Ryb2tlOiMxNzZiNTF9CiAgICAgIC5qdWRnZXtmaWxsOiNmNmYwZmY7c3Ryb2tlOiM3MzUzYTZ9CiAgICAgIC5lZGdle2ZpbGw6bm9uZTtzdHJva2U6IzUxNjA2ZjtzdHJva2Utd2lkdGg6MjttYXJrZXItZW5kOnVybCgjYXJyb3cpfQogICAgICAuZGFzaHtzdHJva2UtZGFzaGFycmF5OjcgNn0KICAgICAgdGV4dHtmb250LWZhbWlseTpJbnRlcixzeXN0ZW0tdWksLWFwcGxlLXN5c3RlbSwiU2Vnb2UgVUkiLHNhbnMtc2VyaWY7ZmlsbDojMWYyOTMzfQogICAgICAubGFiZWx7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NjUwO3RleHQtYW5jaG9yOm1pZGRsZX0KICAgICAgLnNtYWxse2ZvbnQtc2l6ZToxNHB4O3RleHQtYW5jaG9yOm1pZGRsZTtmaWxsOiM1MTYwNmZ9CiAgICAgIC5lZGdlTGFiZWx7Zm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzUxNjA2Zn0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxyZWN0IHg9IjMwIiB5PSIxOTAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNzAiIGNsYXNzPSJub2RlIi8+CiAgPHRleHQgeD0iOTUiIHk9IjIyMCIgY2xhc3M9ImxhYmVsIj5UYXNrIGNvbnRleHQ8L3RleHQ+CiAgPHRleHQgeD0iOTUiIHk9IjI0MyIgY2xhc3M9InNtYWxsIj5wcm9tcHQsIHRvb2xzLCBmaWxlczwvdGV4dD4KCiAgPHJlY3QgeD0iMjEwIiB5PSIxOTAiIHdpZHRoPSIxNDAiIGhlaWdodD0iNzAiIGNsYXNzPSJub2RlIHByaW1hcnkiLz4KICA8dGV4dCB4PSIyODAiIHk9IjIyMCIgY2xhc3M9ImxhYmVsIj5HTE0gcHJpbWFyeTwvdGV4dD4KICA8dGV4dCB4PSIyODAiIHk9IjI0MyIgY2xhc3M9InNtYWxsIj5zdHJlYW0gcmVhc29uaW5nPC90ZXh0PgoKICA8cmVjdCB4PSI0MDAiIHk9IjE4MCIgd2lkdGg9IjE2NSIgaGVpZ2h0PSI5MCIgY2xhc3M9Im5vZGUgcmlzayIvPgogIDx0ZXh0IHg9IjQ4Mi41IiB5PSIyMTEiIGNsYXNzPSJsYWJlbCI+TGl2ZSByaXNrIHBvbGljeTwvdGV4dD4KICA8dGV4dCB4PSI0ODIuNSIgeT0iMjM0IiBjbGFzcz0ic21hbGwiPm1hcmtlcnMgKyByZXBldGl0aW9uPC90ZXh0PgogIDx0ZXh0IHg9IjQ4Mi41IiB5PSIyNTQiIGNsYXNzPSJzbWFsbCI+cGVyc2lzdGVuY2UgdGhyZXNob2xkPC90ZXh0PgoKICA8cmVjdCB4PSI2NDAiIHk9IjM1IiB3aWR0aD0iMTQ1IiBoZWlnaHQ9IjYyIiBjbGFzcz0ibm9kZSBoZWRnZSIvPgogIDx0ZXh0IHg9IjcxMi41IiB5PSI2MiIgY2xhc3M9ImxhYmVsIj5Hcm9rPC90ZXh0PgogIDx0ZXh0IHg9IjcxMi41IiB5PSI4MyIgY2xhc3M9InNtYWxsIj5mYXN0IGNoYWxsZW5nZXI8L3RleHQ+CiAgPHJlY3QgeD0iNjQwIiB5PSIxMjUiIHdpZHRoPSIxNDUiIGhlaWdodD0iNjIiIGNsYXNzPSJub2RlIGhlZGdlIi8+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjE1MiIgY2xhc3M9ImxhYmVsIj5PcGVuQUk8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjE3MyIgY2xhc3M9InNtYWxsIj5mcm9udGllciBjaGFsbGVuZ2VyPC90ZXh0PgogIDxyZWN0IHg9IjYzMCIgeT0iMjIwIiB3aWR0aD0iMTY1IiBoZWlnaHQ9IjcyIiBjbGFzcz0ibm9kZSBoZWRnZSIvPgogIDx0ZXh0IHg9IjcxMi41IiB5PSIyNDkiIGNsYXNzPSJsYWJlbCI+VmVyaWZpZXI8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjI3MiIgY2xhc3M9InNtYWxsIj50YXNrIGNlcnRpZmljYXRlL3Rlc3RzPC90ZXh0PgoKICA8cmVjdCB4PSI2MzAiIHk9IjM1NSIgd2lkdGg9IjE2NSIgaGVpZ2h0PSI3MCIgY2xhc3M9Im5vZGUganVkZ2UiLz4KICA8dGV4dCB4PSI3MTIuNSIgeT0iMzg0IiBjbGFzcz0ibGFiZWwiPkNvdW5jaWwganVkZ2U8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjQwNyIgY2xhc3M9InNtYWxsIj5leGNlcHRpb24gcGF0aDwvdGV4dD4KCiAgPHJlY3QgeD0iODQwIiB5PSIyMjAiIHdpZHRoPSI5NSIgaGVpZ2h0PSI3MiIgY2xhc3M9Im5vZGUgcHJpbWFyeSIvPgogIDx0ZXh0IHg9Ijg4Ny41IiB5PSIyNDkiIGNsYXNzPSJsYWJlbCI+V2lubmVyPC90ZXh0PgogIDx0ZXh0IHg9Ijg4Ny41IiB5PSIyNzIiIGNsYXNzPSJzbWFsbCI+Y29tbWl0IG9uY2U8L3RleHQ+CgogIDxwYXRoIGQ9Ik0xNjAgMjI1IEgyMTAiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTM1MCAyMjUgSDQwMCIgY2xhc3M9ImVkZ2UiLz4KICA8cGF0aCBkPSJNNTY1IDIyNSBINjMwIiBjbGFzcz0iZWRnZSIvPgogIDx0ZXh0IHg9IjU3OSIgeT0iMjE0IiBjbGFzcz0iZWRnZUxhYmVsIj5zYWZlPC90ZXh0PgogIDxwYXRoIGQ9Ik03OTUgMjU2IEg4NDAiIGNsYXNzPSJlZGdlIi8+CgogIDxwYXRoIGQ9Ik01MjAgMTgwIEM1NTUgMTE1IDU4NSA2NiA2NDAgNjYiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTU0NSAxOTAgQzU4MCAxNzQgNTk1IDE1NiA2NDAgMTU2IiBjbGFzcz0iZWRnZSIvPgogIDx0ZXh0IHg9IjU0NSIgeT0iNDgiIGNsYXNzPSJlZGdlTGFiZWwiPnJpc2sgdHJpZ2dlcjwvdGV4dD4KICA8cGF0aCBkPSJNNzEyIDk3IFYyMjAiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTc0MiAxODcgVjIyMCIgY2xhc3M9ImVkZ2UiLz4KCiAgPHBhdGggZD0iTTcxMiAyOTIgVjM1NSIgY2xhc3M9ImVkZ2UgZGFzaCIvPgogIDx0ZXh0IHg9IjcyNSIgeT0iMzI5IiBjbGFzcz0iZWRnZUxhYmVsIj5ub25lIGFjY2VwdGVkPC90ZXh0PgogIDxwYXRoIGQ9Ik03OTUgMzkwIEM4NTUgMzkwIDg4NyAzNTAgODg3IDI5MiIgY2xhc3M9ImVkZ2UiLz4KICA8dGV4dCB4PSI4MjAiIHk9IjM4MCIgY2xhc3M9ImVkZ2VMYWJlbCI+dmVyaWZ5IGFnYWluPC90ZXh0PgoKICA8dGV4dCB4PSI0ODAiIHk9IjQ2NiIgY2xhc3M9InNtYWxsIj5BZnRlciBhIHZlcmlmaWVkIHdpbm5lcjogcmVxdWVzdCBjYW5jZWxsYXRpb24gb2YgdW5maW5pc2hlZCBjYWxsczsgcmVjb3JkIGNhbmNlbGxhdGlvbiBhbmQgYmlsbGVkIHVzYWdlIHNlcGFyYXRlbHkuPC90ZXh0Pgo8L3N2Zz4K" alt="Trace-triggered speculative execution." />
+<figcaption aria-hidden="true">Trace-triggered speculative
+execution.</figcaption>
+</figure>
+<h2 id="system-under-test">System under test</h2>
+<ul>
+<li><strong>Primary:</strong> an OpenAI-compatible GLM endpoint with
+streamed reasoning.</li>
+<li><strong>Challengers:</strong> a fast Grok endpoint and an OpenAI
+frontier endpoint.</li>
+<li><strong>Handoff:</strong> the original task, prior messages, tool
+results, files read, workspace revision, and policy metadata. Hidden
+chain of thought is not copied between providers.</li>
+<li><strong>Side effects:</strong> paused before challenger launch.
+Candidates work in read-only lanes or isolated worktrees. Only an
+elected candidate may commit external changes.</li>
+<li><strong>Verification:</strong> task-specific tests, certificates,
+schemas, or an external command. First-answer-wins is excluded from the
+primary study.</li>
+<li><strong>Cancellation:</strong> cancellation requested, transport
+closure observed, and final reported usage are distinct events. Closing
+a stream is not assumed to stop provider billing immediately.</li>
+</ul>
+<p>The named models are an initial operating point, not a claim that
+this ordering is universally optimal. Routing must be re-measured by
+task family, provider, and date.</p>
+<h2 id="frozen-live-risk-policy">Frozen live-risk policy</h2>
+<p>Version 0 uses a small rolling dictionary over reasoning-channel
+text:</p>
+<ul>
+<li>backtracking markers;</li>
+<li>hedging and inability-to-verify markers;</li>
+<li>explicit give-up markers;</li>
+<li>repeated four-word shingles.</li>
+</ul>
+<p>The score is evaluated over the last 320 words after at least 80
+reasoning words. The launch threshold is 4.0 and must be exceeded on two
+consecutive observations. A single word such as “maybe” cannot trigger a
+hedge. These are engineering defaults for offline replay, not validated
+production thresholds.</p>
+<p>The policy emits its component counts, total score, words observed,
+and trigger time. Feature embeddings, free-form model judges, and
+post-hoc threshold search are excluded from v0.</p>
+<h2 id="comparator-arms">Comparator arms</h2>
+<p>Tasks are assigned by generated instance or repository task, never by
+model call. All arms receive the same frozen context.</p>
+<ol type="1">
+<li><strong>GLM only:</strong> wait for the primary and apply the same
+verifier.</li>
+<li><strong>Always-on council:</strong> launch GLM, Grok, and OpenAI
+together; wait for all configured candidates and synthesize or rank
+their completed answers.</li>
+<li><strong>Fixed-delay hedge:</strong> launch GLM, then launch both
+challengers after a pre-registered elapsed-time threshold if no verified
+result exists.</li>
+<li><strong>Trace-triggered hedge:</strong> launch challengers only when
+the frozen live-risk policy fires; otherwise allow GLM to finish
+alone.</li>
+</ol>
+<p>If the primary completes but fails verification, both hedge arms
+launch their challengers regardless of whether the earlier trigger
+fired. This is recorded as post-completion fallback rather than early
+warning.</p>
+<h2 id="endpoints">Endpoints</h2>
+<p>Correctness is a gate, not a latency trade. A hedge arm is eligible
+for an efficiency claim only if its task success is non-inferior to the
+always-on council within a pre-registered margin.</p>
+<p>Primary endpoints:</p>
+<ol type="1">
+<li>p95 wall time per verified successful task;</li>
+<li>billed cost per verified successful task;</li>
+<li>verified task success rate.</li>
+</ol>
+<p>Secondary endpoints are median latency, time from primary start to
+hedge, false-hedge rate, fraction of work cancelled, tokens observed
+before cancellation, final provider-reported usage, verifier rejection
+rate, council fallback rate, and winner share by task family.</p>
+<p>The causal comparison for the trace is trace-triggered versus
+fixed-delay hedging at matched challenger-launch rate. Always-on council
+answers whether conditional fan-out preserves ensemble quality; GLM-only
+measures the value and cost of any fan-out.</p>
+<h2 id="offline-gate-before-spend">Offline gate before spend</h2>
+<p>Replay timestamped historical traces without making API calls. For
+every completed primary trace, simulate when the frozen policy would
+have launched challengers. Proceed to a live pilot only if all of the
+following hold:</p>
+<ul>
+<li>at least 30 eligible tasks and 10 primary failures are present;</li>
+<li>the trace trigger precedes primary termination on at least 60% of
+failures;</li>
+<li>median simulated warning time is at least 15 seconds;</li>
+<li>false hedges occur on no more than 40% of verified primary
+successes;</li>
+<li>a matched-rate fixed-delay baseline is frozen before the live
+comparison.</li>
+</ul>
+<p>Failure stops the live branch and is reported as <strong>Not
+supported</strong>. A separate budget and one-look stopping rule must be
+registered before any live council or hedge calls. No spend is
+authorised by this v0 document.</p>
+<h2 id="safety-and-accounting-invariants">Safety and accounting
+invariants</h2>
+<ul>
+<li>Candidate tasks never share a writable checkout.</li>
+<li>The pause hook runs once, before challenger launch.</li>
+<li>A winner is elected only after the same external verifier used by
+all arms.</li>
+<li>Unfinished tasks receive cancellation requests and are awaited to
+transport closure; absence of a final usage record is not recorded as
+zero cost.</li>
+<li>Worst-case authorised model cost, including a possible council
+judge, must fit below the run cap before the first request is
+admitted.</li>
+<li>Prompts and handoff context are secret-scanned before public
+release. Raw traces remain a separate checksummed artifact.</li>
+</ul>
+<h2 id="reproducible-interface">Reproducible interface</h2>
+<p>The released harness is <code>drc hedge</code>. A dry run performs
+model/config and worst-case budget admission without making calls:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">drc</span> hedge <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--prompt-file</span> task.md <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> or/glm-5 <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--challenger</span> or/grok-4-fast <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--challenger</span> or/gpt-5.5 <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--verify-command</span> <span class="st">&#39;./verify-answer&#39;</span> <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cap</span> 5 <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out</span> data/hedge/run.json <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--dry-run</span></span></code></pre></div>
+<p>The result JSON contains the frozen plan, risk snapshot, candidate
+completion records, winner, cancellation requests, and a timestamped
+event log. Provider usage is reported where returned; cancellation
+savings are never inferred from transport closure alone.</p>
+<h2 id="positioning">Positioning</h2>
+<p><a href="https://aclanthology.org/2023.acl-long.792/">LLM-Blender</a>
+ranks and fuses completed outputs, while <a href="https://arxiv.org/abs/2406.04692">Mixture-of-Agents</a> passes
+multiple model outputs into later aggregation layers. Those are council
+or ensemble designs. The systems analogue is a <a href="https://research.google/pubs/the-tail-at-scale/">hedged
+request</a>: start a secondary request when the primary looks slow and
+cancel outstanding replicas after one succeeds. This protocol replaces a
+fixed time-only hedge trigger with a small, auditable signal from the
+primary model’s unfolding trajectory.</p>
+</body>
+</html>

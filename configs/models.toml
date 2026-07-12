@@ -123,6 +123,32 @@ base_url = "https://openrouter.ai/api"
 key_env = "or"
 api_model = "openai/gpt-5.5"
 
+# Trace-triggered speculative execution defaults. Prices checked against the
+# provider/OpenRouter model cards on 2026-07-12; API usage remains authoritative.
+[models."or/glm-5"]
+tier = "hedge"
+core = false
+api_path = "openai"
+price_in = 0.6
+price_out = 1.92
+max_completion_tokens = 65536
+provider_only = []
+base_url = "https://openrouter.ai/api"
+key_env = "or"
+api_model = "z-ai/glm-5"
+
+[models."or/grok-4-fast"]
+tier = "hedge"
+core = false
+api_path = "openai"
+price_in = 0.2
+price_out = 0.5
+max_completion_tokens = 65536
+provider_only = []
+base_url = "https://openrouter.ai/api"
+key_env = "or"
+api_model = "x-ai/grok-4-fast"
+
 [models."or/minimax-m2.5"]
 tier = "late"
 core = false

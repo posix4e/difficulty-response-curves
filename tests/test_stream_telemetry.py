@@ -41,8 +41,15 @@ async def test_openai_stream_captures_reasoning_and_answer_events(monkeypatch):
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, text=payload, headers={"content-type": "text/event-stream"})
 
+    observed = []
+
+    async def observer(event):
+        observed.append(event)
+
     client = TRClient("unused", transport=httpx.MockTransport(handler))
-    result = await client.call(model, "prompt", stream_telemetry=True)
+    result = await client.call(
+        model, "prompt", stream_telemetry=True, stream_observer=observer
+    )
     await client.aclose()
     assert result.error is None
     assert result.provider_endpoint == "openrouter/Parasail"
@@ -53,6 +60,8 @@ async def test_openai_stream_captures_reasoning_and_answer_events(monkeypatch):
     assert result.first_answer_ms is not None
     assert result.observed_chars == len("wait, try again") + len("ANSWER: x1=T")
     assert result.reasoning_tokens == 12
+    assert [event["text"] for event in observed] == ["wait, try again", "ANSWER: x1=T"]
+    assert "text" not in result.stream_events[0]  # raw text is not duplicated in telemetry storage
 
 
 def test_store_persists_stream_events_and_migrates_columns(tmp_path):

@@ -16,10 +16,12 @@ from fits, retried on the next run).
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import random
 import time
 from dataclasses import dataclass, field
+from typing import Awaitable, Callable
 
 import httpx
 
@@ -71,13 +73,14 @@ class TRClient:
         prompt: str,
         temperature: float | None = None,
         stream_telemetry: bool = False,
+        stream_observer: Callable[[dict], Awaitable[None] | None] | None = None,
     ) -> CallResult:
         if cfg.api_path == "anthropic":
-            if stream_telemetry:
+            if stream_telemetry or stream_observer is not None:
                 return CallResult(error="stream telemetry currently requires the OpenAI-compatible path")
             return await self._anthropic(cfg, prompt, temperature)
-        if stream_telemetry:
-            return await self._openai_stream(cfg, prompt, temperature)
+        if stream_telemetry or stream_observer is not None:
+            return await self._openai_stream(cfg, prompt, temperature, stream_observer)
         return await self._openai(cfg, prompt, temperature)
 
     def _openai_body(self, cfg: ModelCfg, prompt: str, temperature: float | None) -> dict:
@@ -149,7 +152,11 @@ class TRClient:
         return result
 
     async def _openai_stream(
-        self, cfg: ModelCfg, prompt: str, temperature: float | None
+        self,
+        cfg: ModelCfg,
+        prompt: str,
+        temperature: float | None,
+        stream_observer: Callable[[dict], Awaitable[None] | None] | None = None,
     ) -> CallResult:
         """OpenAI-compatible SSE capture with per-channel timing telemetry."""
         body = self._openai_body(cfg, prompt, temperature)
@@ -239,12 +246,17 @@ class TRClient:
                                     answer_parts.append(text_part)
                                     if result.first_answer_ms is None:
                                         result.first_answer_ms = now_ms
-                                result.stream_events.append({
+                                event = {
                                     "seq": seq,
                                     "elapsed_ms": now_ms,
                                     "channel": channel,
                                     "char_count": len(text_part),
-                                })
+                                }
+                                result.stream_events.append(event)
+                                if stream_observer is not None:
+                                    observed = stream_observer({**event, "text": text_part})
+                                    if inspect.isawaitable(observed):
+                                        await observed
                                 seq += 1
                         result.latency_ms = (time.perf_counter() - t0) * 1000
                         result.observed_chars = sum(e["char_count"] for e in result.stream_events)

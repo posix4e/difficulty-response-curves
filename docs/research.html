@@ -7,7 +7,7 @@
   <meta name="author" content="Alex Newman" />
   <meta name="dcterms.date" content="2026-07-12" />
   <title>Difficulty-Response
-Curves – Confidence Signals at the MiniMax Frontier</title>
+Curves – Confidence and Control at the Model Frontier</title>
   <style>
 
 span.smallcaps{font-variant: small-caps;}
@@ -49,7 +49,7 @@ header#title-block-header { margin-bottom: 2.2em; }
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">Confidence Signals at the MiniMax Frontier</h1>
+<h1 class="title">Confidence and Control at the Model Frontier</h1>
 <p class="subtitle">A living research programme for difficulty-response
 curves</p>
 <p class="author">Alex Newman</p>
@@ -76,6 +76,12 @@ conspicuous truncations. That makes it possible to distinguish two
 operational problems that are often blurred together: detecting an
 answer that is wrong despite completing normally, and detecting a call
 that failed loudly.</p>
+<p>The next control question follows directly: if an unfolding trace
+looks risky, should the harness wait for a confidence score, or use that
+signal immediately to launch a second model? We call the latter
+<strong>trace-triggered speculative execution</strong>. It is related to
+a model council, but it races verified candidates instead of waiting to
+combine every answer.</p>
 <h2 id="current-evidence">Current evidence</h2>
 <table>
 <colgroup>
@@ -119,6 +125,13 @@ still requires prospective validation.</td>
 stopping rule, and spend gate before any new calls.</td>
 </tr>
 <tr>
+<td><strong>Prospective</strong></td>
+<td>Trace risk can control conditional model fan-out.</td>
+<td>The v0 speculative-council protocol freezes an auditable live-risk
+policy and compares it with GLM-only, always-on council, and
+matched-rate fixed-delay hedging. No live spend is authorised yet.</td>
+</tr>
+<tr>
 <td><strong>Censored</strong></td>
 <td>End-to-end billed tokens per second measures generation speed.</td>
 <td>It does not: the denominator includes queueing, retries, transport,
@@ -145,8 +158,15 @@ evaluate the frozen score once on fresh instances. Stop after at least
 Proceed only if the prospective confidence result passes. Measure time
 to first token, reasoning and answer channel timing, inter-chunk gaps,
 and observed output rate.</li>
+<li><strong>Control study.</strong> Independently replay timestamped
+traces through a frozen live-risk policy. Only after a separate gate and
+budget registration should the harness compare conditional fan-out with
+an ordinary always-on model council and a matched-rate time-only
+hedge.</li>
 </ol>
-<p>The complete frozen protocol is <a href="minimax-confidence-protocol.html">MiniMax confidence v1</a>.</p>
+<p>Protocols: <a href="minimax-confidence-protocol.html">MiniMax
+confidence v1</a> · <a href="speculative-council-protocol.html">trace-triggered speculative
+councils v0</a>.</p>
 <h2 id="retrospective-checkpoint-gate-passed">Retrospective checkpoint:
 gate passed</h2>
 <p>The v1 retrospective cohort contains 145 calls on 30 generated
@@ -186,6 +206,78 @@ cannot leak across training and evaluation.</p>
 window are fixed. Correct completed answers and silently wrong completed
 answers form the confidence task. Truncations, parse failures, refusals,
 timeouts, and API errors are a separate loud-failure outcome.</p>
+<h2 id="from-confidence-to-control">From confidence to control</h2>
+<p>A conventional model council pays for several completed answers and
+then votes, ranks, critiques, or synthesises them. That can improve
+quality, but it usually pays the full fan-out latency and token bill.
+The proposed speculative controller starts with one trace-visible
+primary and makes two separate decisions:</p>
+<ol type="1">
+<li><strong>Launch:</strong> persistent trace risk pauses external side
+effects, checkpoints the reproducible task context, and starts Grok and
+OpenAI challengers in isolated lanes.</li>
+<li><strong>Accept:</strong> the first candidate that passes a
+task-specific verifier wins; unfinished calls receive cancellation
+requests. If no candidate verifies, the system may enter a
+council-synthesis exception path.</li>
+</ol>
+<figure>
+<img role="img" aria-label="One primary, conditional fan-out, verifier-gated winner election, and a council fallback." src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NjAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgOTYwIDUwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgogIDx0aXRsZSBpZD0idGl0bGUiPlRyYWNlLXRyaWdnZXJlZCBzcGVjdWxhdGl2ZSBleGVjdXRpb24gYXJjaGl0ZWN0dXJlPC90aXRsZT4KICA8ZGVzYyBpZD0iZGVzYyI+QSBHTE0gcHJpbWFyeSBzdHJlYW1zIHRocm91Z2ggYSByaXNrIG1vbml0b3IuIFNhZmUgdHJhY2VzIGNvbnRpbnVlIHRvIHZlcmlmaWNhdGlvbi4gUGVyc2lzdGVudCByaXNrIHBhdXNlcyBzaWRlIGVmZmVjdHMgYW5kIGxhdW5jaGVzIEdyb2sgYW5kIE9wZW5BSSBjaGFsbGVuZ2Vycy4gVGhlIGZpcnN0IHZlcmlmaWVkIGFuc3dlciB3aW5zIGFuZCByZW1haW5pbmcgY2FsbHMgYXJlIGNhbmNlbGxlZC4gSWYgbm9uZSB2ZXJpZmllcywgYSBjb3VuY2lsIGp1ZGdlIGlzIHVzZWQuPC9kZXNjPgogIDxkZWZzPgogICAgPG1hcmtlciBpZD0iYXJyb3ciIG1hcmtlcldpZHRoPSIxMCIgbWFya2VySGVpZ2h0PSI4IiByZWZYPSI5IiByZWZZPSI0IiBvcmllbnQ9ImF1dG8iPgogICAgICA8cGF0aCBkPSJNMCwwIEwxMCw0IEwwLDggeiIgZmlsbD0iIzUxNjA2ZiIvPgogICAgPC9tYXJrZXI+CiAgICA8c3R5bGU+CiAgICAgIC5ub2Rle2ZpbGw6I2ZmZjtzdHJva2U6IzUxNjA2ZjtzdHJva2Utd2lkdGg6MjtyeDoxMn0KICAgICAgLnByaW1hcnl7ZmlsbDojZWVmNmZmO3N0cm9rZTojMmI2Y2IwfQogICAgICAucmlza3tmaWxsOiNmZmY3ZTg7c3Ryb2tlOiNiNzc5MWZ9CiAgICAgIC5oZWRnZXtmaWxsOiNlZGY5ZjQ7c3Ryb2tlOiMxNzZiNTF9CiAgICAgIC5qdWRnZXtmaWxsOiNmNmYwZmY7c3Ryb2tlOiM3MzUzYTZ9CiAgICAgIC5lZGdle2ZpbGw6bm9uZTtzdHJva2U6IzUxNjA2ZjtzdHJva2Utd2lkdGg6MjttYXJrZXItZW5kOnVybCgjYXJyb3cpfQogICAgICAuZGFzaHtzdHJva2UtZGFzaGFycmF5OjcgNn0KICAgICAgdGV4dHtmb250LWZhbWlseTpJbnRlcixzeXN0ZW0tdWksLWFwcGxlLXN5c3RlbSwiU2Vnb2UgVUkiLHNhbnMtc2VyaWY7ZmlsbDojMWYyOTMzfQogICAgICAubGFiZWx7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NjUwO3RleHQtYW5jaG9yOm1pZGRsZX0KICAgICAgLnNtYWxse2ZvbnQtc2l6ZToxNHB4O3RleHQtYW5jaG9yOm1pZGRsZTtmaWxsOiM1MTYwNmZ9CiAgICAgIC5lZGdlTGFiZWx7Zm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzUxNjA2Zn0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxyZWN0IHg9IjMwIiB5PSIxOTAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNzAiIGNsYXNzPSJub2RlIi8+CiAgPHRleHQgeD0iOTUiIHk9IjIyMCIgY2xhc3M9ImxhYmVsIj5UYXNrIGNvbnRleHQ8L3RleHQ+CiAgPHRleHQgeD0iOTUiIHk9IjI0MyIgY2xhc3M9InNtYWxsIj5wcm9tcHQsIHRvb2xzLCBmaWxlczwvdGV4dD4KCiAgPHJlY3QgeD0iMjEwIiB5PSIxOTAiIHdpZHRoPSIxNDAiIGhlaWdodD0iNzAiIGNsYXNzPSJub2RlIHByaW1hcnkiLz4KICA8dGV4dCB4PSIyODAiIHk9IjIyMCIgY2xhc3M9ImxhYmVsIj5HTE0gcHJpbWFyeTwvdGV4dD4KICA8dGV4dCB4PSIyODAiIHk9IjI0MyIgY2xhc3M9InNtYWxsIj5zdHJlYW0gcmVhc29uaW5nPC90ZXh0PgoKICA8cmVjdCB4PSI0MDAiIHk9IjE4MCIgd2lkdGg9IjE2NSIgaGVpZ2h0PSI5MCIgY2xhc3M9Im5vZGUgcmlzayIvPgogIDx0ZXh0IHg9IjQ4Mi41IiB5PSIyMTEiIGNsYXNzPSJsYWJlbCI+TGl2ZSByaXNrIHBvbGljeTwvdGV4dD4KICA8dGV4dCB4PSI0ODIuNSIgeT0iMjM0IiBjbGFzcz0ic21hbGwiPm1hcmtlcnMgKyByZXBldGl0aW9uPC90ZXh0PgogIDx0ZXh0IHg9IjQ4Mi41IiB5PSIyNTQiIGNsYXNzPSJzbWFsbCI+cGVyc2lzdGVuY2UgdGhyZXNob2xkPC90ZXh0PgoKICA8cmVjdCB4PSI2NDAiIHk9IjM1IiB3aWR0aD0iMTQ1IiBoZWlnaHQ9IjYyIiBjbGFzcz0ibm9kZSBoZWRnZSIvPgogIDx0ZXh0IHg9IjcxMi41IiB5PSI2MiIgY2xhc3M9ImxhYmVsIj5Hcm9rPC90ZXh0PgogIDx0ZXh0IHg9IjcxMi41IiB5PSI4MyIgY2xhc3M9InNtYWxsIj5mYXN0IGNoYWxsZW5nZXI8L3RleHQ+CiAgPHJlY3QgeD0iNjQwIiB5PSIxMjUiIHdpZHRoPSIxNDUiIGhlaWdodD0iNjIiIGNsYXNzPSJub2RlIGhlZGdlIi8+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjE1MiIgY2xhc3M9ImxhYmVsIj5PcGVuQUk8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjE3MyIgY2xhc3M9InNtYWxsIj5mcm9udGllciBjaGFsbGVuZ2VyPC90ZXh0PgogIDxyZWN0IHg9IjYzMCIgeT0iMjIwIiB3aWR0aD0iMTY1IiBoZWlnaHQ9IjcyIiBjbGFzcz0ibm9kZSBoZWRnZSIvPgogIDx0ZXh0IHg9IjcxMi41IiB5PSIyNDkiIGNsYXNzPSJsYWJlbCI+VmVyaWZpZXI8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjI3MiIgY2xhc3M9InNtYWxsIj50YXNrIGNlcnRpZmljYXRlL3Rlc3RzPC90ZXh0PgoKICA8cmVjdCB4PSI2MzAiIHk9IjM1NSIgd2lkdGg9IjE2NSIgaGVpZ2h0PSI3MCIgY2xhc3M9Im5vZGUganVkZ2UiLz4KICA8dGV4dCB4PSI3MTIuNSIgeT0iMzg0IiBjbGFzcz0ibGFiZWwiPkNvdW5jaWwganVkZ2U8L3RleHQ+CiAgPHRleHQgeD0iNzEyLjUiIHk9IjQwNyIgY2xhc3M9InNtYWxsIj5leGNlcHRpb24gcGF0aDwvdGV4dD4KCiAgPHJlY3QgeD0iODQwIiB5PSIyMjAiIHdpZHRoPSI5NSIgaGVpZ2h0PSI3MiIgY2xhc3M9Im5vZGUgcHJpbWFyeSIvPgogIDx0ZXh0IHg9Ijg4Ny41IiB5PSIyNDkiIGNsYXNzPSJsYWJlbCI+V2lubmVyPC90ZXh0PgogIDx0ZXh0IHg9Ijg4Ny41IiB5PSIyNzIiIGNsYXNzPSJzbWFsbCI+Y29tbWl0IG9uY2U8L3RleHQ+CgogIDxwYXRoIGQ9Ik0xNjAgMjI1IEgyMTAiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTM1MCAyMjUgSDQwMCIgY2xhc3M9ImVkZ2UiLz4KICA8cGF0aCBkPSJNNTY1IDIyNSBINjMwIiBjbGFzcz0iZWRnZSIvPgogIDx0ZXh0IHg9IjU3OSIgeT0iMjE0IiBjbGFzcz0iZWRnZUxhYmVsIj5zYWZlPC90ZXh0PgogIDxwYXRoIGQ9Ik03OTUgMjU2IEg4NDAiIGNsYXNzPSJlZGdlIi8+CgogIDxwYXRoIGQ9Ik01MjAgMTgwIEM1NTUgMTE1IDU4NSA2NiA2NDAgNjYiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTU0NSAxOTAgQzU4MCAxNzQgNTk1IDE1NiA2NDAgMTU2IiBjbGFzcz0iZWRnZSIvPgogIDx0ZXh0IHg9IjU0NSIgeT0iNDgiIGNsYXNzPSJlZGdlTGFiZWwiPnJpc2sgdHJpZ2dlcjwvdGV4dD4KICA8cGF0aCBkPSJNNzEyIDk3IFYyMjAiIGNsYXNzPSJlZGdlIi8+CiAgPHBhdGggZD0iTTc0MiAxODcgVjIyMCIgY2xhc3M9ImVkZ2UiLz4KCiAgPHBhdGggZD0iTTcxMiAyOTIgVjM1NSIgY2xhc3M9ImVkZ2UgZGFzaCIvPgogIDx0ZXh0IHg9IjcyNSIgeT0iMzI5IiBjbGFzcz0iZWRnZUxhYmVsIj5ub25lIGFjY2VwdGVkPC90ZXh0PgogIDxwYXRoIGQ9Ik03OTUgMzkwIEM4NTUgMzkwIDg4NyAzNTAgODg3IDI5MiIgY2xhc3M9ImVkZ2UiLz4KICA8dGV4dCB4PSI4MjAiIHk9IjM4MCIgY2xhc3M9ImVkZ2VMYWJlbCI+dmVyaWZ5IGFnYWluPC90ZXh0PgoKICA8dGV4dCB4PSI0ODAiIHk9IjQ2NiIgY2xhc3M9InNtYWxsIj5BZnRlciBhIHZlcmlmaWVkIHdpbm5lcjogcmVxdWVzdCBjYW5jZWxsYXRpb24gb2YgdW5maW5pc2hlZCBjYWxsczsgcmVjb3JkIGNhbmNlbGxhdGlvbiBhbmQgYmlsbGVkIHVzYWdlIHNlcGFyYXRlbHkuPC90ZXh0Pgo8L3N2Zz4K" alt="One primary, conditional fan-out, verifier-gated winner election, and a council fallback." />
+<figcaption aria-hidden="true">One primary, conditional fan-out,
+verifier-gated winner election, and a council fallback.</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Ordinary model council</th>
+<th>Trace-triggered speculative controller</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Launches several models by default</td>
+<td>Launches challengers only after persistent risk or primary
+rejection</td>
+</tr>
+<tr>
+<td>Waits to aggregate completed answers</td>
+<td>Can stop at the first independently verified answer</td>
+</tr>
+<tr>
+<td>Optimises ensemble answer quality</td>
+<td>Gates quality, then optimises latency and billed work</td>
+</tr>
+<tr>
+<td>Uses completed outputs</td>
+<td>Uses the primary’s unfolding trajectory</td>
+</tr>
+<tr>
+<td>Usually pays the full fan-out</td>
+<td>Requests cancellation and measures whether billing actually
+stops</td>
+</tr>
+</tbody>
+</table>
+<p>The harness implementation is deliberately strict.
+<code>drc hedge</code> requires an external verifier, an acceptance
+expression, or an explicit unsafe <code>--accept-first</code> flag. It
+computes worst-case authorised model cost before launch, emits the live
+marker counts and trigger snapshot, pauses through a caller-supplied
+side-effect hook, copies structured task context without sharing hidden
+chain of thought, and records cancellation separately from
+provider-reported usage.</p>
+<p>This design borrows answer aggregation from <a href="https://aclanthology.org/2023.acl-long.792/">LLM-Blender</a> and
+<a href="https://arxiv.org/abs/2406.04692">Mixture-of-Agents</a>, but
+its systems shape is closer to the hedged requests in <a href="https://research.google/pubs/the-tail-at-scale/">The Tail at
+Scale</a>. The new hypothesis is that trace deterioration can replace a
+fixed delay as the hedge trigger. That remains
+<strong>Prospective</strong> until an offline replay beats a
+matched-rate time-only trigger and a separately budgeted live comparison
+passes.</p>
 <h2 id="related-work">Related work</h2>
 <p>This programme sits between dynamic model evaluation, psychometric
 model measurement, and inference-time routing. Generated evaluations

@@ -224,7 +224,7 @@ def navbar(active: str) -> str:
 def compact_head(title: str, active: str) -> str:
     return f"""<header class="compact">
   <div class="race-meta">
-    <span class="wip">&#9888; working notes &mdash; what we've learnt so far · updated 8 July 2026</span>
+    <span class="wip">&#9888; working notes &mdash; what we've learnt so far · updated 12 July 2026</span>
     <span><a href="index.html" style="color:inherit;text-decoration:none">difficulty&ndash;response curves</a></span>
   </div>
   <h1 style="font-size:clamp(26px,4vw,40px)">{title}</h1>
@@ -816,7 +816,7 @@ HEADER_FULL = f"""<header>
     mechanically checkable answers, error bars on everything, all data and tools released below.</p>
   </div>
   <div class="links">
-    <a href="research.html">Follow the live research</a>
+    <a href="research.html">Confidence &amp; control protocols</a>
     <a href="paper.pdf">Read the paper (PDF)</a>
     <a class="ghost" href="https://github.com/posix4e/difficulty-response-curves">Code &amp; generators</a>
     <a class="ghost" href="index.html#data">Raw data</a>
@@ -832,6 +832,8 @@ teasers = f"""
 <section class="signal" id="tour">
   <div class="flag"><span class="t">&#9776;</span><h2>The tour</h2></div>
   <div class="teasers">
+    <a class="teaser" href="research.html"><strong>Living research programme</strong><span>MiniMax confidence,
+      trace-triggered speculative execution, and the registered gates separating evidence from ideas.</span></a>
     <a class="teaser" href="method.html"><strong>The method</strong><span>What a difficulty dial is, the
       SAT comic, why this puzzle beats maths benchmarks, and how this differs from leaderboards and arenas.</span></a>
     <a class="teaser" href="findings.html"><strong>Findings 1&ndash;4</strong><span>The frontier is mist; the
@@ -852,7 +854,7 @@ overview_body = (
     HEADER_FULL.replace("</header>", navbar("index.html") + "</header>")
     + teasers + B_THE_CARD + B_THESIS + B_DATA + B_TOOLS
     + """<p class="notclaim">What this site does not claim: no mechanism, no physics vocabulary, nobody's water is
-freezing, no reading of trace contents beyond what is measured, no early-warning prophecy.
+freezing, no reading of trace contents beyond what is measured, and no claim yet that trace risk gives useful early warning.
 The restraint is the brand.</p>"""
 )
 page("index.html", "Difficulty–Response Curves: A Form Guide for Reasoning Models",
@@ -1234,6 +1236,7 @@ J = [
  ("8 July, morning", "Round 3, rescoped with the owner over coffee: the stronger judge. Per-model trained combos over sixteen trace features, selection and thresholds locked on the exploratory corpus only, and the pre-registration finally carries a stopping rule &mdash; one look at the frozen confirmatory set, ever. Training flatters as training does: R1 cross-validates at 0.81, MiniMax and Qwen post perfect 1.0s on eleven wrongs apiece (flagged as overfit-smell <em>before</em> the gate ran, in writing). The single permitted look: zero of three clear. R1's combo collapses to 0.56 &mdash; it had learnt the corpus, not the model; Qwen's perfection was noise; MiniMax posts a genuinely excellent 0.93 at 92% recall and still clips the false-alarm bar. No live dollar spent. Two rounds, two designs, one verdict: the trace cannot grade itself into a router. The door gets a trained-judge stamp on its way shut."),
  ("8 July, midday", "Round 4, the last signal standing: ask the model twice. Finding 1's mist says near-frontier answers are coin flips, and coin flips should disagree &mdash; so sample the cheap rung twice and escalate on disagreement. Pre-registered (hazard included, in writing: satisfiable SAT admits many right answers), one look at the frozen corpus: recall a perfect 1.000 on all three models &mdash; every silent wrong disagreed &mdash; and P(correct given agreement) also a perfect 1.000: exact agreement never shipped a wrong answer. A flawless certificate. That fires on 2&ndash;20% of calls, because right answers pick different satisfying assignments too: false alarms 76&ndash;94%, escalate-everything economics, gate failed 0-of-3 on the arm the hazard named. Three rounds, three pre-registered negatives, three different reasons. The campaign's verdict stands at a sentence: the certificate is not an implementation detail of the router &mdash; it is the router. Spend for rounds 3 and 4 combined: $0."),
  ("8 July, night", "Round 5 walks through round 4's ajar door: on the synthesis family answers are unique, so agreement means two programs computing the same function on probe inputs &mdash; multiplicity can't tax it. A fresh 120-call gate corpus (pre-registered, stopping rule included, hazard named: your correct answer gets flagged when your <em>partner</em> misses) delivers the campaign's first gate PASS on its one look: recall 0.92, false alarm 0.163, AUC 0.822. The live race runs into the small hours: the router ships 7 answers on agreement &mdash; all 7 correct, the certificate still has never lied &mdash; and solves 17/25, six clear of a control that escalated the <em>exact same number</em> of instances by coin flip (round 2's control flaw, fixed and avenged). The spin-free ledger: it ties always-premium's solve rate but pays $0.69 a solve to premium's $0.50, because this mix was deliberately frontier-heavy and the double-probe is a toll on every instance. Four rounds of no, one conditioned yes: where answers are unique, two cheap samples grade each other. Finding 9 goes up before dawn."),
+ ("12 July", "The confidence programme becomes a control programme. The question: instead of waiting for a trace score, use persistent backtracking, hedging, give-up, and repetition to launch backup models while the primary is still thinking. The distinction from a model council is fixed in writing: a council waits to combine completed answers; the speculative controller races candidates, accepts only an externally verified winner, cancels losers, and invokes a council judge only as an exception. A v0 protocol and <span class=\"mono\">drc hedge</span> harness ship with a no-spend offline gate, side-effect pause hook, structured context handoff, worst-case budget admission, and separate cancellation/billing records. No live result is claimed."),
 ]
 entries = "".join(
     f"""<div class="jentry"><div class="jdate">{d}</div><div class="jbody"><p>{t}</p></div></div>"""
