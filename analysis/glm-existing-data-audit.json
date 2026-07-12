@@ -1,0 +1,105 @@
+{
+  "claim_status": "Censored",
+  "counts": {
+    "calls": 14,
+    "correct_completed": 9,
+    "instances": 13,
+    "loud_failure": 0,
+    "silently_wrong_completed": 5
+  },
+  "decision": "existing calls are not an eligible confidence-replication cohort",
+  "descriptive_features": {
+    "correct_completed": {
+      "completion_tokens": {
+        "mean": 15903.777778,
+        "n": 9
+      },
+      "effective_billed_tps": {
+        "mean": 41.997583,
+        "n": 9
+      },
+      "latency_ms": {
+        "mean": 424272.04619,
+        "n": 9
+      },
+      "reasoning_tokens": {
+        "mean": 15107.2,
+        "n": 5
+      }
+    },
+    "silently_wrong_completed": {
+      "completion_tokens": {
+        "mean": 23098.0,
+        "n": 5
+      },
+      "effective_billed_tps": {
+        "mean": 52.723622,
+        "n": 5
+      },
+      "latency_ms": {
+        "mean": 533485.025258,
+        "n": 5
+      },
+      "reasoning_tokens": {
+        "mean": 22606.75,
+        "n": 4
+      }
+    }
+  },
+  "eligibility": {
+    "all_calls_provider_pinned": false,
+    "at_least_20_silent_wrong": false,
+    "at_least_30_completed_calls": false,
+    "at_least_3_mixed_outcome_levels": false,
+    "pass": false,
+    "single_provider_route": false
+  },
+  "levels": {
+    "2.0": {
+      "correct": 1,
+      "loud": 0,
+      "silent_wrong": 0
+    },
+    "2.5143": {
+      "correct": 2,
+      "loud": 0,
+      "silent_wrong": 0
+    },
+    "3.5429": {
+      "correct": 3,
+      "loud": 0,
+      "silent_wrong": 0
+    },
+    "4.0571": {
+      "correct": 2,
+      "loud": 0,
+      "silent_wrong": 0
+    },
+    "4.5714": {
+      "correct": 0,
+      "loud": 0,
+      "silent_wrong": 3
+    },
+    "5.0857": {
+      "correct": 0,
+      "loud": 0,
+      "silent_wrong": 2
+    },
+    "5.6": {
+      "correct": 1,
+      "loud": 0,
+      "silent_wrong": 0
+    }
+  },
+  "model": "z-ai/glm-5",
+  "new_spend_usd": 0.0,
+  "providers": [
+    "z-ai/glm-5@phala/prepaid",
+    "z-ai/glm-5@siliconflow/prepaid",
+    "z-ai/glm-5@zai/prepaid"
+  ],
+  "source": {
+    "path": "data/exports/drc.sqlite.gz",
+    "sha256": "eb9eda2e84b8e3db7158a8149bba005ada65f266234e0c0231438f523c13ec49"
+  }
+}

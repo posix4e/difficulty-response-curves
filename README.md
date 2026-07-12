@@ -1,125 +1,99 @@
-# Difficulty–Response Curves: A Form Guide for Reasoning Models
+# Can a model tell when it is wrong?
 
-Ask where a reasoning model stops being able to reason and the honest answer
-today is a shrug and a leaderboard number. This repo does better with old
-tools: item response theory, pointed at language models.
+This repository now has one job: run and report a registered per-answer
+confidence study.
 
-We sweep procedurally generated tasks with a scalar difficulty knob — random
-3-SAT across the clause-to-variable ratio, depth-controlled DAG arithmetic as
-a second opinion — draw repeated samples per instance, and fit two-parameter
-logistic difficulty–response curves. Each model gets a datasheet: a frontier
-**x50** (the difficulty where its pass rate crosses one half) and a sharpness
-**a**, both with cluster-bootstrap confidence intervals.
+A difficulty-response curve supplies a baseline probability of correctness.
+The study asks whether metadata from one model call - token use, elapsed time,
+finish reason, and provider records - improves that probability. Reasoning-text
+features and trace-triggered model fan-out were tested, failed their registered
+gates, and are not part of the runtime.
 
-- **Living research programme**: [`research/program.md`](research/program.md) · **Frozen MiniMax protocol**: [`research/studies/minimax-confidence-v1.md`](research/studies/minimax-confidence-v1.md) · **Speculative-council protocol**: [`research/studies/speculative-council-v0.md`](research/studies/speculative-council-v0.md)
-- **Paper**: [`paper/paper.pdf`](paper/paper.pdf) · **Site**: https://posix4e.github.io/difficulty-response-curves/
-- **Raw data**: every published API call is available in [`data/exports`](data/exports)
-  as JSONL.gz and a SQLite snapshot with a sha256 manifest. No GitHub Release is
-  claimed while the research programme remains preliminary.
-- **Everything below is reproducible**: `analysis/run_analysis.py` regenerates
-  every number in the paper from the raw data; the abstract's numbers are read
-  from `analysis/numbers.json` at compile time, not typed in.
+- [Plain-language research page](research/program.md)
+- [Concise paper](paper/paper.pdf)
+- [Frozen MiniMax protocol](research/studies/minimax-confidence-v1.md)
+- [Field journal](docs/journal.html)
+- [Next-step runbook](NEXT.md)
 
-## Measure your own model
+## The whole workflow
 
-You need an OpenAI-compatible endpoint. We used [TrustedRouter](https://trustedrouter.com);
-anything that speaks `POST /v1/chat/completions` works with a base-URL change
-in `src/drc/runner/client.py`.
-
-```bash
-python3 -m venv .venv && .venv/bin/pip install -e .
-export TRUSTEDROUTER_API_KEY=sk-tr-...        # or drop a key file at ~/src/.env-tr
-
-# add your model to configs/models.toml, then:
-.venv/bin/drc sweep --model openai/gpt-oss-20b --grid sat-n20-main \
-    --instances 15 --k 4 --cap 2.0            # hard dollar cap, enforced per call
-
-.venv/bin/drc fit --model openai/gpt-oss-20b --sets adhoc --stages adhoc \
-    --bootstrap 2000 --gof                    # frontier + sharpness with CIs
-
-.venv/bin/drc adaptive --model openai/gpt-oss-20b --cap 2.0   # find x50 the fast way
-.venv/bin/drc budget                          # where every microdollar went
+```text
+study.toml -> plan -> collect -> status -> one frozen analysis -> export
+                              |
+                              +-> correct / silent error / loud failure
 ```
 
-The sweep is resumable: kill it, rerun the same command, and finished calls
-are never repeated (idempotency key in SQLite). Failed transport calls retry
-on the next run. Every call records tokens, cost in microdollars, and the
-provider endpoint that actually served it.
+The package has ten small modules and no plugin framework:
 
-## Trace-triggered speculative execution
-
-`drc hedge` starts one trace-visible primary, launches challengers only after
-persistent live-risk markers or primary verification failure, elects the first
-externally verified answer, and requests cancellation of unfinished calls.
-Council synthesis is an optional exception path, not the default.
-
-```bash
-.venv/bin/drc hedge \
-    --prompt-file task.md \
-    --primary or/glm-5 \
-    --challenger or/grok-4-fast \
-    --challenger or/gpt-5.5 \
-    --verify-command './verify-answer' \
-    --cap 5 --out data/hedge/run.json --dry-run
-```
-
-The dry run checks model configuration and worst-case authorisation without
-making calls. Remove `--dry-run` only after supplying a real verifier. The CLI
-rejects unverified first-answer-wins unless `--accept-first` is explicitly
-selected. Cancellation requests, transport closure, and reported billed usage
-remain separate accounting events.
-
-The complete registered comparison is also executable:
-
-```bash
-.venv/bin/drc council-experiment \
-    --prompt-file task.md --task-id example-1 \
-    --verify-command './verify-answer' \
-    --fixed-delay-ms 30000 --cap 20 --dry-run
-```
-
-It runs GLM-only, always-on council, fixed-delay hedge, and trace-triggered
-hedge arms in deterministic random order, with candidate worktrees available
-through `WorktreeLaneManager`. The frozen v0 policy has already failed its
-zero-spend replay gate: it caught every historical failure but fired on 87.2%
-of correct completions, producing 94.4% fan-out. The live branch therefore did
-not run. See [`analysis/speculative-replay.json`](analysis/speculative-replay.json).
-
-## What is in the box
-
-| path | what |
+| Module | Responsibility |
 |---|---|
-| `src/drc/tasks/` | instance generators + verifiers (pure, no I/O): satisfiable-only 3-SAT with certificate scoring; depth-controlled DAG arithmetic |
-| `src/drc/runner/` | async runner plus trace-triggered speculative controller: AIMD concurrency, provider pinning, budget guard, verifier-gated winner election, cancellation accounting, SQLite store |
-| `src/drc/stats/` | penalized 2PL+lapse MLE, stratified cluster bootstrap, variance decomposition (C2), token-effort peak (C3), reliability (C1) |
-| `src/drc/adaptive/` | bracket-then-refine frontier search (C4), simulator + live runner |
-| `configs/` | model roster (prices, pins, caps), difficulty grids, stage designs |
-| `analysis/` | `run_analysis.py` → `numbers.json`; figure scripts |
-| `paper/` | Typst source; compiles against `analysis/numbers.json` |
-| `docs/` | the GitHub Pages site |
+| `types.py` | Shared records and the three-outcome taxonomy |
+| `config.py` | One TOML study contract and hard caps |
+| `sat.py` | Deterministic SAT generation, solving, parsing, and verification |
+| `provider.py` | One pinned OpenRouter adapter |
+| `store.py` | SQLite records and resumability |
+| `runner.py` | Planning, provider enforcement, budgets, and stopping |
+| `analysis.py` | Frozen metadata score and prospective metrics |
+| `audit.py` | Recompute released metrics and verify checksums |
+| `export.py` | Compact public data and separate raw traces |
+| `cli.py` | Eight small commands |
 
-## Protocol notes (the short version)
-
-- **Guess-proof scoring.** SAT instances are rejection-sampled to be
-  satisfiable and the model must output a full assignment; a pass is a
-  checked certificate, not a label match. No guessing floor, so the curve
-  needs no third parameter.
-- **Parse failures count as failures**, disclosed per model; truncation is
-  counted, disclosed, and flags any contaminated cell.
-- **Provider pinned** per model (`provider.only`), endpoint recorded per call.
-- **Budget is enforced, not estimated**: the runner admits a call only if the
-  ledger plus in-flight reserve stays under the cap.
-- **Contamination**: every instance is freshly generated from named seed
-  streams; a fixed canary string rides in every prompt.
-
-## Tests
+## Install
 
 ```bash
-.venv/bin/python -m pytest
+python3 -m venv .venv
+.venv/bin/pip install -e '.[dev]'
 ```
 
-## License
+No command reads an API key except `drc run`. The configured provider key is
+read only from `OPENROUTER_API_KEY`.
+
+## Commands
+
+```bash
+drc plan       # print the frozen design and worst-case admission cost
+drc status     # labels, spend, provider continuity, and stopping state
+drc run        # collect a newly named, unlocked study under hard caps
+drc analyze    # one prospective read; refuses early or repeated analysis
+drc export     # compact metadata plus a separate trace artifact and manifest
+drc next       # state the next protocol-authorized action
+drc audit      # recompute released metrics and verify frozen checksums
+drc audit-model --model z-ai/glm-5  # test whether old calls form an eligible cohort
+```
+
+The checked-in `minimax-confidence-v1` config is deliberately
+`collection_locked = true`. Its batch began under version 1 and must finish
+under that exact collector. Version 2 may analyze it after the post-sentinel
+and database snapshot, but must not add calls to its stage.
+
+To start a future study, copy `configs/study.toml`, choose a new study name and
+seed, set `collection_locked = false`, review `drc plan`, and commit the new
+protocol before making calls.
+
+## Safety invariants
+
+- Provider fallback is disabled and endpoint mismatches stop admission.
+- Calls are admitted only while recorded spend plus in-flight worst-case
+  reserves remain under the stage cap.
+- `(model, instance, sample, prompt version, stage)` is unique in SQLite.
+- Correct completions, silent errors, and loud failures remain separate.
+- The prospective command refuses to run before a stopping condition and both
+  sentinel checks are present.
+- A result file is write-once by default.
+- Raw traces are never mixed into the compact public table.
+
+## Tests and artifacts
+
+```bash
+PYTHONPATH=src python -m pytest -q
+sh paper/build.sh
+sh research/build.sh
+```
+
+Released data, frozen coefficients, generated figures, protocols, and the
+journal are retained as the evidentiary record. Historical router and
+speculative-controller code was removed rather than carried as dormant product
+surface.
 
 Code is MIT licensed. Research text and released study data are CC BY 4.0,
-subject to provider terms. See [`LICENSE`](LICENSE) and
-[`LICENSE-RESEARCH.md`](LICENSE-RESEARCH.md).
+subject to provider terms.

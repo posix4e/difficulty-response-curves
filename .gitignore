@@ -6,6 +6,7 @@ data/*.sqlite
 data/*.sqlite-wal
 data/*.sqlite-shm
 .pytest_cache/
+build/
 .DS_Store
 paper/*.pdf.tmp
 tmp/

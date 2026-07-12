@@ -146,9 +146,9 @@ Trigger position was therefore replayed by delivered word count, and the
 is published for diagnosis but cannot pass the gate. The false-hedge condition
 fails without it, so the paid live comparison is not run and v0 is not retuned.
 
-Reproducible artifacts: `analysis/speculative_replay.py`,
-`analysis/speculative-replay.json`, and
-`analysis/speculative-replay-predictions.jsonl`. New API spend: USD 0.
+Reproducible artifacts: `analysis/speculative-replay.json` and
+`analysis/speculative-replay-predictions.jsonl`. The exact replay and harness
+source remains in Git history at commit `7cca5c9`. New API spend: USD 0.
 
 ## Safety and accounting invariants
 
@@ -162,9 +162,10 @@ Reproducible artifacts: `analysis/speculative_replay.py`,
 - Prompts and handoff context are secret-scanned before public release. Raw
   traces remain a separate checksummed artifact.
 
-## Reproducible interface
+## Archived implementation
 
-The released harness is `drc hedge`. A dry run performs model/config and
+Version 1 released the `drc hedge` harness and the complete four-arm experiment
+runner before replay. Their dry-run interface performed model, verifier, and
 worst-case budget admission without making calls:
 
 ```sh
@@ -179,10 +180,11 @@ drc hedge \
   --dry-run
 ```
 
-The result JSON contains the frozen plan, risk snapshot, candidate completion
-records, winner, cancellation requests, and a timestamped event log. Provider
-usage is reported where returned; cancellation savings are never inferred
-from transport closure alone.
+The failed gate closed this branch before live use. Version 2 therefore removes
+the speculative controller from the executable product surface. The historical
+commit preserves the implementation for audit, while the current CLI offers no
+hedge or council command. This prevents a registered negative experiment from
+quietly becoming a production feature.
 
 ## Positioning
 

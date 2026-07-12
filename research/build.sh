@@ -19,6 +19,7 @@ if [ -f analysis/confidence-minimax.json ]; then
 fi
 [ -f analysis/speculative-replay.json ] && cp analysis/speculative-replay.json docs/data/speculative-replay.json
 [ -f analysis/speculative-replay-predictions.jsonl ] && cp analysis/speculative-replay-predictions.jsonl docs/data/speculative-replay-predictions.jsonl
+[ -f analysis/glm-existing-data-audit.json ] && cp analysis/glm-existing-data-audit.json docs/data/glm-existing-data-audit.json
 for artifact in data/exports/*; do
   [ -f "$artifact" ] && cp "$artifact" docs/data/
 done
@@ -44,6 +45,10 @@ pandoc research/studies/speculative-council-v0.md \
 # Pandoc's default source-code CSS carries trailing spaces on each generated
 # rule. Keep checked-in HTML clean and deterministic for Git whitespace checks.
 perl -pi -e 's/[ \t]+$//' docs/research.html docs/minimax-confidence-protocol.html docs/speculative-council-protocol.html
+
+# The living research page is the public front door. Historical pages remain
+# addressable, but the old dashboard is no longer the default explanation.
+cp docs/research.html docs/index.html
 
 pandoc research/program.md \
   --resource-path=docs:research:. \
