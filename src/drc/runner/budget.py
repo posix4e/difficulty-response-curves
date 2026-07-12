@@ -77,12 +77,16 @@ class BudgetGuard:
         with self._lock:
             self._inflight.pop(token, None)
 
-    def summary(self) -> dict:
-        spent = self.store.spent_microdollars()
+    def summary(self, stage: str | None = None) -> dict:
+        global_spent = self.store.spent_microdollars()
+        stage_spent = self.store.spent_microdollars(stage) if stage else None
         with self._lock:
             reserve = sum(self._inflight.values())
         return {
-            "spent_usd": spent / USD,
+            # Keep the legacy key for callers that consume the global ledger.
+            "spent_usd": global_spent / USD,
+            "global_spent_usd": global_spent / USD,
+            "stage_spent_usd": stage_spent / USD if stage_spent is not None else None,
             "inflight_reserved_usd": reserve / USD,
             "global_cap_usd": GLOBAL_CAP_USD,
             "soft_stop_usd": SOFT_STOP_USD,

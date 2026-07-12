@@ -60,6 +60,16 @@ def test_p95_estimate_tracks_observations(tmp_path):
     assert guard.p95_estimate("m", 5000) >= 100
 
 
+def test_summary_distinguishes_stage_from_global_spend(tmp_path):
+    store = _store(tmp_path)
+    store.conn.execute("INSERT OR IGNORE INTO instances (instance_id, family, task_version, set_name, level_idx, level_value, params_json, payload_json, witness_json, seed) VALUES ('i0','sat',1,'t',0,2.0,'{}','{}','[]',0)")
+    store.record_call(_fake_call_row("history", "m", int(10 * USD)))
+    store.record_call(_fake_call_row("prospective", "m", int(0.5 * USD)))
+    summary = BudgetGuard(store, {"prospective": 1.0}).summary("prospective")
+    assert summary["global_spent_usd"] == 10.5
+    assert summary["stage_spent_usd"] == 0.5
+
+
 def test_pricetable_margin():
     cfg = ModelCfg(
         model_id="x", tier="A", core=True, api_path="anthropic",

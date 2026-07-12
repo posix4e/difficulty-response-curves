@@ -45,6 +45,15 @@ def _stage_caps(stages) -> dict[str, float]:
     return {name: s.cap_usd for name, s in stages.items()}
 
 
+async def _run_stage_async(jobs, models, store, guard):
+    """Keep the HTTP client and its shutdown on one event loop."""
+    client = TRClient(config.load_key())
+    try:
+        return await run_jobs(jobs, models, client, store, guard, log=_log)
+    finally:
+        await client.aclose()
+
+
 def cmd_run_stage(args) -> int:
     models = config.load_models()
     grids = config.load_grids()
@@ -61,11 +70,7 @@ def cmd_run_stage(args) -> int:
     _log(f"stage {stage.name}: {len(jobs)} calls to run (cap ${stage.cap_usd:.2f})")
     if args.dry_run or not jobs:
         return 0
-    client = TRClient(config.load_key())
-    try:
-        summary = asyncio.run(run_jobs(jobs, models, client, store, guard, log=_log))
-    finally:
-        asyncio.run(client.aclose())
+    summary = asyncio.run(_run_stage_async(jobs, models, store, guard))
     _log(json.dumps(summary, indent=2, default=str))
     return 0
 

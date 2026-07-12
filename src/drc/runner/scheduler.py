@@ -80,6 +80,7 @@ async def run_jobs(
     done_count = 0
     total = len(jobs)
     last_report = 0
+    run_stage = jobs[0].stage if jobs else None
 
     def fallback_est(model_id: str) -> int:
         cfg = models[model_id]
@@ -153,15 +154,21 @@ async def run_jobs(
             done_count += 1
             if done_count - last_report >= 25 or done_count == total:
                 last_report = done_count
-                s = budget.summary()
+                s = budget.summary(run_stage)
                 log(
                     f"[{datetime.now().strftime('%H:%M:%S')}] {done_count}/{total} done, "
-                    f"${s['spent_usd']:.2f} spent (${s['inflight_reserved_usd']:.2f} reserved)"
+                    f"${s['stage_spent_usd']:.2f} stage spend "
+                    f"(${s['inflight_reserved_usd']:.2f} reserved)"
                 )
         dispatch()
 
     stopped = {m: st.stopped for m, st in states.items() if st.stopped}
-    return {"done": done_count, "total": total, "stopped": stopped, "spent": budget.summary()}
+    return {
+        "done": done_count,
+        "total": total,
+        "stopped": stopped,
+        "spent": budget.summary(run_stage),
+    }
 
 
 async def _run_one(client: TRClient, cfg: ModelCfg, job: Job) -> CallResult:
