@@ -24,6 +24,7 @@ import numpy as np
 from . import config
 from .runner.budget import BudgetGuard
 from .runner.client import TRClient
+from .runner.council_experiment import Arm, FourArmExperiment, write_experiment_result
 from .runner.scheduler import Job, run_jobs
 from .runner.speculative import (
     CandidateResult,
@@ -324,6 +325,52 @@ async def _command_verifier(command: str, result: CandidateResult) -> bool:
     return process.returncode == 0
 
 
+def _handoff_from_args(args) -> HandoffContext:
+    prompt = Path(args.prompt_file).read_text() if args.prompt_file else args.prompt
+    context_payload = {}
+    if args.context_json:
+        context_payload = json.loads(Path(args.context_json).read_text())
+    return HandoffContext(
+        prompt=prompt,
+        messages=tuple(context_payload.get("messages", ())),
+        tool_results=tuple(context_payload.get("tool_results", ())),
+        files_read=tuple(context_payload.get("files_read", ())),
+        workspace_revision=str(context_payload.get("workspace_revision", "")),
+        metadata=dict(context_payload.get("metadata", {})),
+    )
+
+
+def _verifier_from_args(args):
+    if args.verify_command:
+        async def verifier(result):
+            return await _command_verifier(args.verify_command, result)
+        return verifier
+    if args.accept_regex:
+        return regex_verifier(args.accept_regex)
+    return accept_first_complete
+
+
+def _judge_for(client, cfg, temperature):
+    judge = ModelCandidate(client, cfg, temperature)
+
+    async def council_judge(base_context, results):
+        candidates = "\n\n".join(
+            f"## {item.model}\n{item.text or '[no answer]'}" for item in results
+        )
+        judge_context = HandoffContext(
+            prompt=(
+                base_context.render()
+                + "\n\nYou are the council judge. Produce one independently checkable "
+                "answer from the candidate reports below. Do not vote by model name.\n\n"
+                + candidates
+            ),
+            metadata={"role": "council_judge"},
+        )
+        return await judge.run(judge_context)
+
+    return council_judge
+
+
 async def _run_hedge_async(args, models, context: HandoffContext) -> dict:
     client = TRClient(config.load_key())
     try:
@@ -332,13 +379,7 @@ async def _run_hedge_async(args, models, context: HandoffContext) -> dict:
             ModelCandidate(client, models[model_id], args.temperature)
             for model_id in args.challenger
         ]
-        if args.verify_command:
-            async def verifier(result):
-                return await _command_verifier(args.verify_command, result)
-        elif args.accept_regex:
-            verifier = regex_verifier(args.accept_regex)
-        else:
-            verifier = accept_first_complete
+        verifier = _verifier_from_args(args)
 
         async def pause(_context, snapshot):
             _log(
@@ -348,22 +389,9 @@ async def _run_hedge_async(args, models, context: HandoffContext) -> dict:
 
         council_judge = None
         if args.judge_model:
-            judge = ModelCandidate(client, models[args.judge_model], args.temperature)
-
-            async def council_judge(base_context, results):
-                candidates = "\n\n".join(
-                    f"## {item.model}\n{item.text or '[no answer]'}" for item in results
-                )
-                judge_context = HandoffContext(
-                    prompt=(
-                        base_context.render()
-                        + "\n\nYou are the council judge. Produce one independently checkable "
-                        "answer from the candidate reports below. Do not vote by model name.\n\n"
-                        + candidates
-                    ),
-                    metadata={"role": "council_judge"},
-                )
-                return await judge.run(judge_context)
+            council_judge = _judge_for(
+                client, models[args.judge_model], args.temperature
+            )
 
         policy = TraceRiskPolicy(
             threshold=args.risk_threshold,
@@ -402,18 +430,7 @@ def cmd_hedge(args) -> int:
         _log("refusing first-answer-wins: provide --verify-command, --accept-regex, or explicit --accept-first")
         return 2
 
-    prompt = Path(args.prompt_file).read_text() if args.prompt_file else args.prompt
-    context_payload = {}
-    if args.context_json:
-        context_payload = json.loads(Path(args.context_json).read_text())
-    context = HandoffContext(
-        prompt=prompt,
-        messages=tuple(context_payload.get("messages", ())),
-        tool_results=tuple(context_payload.get("tool_results", ())),
-        files_read=tuple(context_payload.get("files_read", ())),
-        workspace_revision=str(context_payload.get("workspace_revision", "")),
-        metadata=dict(context_payload.get("metadata", {})),
-    )
+    context = _handoff_from_args(args)
     authorized = _hedge_authorized_max(models, ids, context.render())
     plan = {
         "primary": args.primary,
@@ -444,6 +461,102 @@ def cmd_hedge(args) -> int:
         path.write_text(payload)
     _log(payload.rstrip())
     return 0 if result.get("winner") else 1
+
+
+async def _run_council_experiment_async(args, models, context, arms, plan):
+    client = TRClient(config.load_key())
+    try:
+        verifier = _verifier_from_args(args)
+        judge = _judge_for(client, models[args.judge_model], args.temperature)
+
+        async def pause(_context, snapshot):
+            reason = f"trace score {snapshot.score:.2f}" if snapshot else "timer or primary rejection"
+            _log(f"[experiment] side effects paused: {reason}")
+
+        experiment = FourArmExperiment(
+            runner_factory=lambda model_id: ModelCandidate(
+                client, models[model_id], args.temperature
+            ),
+            primary_model=args.primary,
+            challenger_models=args.challenger,
+            judge=judge,
+            verifier=verifier,
+            policy_factory=lambda: TraceRiskPolicy(
+                threshold=args.risk_threshold,
+                persistence=args.risk_persistence,
+                min_words=args.risk_min_words,
+                window_words=args.risk_window_words,
+            ),
+            fixed_delay_ms=args.fixed_delay_ms,
+            pause_side_effects=pause,
+        )
+        return await experiment.run(
+            context,
+            task_id=args.task_id,
+            seed=args.seed,
+            arms=arms,
+            plan=plan,
+        )
+    finally:
+        await client.aclose()
+
+
+def cmd_council_experiment(args) -> int:
+    models = config.load_models()
+    if not args.challenger:
+        args.challenger = ["or/grok-4-fast", "or/gpt-5.5"]
+    ids = [args.primary, *args.challenger, args.judge_model]
+    missing = [model_id for model_id in ids if model_id not in models]
+    if missing:
+        _log(f"unknown models: {', '.join(missing)}")
+        return 2
+    if not (args.verify_command or args.accept_regex):
+        _log("the registered experiment requires --verify-command or --accept-regex")
+        return 2
+    if any(models[model_id].api_path != "openai" for model_id in ids):
+        _log("council experiment currently requires OpenAI-compatible streaming models")
+        return 2
+
+    try:
+        arms = [Arm(value) for value in args.arm] if args.arm else list(Arm)
+    except ValueError as exc:
+        _log(str(exc))
+        return 2
+    context = _handoff_from_args(args)
+    primary_cost = _hedge_authorized_max(models, [args.primary], context.render())
+    full_cost = _hedge_authorized_max(models, ids, context.render())
+    authorized = sum(
+        primary_cost if arm is Arm.PRIMARY_ONLY else full_cost for arm in arms
+    )
+    plan = {
+        "primary": args.primary,
+        "challengers": args.challenger,
+        "judge_model": args.judge_model,
+        "arms": [arm.value for arm in arms],
+        "fixed_delay_ms": args.fixed_delay_ms,
+        "risk": {
+            "threshold": args.risk_threshold,
+            "persistence": args.risk_persistence,
+            "min_words": args.risk_min_words,
+            "window_words": args.risk_window_words,
+        },
+        "authorized_worst_case_usd": round(authorized, 6),
+        "cap_usd": args.cap,
+    }
+    if authorized > args.cap:
+        _log(json.dumps(plan, indent=2))
+        _log("worst-case four-arm authorization exceeds --cap; no calls launched")
+        return 2
+    if args.dry_run:
+        _log(json.dumps(plan, indent=2))
+        return 0
+    result = asyncio.run(
+        _run_council_experiment_async(args, models, context, arms, plan)
+    )
+    output = Path(args.out)
+    write_experiment_result(output, result)
+    _log(json.dumps(result.as_dict(), indent=2))
+    return 0 if all(arm.verified for arm in result.arms) else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -513,6 +626,31 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", default="")
     p.add_argument("--dry-run", action="store_true")
     p.set_defaults(fn=cmd_hedge)
+
+    p = sub.add_parser("council-experiment", help="run the registered four-arm council comparison")
+    source = p.add_mutually_exclusive_group(required=True)
+    source.add_argument("--prompt")
+    source.add_argument("--prompt-file")
+    p.add_argument("--context-json")
+    p.add_argument("--task-id", required=True)
+    p.add_argument("--primary", default="or/glm-5")
+    p.add_argument("--challenger", action="append", default=[])
+    p.add_argument("--judge-model", default="or/gpt-5.5")
+    verify = p.add_mutually_exclusive_group()
+    verify.add_argument("--verify-command")
+    verify.add_argument("--accept-regex")
+    p.add_argument("--arm", action="append", choices=[arm.value for arm in Arm], default=[])
+    p.add_argument("--fixed-delay-ms", type=float, default=30_000)
+    p.add_argument("--risk-threshold", type=float, default=4.0)
+    p.add_argument("--risk-persistence", type=int, default=2)
+    p.add_argument("--risk-min-words", type=int, default=80)
+    p.add_argument("--risk-window-words", type=int, default=320)
+    p.add_argument("--temperature", type=float, default=None)
+    p.add_argument("--seed", type=int, default=20260712)
+    p.add_argument("--cap", type=float, default=20.0)
+    p.add_argument("--out", default="data/hedge/experiment.json")
+    p.add_argument("--dry-run", action="store_true")
+    p.set_defaults(fn=cmd_council_experiment)
 
     from .adaptive.live import cmd_adaptive
 

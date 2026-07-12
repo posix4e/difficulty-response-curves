@@ -175,7 +175,7 @@ class ModelCandidate:
 
 
 Verifier = Callable[[CandidateResult], Awaitable[bool]]
-PauseHook = Callable[[HandoffContext, RiskSnapshot], Awaitable[None]]
+PauseHook = Callable[[HandoffContext, RiskSnapshot | None], Awaitable[None]]
 CouncilJudge = Callable[[HandoffContext, list[CandidateResult]], Awaitable[CandidateResult | None]]
 
 
@@ -188,12 +188,21 @@ class SpeculativeResult:
     council_used: bool
     events: list[dict]
 
+    @property
+    def reported_cost_microdollars(self) -> int:
+        total = sum(item.cost_microdollars for item in self.completed)
+        if self.council_used and self.winner is not None:
+            total += self.winner.cost_microdollars
+        return total
+
     def as_dict(self) -> dict:
         return {
             "winner": asdict(self.winner) if self.winner else None,
             "trigger": asdict(self.trigger) if self.trigger else None,
             "completed": [asdict(item) for item in self.completed],
             "cancel_requested": self.cancel_requested,
+            "unresolved_usage": list(self.cancel_requested),
+            "reported_cost_microdollars": self.reported_cost_microdollars,
             "council_used": self.council_used,
             "events": self.events,
         }
@@ -211,6 +220,8 @@ class SpeculativeCouncil:
         verifier: Verifier,
         pause_side_effects: PauseHook | None = None,
         council_judge: CouncilJudge | None = None,
+        fixed_delay_ms: float | None = None,
+        trace_trigger_enabled: bool = True,
     ):
         if not challengers:
             raise ValueError("at least one challenger is required")
@@ -223,6 +234,10 @@ class SpeculativeCouncil:
         self.verifier = verifier
         self.pause_side_effects = pause_side_effects
         self.council_judge = council_judge
+        if fixed_delay_ms is not None and fixed_delay_ms < 0:
+            raise ValueError("fixed delay must be non-negative")
+        self.fixed_delay_ms = fixed_delay_ms
+        self.trace_trigger_enabled = trace_trigger_enabled
 
     async def run(self, context: HandoffContext) -> SpeculativeResult:
         started = time.perf_counter()
@@ -233,6 +248,8 @@ class SpeculativeCouncil:
         events: list[dict] = []
         trigger: RiskSnapshot | None = None
         challengers_started = False
+        side_effects_paused = False
+        delay_task: asyncio.Task | None = None
 
         def stamp(event: str, **fields) -> None:
             events.append({
@@ -263,11 +280,18 @@ class SpeculativeCouncil:
             stamp("candidate_started", model=runner.model)
             tasks[runner.model] = asyncio.create_task(execute(runner, observer))
 
-        async def start_challengers(reason: str) -> None:
-            nonlocal challengers_started
+        async def start_challengers(
+            reason: str, snapshot: RiskSnapshot | None = None
+        ) -> None:
+            nonlocal challengers_started, side_effects_paused
             if challengers_started:
                 return
             challengers_started = True
+            if not side_effects_paused:
+                if self.pause_side_effects:
+                    await self.pause_side_effects(context, snapshot)
+                side_effects_paused = True
+                stamp("side_effects_paused", reason=reason)
             stamp("challengers_started", reason=reason)
             for runner in self.challengers:
                 start(runner)
@@ -292,12 +316,16 @@ class SpeculativeCouncil:
                     words_seen=snapshot.words_seen,
                     source_elapsed_ms=round(elapsed_ms, 3),
                 )
-                if self.pause_side_effects:
-                    await self.pause_side_effects(context, snapshot)
-                stamp("side_effects_paused")
-                await start_challengers("trace_risk")
+                if self.trace_trigger_enabled:
+                    await start_challengers("trace_risk", snapshot)
 
         start(self.primary, observe)
+        if self.fixed_delay_ms is not None:
+            async def delayed_launch() -> None:
+                await asyncio.sleep(self.fixed_delay_ms / 1000.0)
+                await start_challengers("fixed_delay")
+
+            delay_task = asyncio.create_task(delayed_launch())
         winner: CandidateResult | None = None
         council_used = False
         while tasks:
@@ -316,6 +344,8 @@ class SpeculativeCouncil:
                 break
 
         cancel_requested: list[str] = []
+        if delay_task is not None and not delay_task.done():
+            delay_task.cancel()
         if winner is not None:
             for model, task in tasks.items():
                 if not task.done():
@@ -338,6 +368,8 @@ class SpeculativeCouncil:
                 if winner is not None and not await self.verifier(winner):
                     winner = None
                 stamp("council_completed", accepted=winner is not None)
+        if delay_task is not None:
+            await asyncio.gather(delay_task, return_exceptions=True)
 
         return SpeculativeResult(
             winner=winner,
