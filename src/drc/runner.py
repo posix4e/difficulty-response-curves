@@ -26,7 +26,7 @@ def provider_matches(observed: str, required: str) -> bool:
 
 
 class BudgetGate:
-    def __init__(self, cap: int, spent: int = 0):
+    def __init__(self, cap: int | None, spent: int = 0):
         self.cap = cap
         self.spent = spent
         self.reserved = 0
@@ -34,7 +34,7 @@ class BudgetGate:
 
     async def reserve(self, amount: int) -> bool:
         async with self._lock:
-            if self.spent + self.reserved + amount > self.cap:
+            if self.cap is not None and self.spent + self.reserved + amount > self.cap:
                 return False
             self.reserved += amount
             return True
@@ -50,7 +50,10 @@ def should_stop(status: StudyStatus, config: StudyConfig) -> str | None:
         return "label target reached"
     if status.calls >= config.stop.max_calls:
         return "call cap reached"
-    if status.spend_microdollars >= config.stop.max_spend_microdollars:
+    if (
+        config.stop.max_spend_microdollars is not None
+        and status.spend_microdollars >= config.stop.max_spend_microdollars
+    ):
         return "spend cap reached"
     return None
 
@@ -84,7 +87,7 @@ def plan_summary(config: StudyConfig) -> dict[str, object]:
         "planned_calls": calls,
         "concurrency": config.concurrency,
         "per_call_worst_case_usd": round(reserve / 1_000_000, 6),
-        "hard_cap_usd": config.stop.max_spend_usd,
+        "hard_cap_usd": config.stop.max_spend_usd or "unlimited",
         "stop_labels": {
             "correct": config.stop.correct,
             "silent_wrong": config.stop.silent_wrong,

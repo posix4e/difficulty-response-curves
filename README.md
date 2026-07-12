@@ -30,7 +30,7 @@ The package has ten small modules and no plugin framework:
 | Module | Responsibility |
 |---|---|
 | `types.py` | Shared records and the three-outcome taxonomy |
-| `config.py` | One TOML study contract and hard caps |
+| `config.py` | One TOML study contract and explicit stopping rules |
 | `sat.py` | Deterministic SAT generation, solving, parsing, and verification |
 | `provider.py` | One pinned OpenRouter adapter |
 | `store.py` | SQLite records and resumability |
@@ -55,7 +55,7 @@ read only from `OPENROUTER_API_KEY`.
 ```bash
 drc plan       # print the frozen design and worst-case admission cost
 drc status     # labels, spend, provider continuity, and stopping state
-drc run        # collect a newly named, unlocked study under hard caps
+drc run        # collect a newly named study under registered stopping rules
 drc analyze    # one prospective read; refuses early or repeated analysis
 drc export     # compact metadata plus a separate trace artifact and manifest
 drc next       # state the next protocol-authorized action
@@ -75,8 +75,9 @@ protocol before making calls.
 ## Safety invariants
 
 - Provider fallback is disabled and endpoint mismatches stop admission.
-- Calls are admitted only while recorded spend plus in-flight worst-case
-  reserves remain under the stage cap.
+- When a spend cap is configured, admission includes in-flight worst-case
+  reserves. An unlimited-spend study must say so explicitly and remains bounded
+  by its call and token limits.
 - `(model, instance, sample, prompt version, stage)` is unique in SQLite.
 - Correct completions, silent errors, and loud failures remain separate.
 - The prospective command refuses to run before a stopping condition and both

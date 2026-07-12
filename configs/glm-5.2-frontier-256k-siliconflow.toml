@@ -28,7 +28,7 @@ seed = 2026071201
 correct = 10
 silent_wrong = 10
 max_calls = 10
-max_spend_usd = 12.0
+max_spend_usd = "unlimited"
 
 [sentinels]
 before_stage = "not-applicable-256k-pre"

@@ -47,10 +47,12 @@ class StopConfig:
     correct: int
     silent_wrong: int
     max_calls: int
-    max_spend_usd: float
+    max_spend_usd: float | None
 
     @property
-    def max_spend_microdollars(self) -> int:
+    def max_spend_microdollars(self) -> int | None:
+        if self.max_spend_usd is None:
+            return None
         return int(round(self.max_spend_usd * 1_000_000))
 
 
@@ -90,7 +92,9 @@ class StudyConfig:
             raise ValueError("SAT task configuration is incomplete")
         if self.task.instances_per_level < 1 or self.task.samples_per_instance < 1:
             raise ValueError("task replication must be positive")
-        if self.stop.max_calls < 1 or self.stop.max_spend_usd <= 0:
+        if self.stop.max_calls < 1:
+            raise ValueError("hard call cap is required")
+        if self.stop.max_spend_usd is not None and self.stop.max_spend_usd <= 0:
             raise ValueError("hard call and spend caps are required")
 
 
@@ -103,6 +107,12 @@ def load_config(path: str | Path = "configs/study.toml") -> StudyConfig:
     database = Path(study.get("database", "data/drc.sqlite"))
     if not database.is_absolute():
         database = (source.parent.parent / database).resolve()
+    raw_spend = stop.get("max_spend_usd")
+    max_spend = (
+        None
+        if isinstance(raw_spend, str) and raw_spend.strip().lower() == "unlimited"
+        else float(raw_spend)
+    )
     config = StudyConfig(
         name=str(study["name"]),
         prompt_version=int(study.get("prompt_version", 1)),
@@ -132,7 +142,7 @@ def load_config(path: str | Path = "configs/study.toml") -> StudyConfig:
             correct=int(stop["correct"]),
             silent_wrong=int(stop["silent_wrong"]),
             max_calls=int(stop["max_calls"]),
-            max_spend_usd=float(stop["max_spend_usd"]),
+            max_spend_usd=max_spend,
         ),
         sentinels=SentinelConfig(
             before_stage=str(sentinels["before_stage"]),

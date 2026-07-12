@@ -208,11 +208,12 @@ separately.</li>
 <li>Outcomes: correct completion, silently wrong completion, or loud
 failure.</li>
 <li>Calls: ten, without automatic retries.</li>
-<li>Hard spend ceiling: USD 12.</li>
+<li>Dollar spend ceiling: none. Provider-reported spend remains
+recorded.</li>
 </ul>
 <p>The OpenRouter credential exposed during the preceding scout must be
-rotated before collection. The run must stop on a provider mismatch,
-call cap, or spend cap.</p>
+rotated before collection. The run must stop on a provider mismatch or
+the ten-call cap.</p>
 <h2 id="readout">Readout</h2>
 <p>Report outcomes and spend for all ten calls, plus paired outcome
 transitions from the 32K scout. The follow-up clears the reliability

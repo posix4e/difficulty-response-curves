@@ -25,10 +25,10 @@ joint effect of cap and provider and cannot be attributed to the cap alone.
 - Reasoning effort: high, with returned reasoning retained separately.
 - Outcomes: correct completion, silently wrong completion, or loud failure.
 - Calls: ten, without automatic retries.
-- Hard spend ceiling: USD 12.
+- Dollar spend ceiling: none. Provider-reported spend remains recorded.
 
 The OpenRouter credential exposed during the preceding scout must be rotated
-before collection. The run must stop on a provider mismatch, call cap, or spend
+before collection. The run must stop on a provider mismatch or the ten-call
 cap.
 
 ## Readout
