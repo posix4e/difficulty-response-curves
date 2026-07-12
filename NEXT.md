@@ -123,9 +123,10 @@ a new reliability protocol that decides whether to increase the token cap,
 lower reasoning effort, or change the output contract. That protocol must not
 retroactively reinterpret the completed scout.
 
-A 262,144-token follow-up on the same ten instances is now registered through
-SiliconFlow without a dollar spend ceiling. It remains bounded to ten calls
-and the provider's 262,144-token maximum. It changes both provider and token
-cap because StreamLake cannot serve 256K completions, so it is not a cap-only
-comparison. Collection remains blocked until the exposed OpenRouter key is
-rotated and `/Users/posix4e/src/.env-or` is replaced.
+The 262,144-token SiliconFlow follow-up completed all ten calls for USD
+0.662540. After a tested mechanical parser correction, it contained three
+correct completions, three silent errors, and four loud failures. It eliminated
+token-cap truncation but failed its registered reliability gate of at most two
+loud failures. Because provider and cap changed together, it is not a cap-only
+result. The six completed answers are too few for a confidence model; any
+larger focus study requires a new frozen protocol.

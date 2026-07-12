@@ -21,9 +21,14 @@ fi
 [ -f analysis/speculative-replay-predictions.jsonl ] && cp analysis/speculative-replay-predictions.jsonl docs/data/speculative-replay-predictions.jsonl
 [ -f analysis/glm-existing-data-audit.json ] && cp analysis/glm-existing-data-audit.json docs/data/glm-existing-data-audit.json
 [ -f analysis/glm-5.2-frontier-scout-v1.json ] && cp analysis/glm-5.2-frontier-scout-v1.json docs/data/glm-5.2-frontier-scout-v1.json
+[ -f analysis/glm-5.2-frontier-256k-siliconflow-v1.json ] && cp analysis/glm-5.2-frontier-256k-siliconflow-v1.json docs/data/glm-5.2-frontier-256k-siliconflow-v1.json
 if [ -d data/exports/glm-5.2-frontier-scout-v1 ]; then
   mkdir -p docs/data/glm-5.2-frontier-scout-v1
   cp data/exports/glm-5.2-frontier-scout-v1/* docs/data/glm-5.2-frontier-scout-v1/
+fi
+if [ -d data/exports/glm-5.2-frontier-256k-siliconflow-v1 ]; then
+  mkdir -p docs/data/glm-5.2-frontier-256k-siliconflow-v1
+  cp data/exports/glm-5.2-frontier-256k-siliconflow-v1/* docs/data/glm-5.2-frontier-256k-siliconflow-v1/
 fi
 for artifact in data/exports/*; do
   [ -f "$artifact" ] && cp "$artifact" docs/data/

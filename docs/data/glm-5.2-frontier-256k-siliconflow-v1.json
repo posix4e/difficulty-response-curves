@@ -1,0 +1,72 @@
+{
+  "study": "glm-5.2-frontier-256k-siliconflow-v1",
+  "status": "Reliability gate not met",
+  "claim_status": "Not supported",
+  "model": "z-ai/glm-5.2",
+  "provider": "SiliconFlow",
+  "provider_pinned": true,
+  "provider_mismatches": 0,
+  "conditions": {
+    "prompt_version": 1,
+    "variables": 20,
+    "max_completion_tokens": 262144,
+    "temperature": 0.6,
+    "reasoning_effort": "high",
+    "max_calls": 10,
+    "max_spend_usd": null,
+    "difficulties": [4.2, 4.8, 5.4, 6.0, 6.6]
+  },
+  "counts": {
+    "calls": 10,
+    "correct_completed": 3,
+    "silently_wrong_completed": 3,
+    "loud_failure": 4
+  },
+  "loud_failures": {
+    "truncation": 0,
+    "parse_failure": 1,
+    "api_error": 3
+  },
+  "levels": {
+    "4.2": {"calls": 2, "correct": 1, "silent_wrong": 0, "loud": 1},
+    "4.8": {"calls": 2, "correct": 0, "silent_wrong": 1, "loud": 1},
+    "5.4": {"calls": 2, "correct": 0, "silent_wrong": 0, "loud": 2},
+    "6.0": {"calls": 2, "correct": 1, "silent_wrong": 1, "loud": 0},
+    "6.6": {"calls": 2, "correct": 1, "silent_wrong": 1, "loud": 0}
+  },
+  "paired_summary": {
+    "scout_32768": {"correct": 4, "silent_wrong": 0, "loud": 6},
+    "followup_262144": {"correct": 3, "silent_wrong": 3, "loud": 4},
+    "truncations": {"scout_32768": 4, "followup_262144": 0},
+    "api_errors": {"scout_32768": 1, "followup_262144": 3},
+    "interpretation": "The provider and token cap both changed, so paired differences cannot be attributed to the cap alone."
+  },
+  "gates": {
+    "no_more_than_two_loud_failures": false,
+    "at_least_two_correct_completed": true,
+    "at_least_two_silently_wrong_completed": true,
+    "reliability_pass": false,
+    "completed_answer_mix_available": true
+  },
+  "scoring_correction": {
+    "reason": "The original parser rejected contiguous 20-bit FINAL assignments.",
+    "changed_calls": [
+      {"call_id": 12, "before": "fail_parse", "after": "pass"},
+      {"call_id": 18, "before": "fail_parse", "after": "pass"}
+    ],
+    "genuine_19_bit_answer_remained": "fail_parse"
+  },
+  "spend": {
+    "actual_usd": 0.66254,
+    "configured_ceiling_usd": null
+  },
+  "decision": "Report the failed reliability gate. Do not fit or claim a validated confidence model from six completed answers; any larger focus study requires a new protocol.",
+  "provenance": {
+    "collection_commit": "acef866",
+    "scoring_commit": "4a1c50c",
+    "config_sha256": "4f0c38170ffd1ad073d7ac9b4efd46abd1de5c8366337bb3d976a35d32bf0680",
+    "database_sha256_after_rescore": "0f7afacca24605b17d786146f825135a36e348b5e41b13f0bbafe3bc3b7525d7",
+    "compact_export_sha256": "b7567f1fba39e8e1d6e1a6de437d04eea96ba61b32a4912fdf7d64632e4ce066",
+    "trace_export_sha256": "e472e739347cc767fd25126d2024be84445744dec2415e53cfa5249ee368b7ba"
+  }
+}

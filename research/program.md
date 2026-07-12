@@ -86,6 +86,13 @@ five silent errors. They cannot identify a confidence replication.
 A new ten-call, provider-pinned scout produced four correct completions, no
 silent errors, and six loud failures. It did not locate a confidence cohort.
 :::
+
+::: {.summary-card .not-supported}
+### Not supported — GLM-5.2 256K reliability
+
+The paired SiliconFlow follow-up eliminated truncation but still produced four
+loud failures, exceeding its registered ceiling of two.
+:::
 :::
 
 ## What exactly counts as failure?
@@ -212,14 +219,21 @@ before a silent-error cohort.
 [Download the result JSON](data/glm-5.2-frontier-scout-v1.json) ·
 [Download the compact calls](data/glm-5.2-frontier-scout-v1/calls.jsonl.gz)
 
-A 262,144-token reliability follow-up on the same ten instances is
-**registered but not started**. It uses SiliconFlow because StreamLake cannot
-serve 256K completions. That changes both provider and cap, so the comparison
-cannot isolate a cap effect. It has no dollar spend ceiling but remains limited
-to ten calls and the provider's 262,144-token maximum. Collection is blocked
-until the exposed OpenRouter credential is rotated.
+A 262,144-token reliability follow-up on the same ten instances ran through
+SiliconFlow without fallback or retry. It cost USD 0.662540 and produced three
+correct completions, three silent errors, and four loud failures: one malformed
+19-bit answer and three malformed API responses. No call reached the new token
+cap.
 
-[Read the registered 256K follow-up](glm-5.2-frontier-256k-siliconflow.html)
+The reliability gate allowed at most two loud failures, so the result is **Not
+supported**. Compared with the 32K scout, truncations fell from four to zero,
+but API failures rose from one to three. Because provider and cap changed
+together, this cannot identify a cap-only effect. The six completed calls are
+too few for a confidence model, and no focus batch is authorized.
+
+[Read the completed 256K follow-up](glm-5.2-frontier-256k-siliconflow.html) ·
+[Download the result JSON](data/glm-5.2-frontier-256k-siliconflow-v1.json) ·
+[Download the compact calls](data/glm-5.2-frontier-256k-siliconflow-v1/calls.jsonl.gz)
 
 ## Study 2: the trace-triggered backup idea failed
 
