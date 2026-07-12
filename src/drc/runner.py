@@ -95,6 +95,41 @@ def plan_summary(config: StudyConfig) -> dict[str, object]:
     }
 
 
+def rescore(config: StudyConfig) -> dict[str, object]:
+    """Reapply the current mechanical parser and verifier to stored completions."""
+    changed = []
+    with Store(config.database) as store:
+        rows = store.study_rows(config.name, config.model.record_id)
+        for row in rows:
+            if row.get("provider_mismatch") or row.get("finish_reason") not in {
+                "stop",
+                "completed",
+            }:
+                continue
+            assignment = parse_assignment(
+                str(row.get("response_text") or ""), config.task.variables
+            )
+            if assignment is None:
+                outcome = "fail_parse"
+                parsed = None
+            else:
+                payload = json.loads(str(row["payload_json"]))
+                clauses = tuple(tuple(clause) for clause in payload["clauses"])
+                outcome = "pass" if verify(clauses, assignment) else "fail_wrong"
+                parsed = json.dumps(assignment)
+            if outcome != row["outcome"] or parsed != row.get("parsed_answer"):
+                store.update_score(int(row["call_id"]), outcome, parsed)
+                changed.append(
+                    {
+                        "call_id": int(row["call_id"]),
+                        "before": str(row["outcome"]),
+                        "after": outcome,
+                    }
+                )
+        status = store.status(config.name, config.model.record_id)
+    return {"study": config.name, "changed": changed, "status": status.as_dict()}
+
+
 def _request_record(config: StudyConfig) -> str:
     return json.dumps(
         {

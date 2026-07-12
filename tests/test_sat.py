@@ -22,7 +22,9 @@ def test_generation_is_deterministic_and_satisfiable():
 
 def test_parser_requires_exact_final_assignment():
     assert parse_assignment("work\nFINAL: 1 0 1", 3) == (True, False, True)
+    assert parse_assignment("work\nFINAL: 101", 3) == (True, False, True)
     assert parse_assignment("FINAL: 1 0", 3) is None
+    assert parse_assignment("FINAL: 10", 3) is None
     assert parse_assignment("1 0 1", 3) is None
 
 

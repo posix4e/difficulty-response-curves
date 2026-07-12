@@ -10,7 +10,7 @@ from .analysis import analyze
 from .audit import audit_model_cohort, audit_retrospective
 from .config import load_config
 from .export import export
-from .runner import plan_summary, run, should_stop
+from .runner import plan_summary, rescore, run, should_stop
 from .store import Store
 
 
@@ -48,6 +48,7 @@ def parser() -> argparse.ArgumentParser:
     commands.add_parser("plan", help="show the frozen design without generating tasks")
     commands.add_parser("status", help="show labels, spend, and stopping state")
     commands.add_parser("run", help="resume collection under hard caps")
+    commands.add_parser("rescore", help="reapply the mechanical parser and verifier")
 
     analysis = commands.add_parser("analyze", help="perform the registered one-look analysis")
     analysis.add_argument("--frozen", default="analysis/confidence-minimax-frozen.json")
@@ -84,6 +85,9 @@ def main(argv: list[str] | None = None) -> int:
                 "collection is locked for this registered study; finish v1 with its original collector"
             )
         print(json.dumps(asyncio.run(run(config)), indent=2))
+        return 0
+    if args.command == "rescore":
+        print(json.dumps(rescore(config), indent=2))
         return 0
     if args.command == "analyze":
         output = Path(args.out)

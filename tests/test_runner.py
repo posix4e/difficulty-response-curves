@@ -4,8 +4,8 @@ import re
 import pytest
 
 from drc.config import load_config
-from drc.runner import BudgetGate, provider_matches, run, should_stop
-from drc.sat import solve
+from drc.runner import BudgetGate, provider_matches, rescore, run, should_stop
+from drc.sat import generate, solve
 from drc.store import Store
 from drc.types import ProviderResponse, StudyStatus, Usage
 
@@ -80,6 +80,34 @@ async def test_runner_records_and_resumes(monkeypatch, study_config):
     second = await run(study_config, provider)
     assert second["status"]["calls"] == 2
     assert provider.calls == 2
+
+
+def test_rescore_repairs_contiguous_assignment(study_config):
+    instance = generate(4, 2.0, 6)
+    bits = "".join("1" if value else "0" for value in instance.witness)
+    with Store(study_config.database) as store:
+        store.add_instance(instance, study_config.name, 0)
+        store.record_call(
+            {
+                "instance_id": instance.instance_id,
+                "model_id": study_config.model.record_id,
+                "sample_idx": 0,
+                "stage": study_config.name,
+                "api_path": "openai",
+                "prompt_version": 1,
+                "request_json": "{}",
+                "response_text": f"FINAL: {bits}",
+                "finish_reason": "stop",
+                "outcome": "fail_parse",
+                "pass": 0,
+                "provider_endpoint": "Parasail",
+                "provider_pinned": 1,
+                "provider_mismatch": 0,
+            }
+        )
+    result = rescore(study_config)
+    assert result["changed"][0]["after"] == "pass"
+    assert result["status"]["correct"] == 1
 
 
 @pytest.mark.asyncio
