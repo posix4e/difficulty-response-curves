@@ -52,3 +52,10 @@ calls_each=1
 def test_price_estimate_has_safety_margin():
     config = load_config("configs/study.toml")
     assert config.model.estimated_microdollars(1_000_000, 0) == 330_000
+
+
+def test_explicit_unlimited_spend_keeps_call_cap():
+    config = load_config("configs/glm-5.2-frontier-256k-siliconflow.toml")
+    assert config.stop.max_calls == 10
+    assert config.stop.max_spend_usd is None
+    assert config.stop.max_spend_microdollars is None

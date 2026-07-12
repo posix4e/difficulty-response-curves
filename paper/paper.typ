@@ -175,6 +175,12 @@ located a GLM-5.2 confidence frontier. It is not evidence that GLM-5.2 lacks a
 confidence signal: loud reliability failures dominated before a silent-error
 cohort appeared under this call condition.
 
+A 262,144-token SiliconFlow follow-up on the same instances is registered but
+not started. StreamLake cannot serve that completion allowance, so the design
+changes both cap and provider and cannot identify a cap-only effect. Collection
+has no dollar ceiling but remains bounded to ten calls. It is blocked pending
+rotation of an exposed API credential.
+
 = A negative control result
 
 We separately asked whether trace deterioration could trigger selective
@@ -251,7 +257,7 @@ remain broader adjacent areas; see
 = Reproducibility and next step
 
 Version 2 of the released code has one workflow: plan, collect under hard
-provider and budget constraints, inspect outcome counts without efficacy
+provider and registered stopping constraints, inspect outcome counts without efficacy
 metrics, perform the frozen analysis once, and export compact metadata plus a
 separately checksummed trace artifact. Historical routing and speculative
 controller code is not part of the runtime.

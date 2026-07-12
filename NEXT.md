@@ -122,3 +122,10 @@ Do not fit a confidence model to this scout. Any further GLM-5.2 calls require
 a new reliability protocol that decides whether to increase the token cap,
 lower reasoning effort, or change the output contract. That protocol must not
 retroactively reinterpret the completed scout.
+
+A 262,144-token follow-up on the same ten instances is now registered through
+SiliconFlow without a dollar spend ceiling. It remains bounded to ten calls
+and the provider's 262,144-token maximum. It changes both provider and token
+cap because StreamLake cannot serve 256K completions, so it is not a cap-only
+comparison. Collection remains blocked until the exposed OpenRouter key is
+rotated and `/Users/posix4e/src/.env-or` is replaced.

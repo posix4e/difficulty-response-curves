@@ -3,6 +3,7 @@ import re
 
 import pytest
 
+from drc.config import load_config
 from drc.runner import BudgetGate, provider_matches, run, should_stop
 from drc.sat import solve
 from drc.store import Store
@@ -46,6 +47,12 @@ async def test_budget_gate_accounts_for_reservations():
     assert await gate.reserve(40)
 
 
+@pytest.mark.asyncio
+async def test_budget_gate_can_be_explicitly_unlimited():
+    gate = BudgetGate(cap=None, spent=10_000_000)
+    assert await gate.reserve(10**12)
+
+
 def test_provider_pin_matching_is_explicit():
     assert provider_matches("openrouter/Parasail", "Parasail")
     assert not provider_matches("Other", "Parasail")
@@ -55,6 +62,11 @@ def test_provider_pin_matching_is_explicit():
 def test_stopping_rules_are_hard(study_config):
     assert should_stop(StudyStatus(2, 0, 0, 2, 0), study_config) == "call cap reached"
     assert should_stop(StudyStatus(0, 0, 0, 0, 1_000_000), study_config) == "spend cap reached"
+
+
+def test_explicit_unlimited_spend_does_not_stop_on_cost():
+    config = load_config("configs/glm-5.2-frontier-256k-siliconflow.toml")
+    assert should_stop(StudyStatus(1, 0, 0, 1, 10**12), config) is None
 
 
 @pytest.mark.asyncio

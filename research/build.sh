@@ -53,9 +53,15 @@ pandoc research/studies/glm-5.2-frontier-pilot-v1.md \
   --metadata title-prefix="Difficulty-Response Curves" \
   --output docs/glm-5.2-frontier-pilot.html
 
+pandoc research/studies/glm-5.2-frontier-256k-siliconflow-v1.md \
+  --resource-path=docs:research:. \
+  --standalone --embed-resources --css research/style.css \
+  --metadata title-prefix="Difficulty-Response Curves" \
+  --output docs/glm-5.2-frontier-256k-siliconflow.html
+
 # Pandoc's default source-code CSS carries trailing spaces on each generated
 # rule. Keep checked-in HTML clean and deterministic for Git whitespace checks.
-perl -pi -e 's/[ \t]+$//' docs/research.html docs/minimax-confidence-protocol.html docs/speculative-council-protocol.html docs/glm-5.2-frontier-pilot.html
+perl -pi -e 's/[ \t]+$//' docs/research.html docs/minimax-confidence-protocol.html docs/speculative-council-protocol.html docs/glm-5.2-frontier-pilot.html docs/glm-5.2-frontier-256k-siliconflow.html
 
 # The living research page is the public front door. Historical pages remain
 # addressable, but the old dashboard is no longer the default explanation.
@@ -102,10 +108,22 @@ pandoc research/studies/glm-5.2-frontier-pilot-v1.md \
   --variable margin-right=20mm \
   --output output/pdf/glm-5.2-frontier-pilot-v1.pdf
 
+pandoc research/studies/glm-5.2-frontier-256k-siliconflow-v1.md \
+  --resource-path=docs:research:. \
+  --pdf-engine=typst \
+  --variable papersize=a4 \
+  --variable fontsize=10pt \
+  --variable margin-top=18mm \
+  --variable margin-bottom=18mm \
+  --variable margin-left=20mm \
+  --variable margin-right=20mm \
+  --output output/pdf/glm-5.2-frontier-256k-siliconflow-v1.pdf
+
 cp output/pdf/confidence-signals-research-program.pdf docs/research-program.pdf
 cp output/pdf/minimax-confidence-protocol-v1.pdf docs/minimax-confidence-protocol.pdf
 cp output/pdf/speculative-council-protocol-v0.pdf docs/speculative-council-protocol.pdf
 cp output/pdf/glm-5.2-frontier-pilot-v1.pdf docs/glm-5.2-frontier-pilot.pdf
+cp output/pdf/glm-5.2-frontier-256k-siliconflow-v1.pdf docs/glm-5.2-frontier-256k-siliconflow.pdf
 
 if rg -n "<pending>|PLACEHOLDER|TODO" research/program.md research/studies/*.md; then
   echo "research build contains unresolved placeholders" >&2
