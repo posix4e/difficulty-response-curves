@@ -58,15 +58,15 @@ def make_figure(rows: list[dict], path: Path) -> None:
         "loud failure": [row for row in rows if row["outcome_class"] == "loud_failure"],
     }
     colours = {"correct": "#2b6cb0", "silent wrong": "#b7791f", "loud failure": "#9b2c2c"}
-    fig, ax = plt.subplots(figsize=(7.0, 4.2))
+    fig, ax = plt.subplots(figsize=(7.6, 4.8))
     for label, group in groups.items():
         values = [row["trigger_fraction"] for row in group if row["trigger_fraction"] is not None]
         if values:
             ax.hist(values, bins=[0, .2, .4, .6, .8, 1.0], alpha=.55, label=f"{label} (n={len(values)})", color=colours[label])
     ax.set(
-        xlabel="proxy trigger position (fraction of delivered reasoning words)",
+        xlabel="trigger position (fraction of delivered reasoning words)",
         ylabel="calls",
-        title="Frozen trace-risk policy: untimestamped proxy replay",
+        title="Untimestamped proxy replay of the frozen trace-risk policy",
         xlim=(0, 1),
     )
     ax.legend(frameon=False)
