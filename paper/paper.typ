@@ -175,6 +175,11 @@ located a GLM-5.2 confidence frontier. It is not evidence that GLM-5.2 lacks a
 confidence signal: loud reliability failures dominated before a silent-error
 cohort appeared under this call condition.
 
+A 262,144-token SiliconFlow follow-up on the same instances is registered but
+not started. StreamLake cannot serve that completion allowance, so the design
+changes both cap and provider and cannot identify a cap-only effect. Collection
+is blocked pending rotation of an exposed API credential.
+
 = A negative control result
 
 We separately asked whether trace deterioration could trigger selective

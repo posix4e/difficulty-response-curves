@@ -212,6 +212,14 @@ before a silent-error cohort.
 [Download the result JSON](data/glm-5.2-frontier-scout-v1.json) ·
 [Download the compact calls](data/glm-5.2-frontier-scout-v1/calls.jsonl.gz)
 
+A 262,144-token reliability follow-up on the same ten instances is
+**registered but not started**. It uses SiliconFlow because StreamLake cannot
+serve 256K completions. That changes both provider and cap, so the comparison
+cannot isolate a cap effect. Collection is blocked until the exposed
+OpenRouter credential is rotated.
+
+[Read the registered 256K follow-up](glm-5.2-frontier-256k-siliconflow.html)
+
 ## Study 2: the trace-triggered backup idea failed
 
 The control idea was simple:

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Difficulty-Response
+Curves – glm-5.2-frontier-256k-siliconflow-v1</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">:root {
+--ink: #16231f;
+--muted: #52615b;
+--paper: #f7f7f2;
+--card: #ffffff;
+--rule: #d9ddd7;
+--green: #176b51;
+--green-soft: #e7f2ed;
+--blue: #2b6cb0;
+--blue-soft: #eaf1f8;
+--amber: #9a6500;
+--amber-soft: #fbf3df;
+--red: #9b2c2c;
+--red-soft: #f8eaea;
+--grey-soft: #eef0ed;
+--shadow: 0 12px 34px rgba(22, 35, 31, .07);
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); scroll-behavior: smooth; }
+body {
+max-width: 980px;
+margin: 0 auto;
+padding: 30px 34px 90px;
+font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+header#title-block-header {
+margin: 0 0 22px;
+padding: 58px 54px 48px;
+color: white;
+background: linear-gradient(135deg, #123e31, #176b51 62%, #248363);
+border-radius: 22px;
+box-shadow: var(--shadow);
+}
+h1, h2, h3 { color: var(--ink); line-height: 1.15; letter-spacing: -.018em; }
+header h1 { max-width: 760px; margin: 0 0 12px; color: white; font-size: clamp(2.6rem, 7vw, 4.8rem); }
+header .subtitle { max-width: 650px; margin: 0; color: rgba(255,255,255,.86); font-size: 1.32rem; }
+header .author, header .date { display: inline-block; margin: 24px 16px 0 0; color: rgba(255,255,255,.72); font-size: .88rem; }
+h2 { margin: 68px 0 20px; font-size: clamp(1.75rem, 4vw, 2.55rem); }
+h3 { margin: 0 0 10px; font-size: 1.08rem; }
+p { margin: 0 0 1.1em; }
+strong { color: var(--ink); }
+a { color: var(--green); font-weight: 650; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+.page-nav {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin: 18px 0 28px;
+}
+.page-nav a {
+padding: 8px 13px;
+border: 1px solid var(--rule);
+border-radius: 999px;
+background: var(--card);
+color: var(--ink);
+font-size: .85rem;
+text-decoration: none;
+}
+.page-nav a:hover { border-color: var(--green); color: var(--green); }
+.notice {
+margin: 24px 0;
+padding: 15px 20px;
+border-left: 4px solid var(--amber);
+border-radius: 0 10px 10px 0;
+background: var(--amber-soft);
+color: #5c4b27;
+}
+.notice p { margin: 0; }
+.notice p + p { margin-top: 4px; }
+.answer {
+margin: 28px 0 54px;
+padding: 34px 38px 30px;
+border: 1px solid #bad6ca;
+border-radius: 18px;
+background: var(--green-soft);
+}
+.answer h2 { margin: 0 0 14px; font-size: 1.85rem; }
+.answer p { font-size: 1.13rem; }
+.answer p:last-child { margin-bottom: 0; color: #344b42; }
+blockquote {
+margin: 24px 0;
+padding: 22px 26px;
+border-left: 5px solid var(--green);
+background: var(--card);
+box-shadow: var(--shadow);
+font: 1.3rem/1.45 Georgia, serif;
+}
+blockquote p { margin: 0; }
+.summary-grid, .number-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 16px;
+margin: 28px 0;
+}
+.summary-card, .number-card, .claim {
+border: 1px solid var(--rule);
+border-radius: 14px;
+background: var(--card);
+box-shadow: 0 5px 18px rgba(22, 35, 31, .04);
+}
+.summary-card { padding: 23px 24px 18px; border-top-width: 5px; }
+.summary-card p:last-child, .claim p:last-child { margin-bottom: 0; }
+.supported { border-top-color: var(--green); }
+.exploratory { border-top-color: var(--blue); }
+.not-supported { border-top-color: var(--red); }
+.censored { border-top-color: #68736e; }
+.number-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.number-grid.negative-result { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.number-card { padding: 24px 16px 18px; text-align: center; }
+.number-card strong { display: block; margin-bottom: 5px; color: var(--green); font-size: clamp(1.8rem, 4vw, 2.75rem); line-height: 1; }
+.negative-result .number-card strong { color: var(--red); }
+.number-card p { margin: 0; color: var(--muted); font-size: .88rem; }
+.interpretation {
+margin: 28px 0;
+padding: 24px 26px 18px;
+border-radius: 14px;
+background: var(--blue-soft);
+}
+.claim-list { display: grid; gap: 12px; margin: 26px 0; }
+.claim { padding: 20px 23px 15px; border-left-width: 6px; }
+.claim.supported { border-left-color: var(--green); background: var(--green-soft); }
+.claim.exploratory { border-left-color: var(--blue); background: var(--blue-soft); }
+.claim.not-supported { border-left-color: var(--red); background: var(--red-soft); }
+.claim.censored { border-left-color: #68736e; background: var(--grey-soft); }
+ol, ul { padding-left: 1.35em; }
+li { margin: .45em 0; }
+code { padding: .13em .35em; border-radius: 4px; background: var(--grey-soft); font-size: .88em; }
+figure { margin: 34px auto; }
+figure img, body > p > img {
+display: block;
+max-width: 100%;
+height: auto;
+margin: 30px auto 10px;
+padding: 14px;
+border: 1px solid var(--rule);
+border-radius: 14px;
+background: white;
+}
+figcaption { max-width: 720px; margin: 8px auto 0; color: var(--muted); font-size: .85rem; text-align: center; }
+body > hr { margin: 60px 0; border: 0; border-top: 1px solid var(--rule); }
+@media (max-width: 720px) {
+body { padding: 14px 17px 64px; font-size: 16px; }
+header#title-block-header { padding: 36px 26px 32px; border-radius: 16px; }
+header h1 { font-size: 2.65rem; }
+header .subtitle { font-size: 1.08rem; }
+h2 { margin-top: 50px; }
+.answer { padding: 26px 23px 22px; }
+.summary-grid, .number-grid, .number-grid.negative-result { grid-template-columns: 1fr; }
+.number-card { padding: 19px 16px 15px; }
+blockquote { padding: 19px 21px; font-size: 1.12rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+<h1 id="glm-5.2-256k-reliability-follow-up-v1">GLM-5.2 256K reliability
+follow-up v1</h1>
+<p><strong>Status: Registered; blocked pending credential
+rotation.</strong> Frozen before the first call.</p>
+<h2 id="question">Question</h2>
+<p>Do the same ten satisfiable 3-SAT instances produce fewer loud
+failures when GLM-5.2 receives a 262,144-token completion allowance
+through SiliconFlow?</p>
+<p>This is a reliability follow-up, not a confidence-model test.
+StreamLake’s endpoint is limited to 128,000 completion tokens, so
+serving 256K requires a provider change. Any difference from the
+32,768-token scout is therefore the joint effect of cap and provider and
+cannot be attributed to the cap alone.</p>
+<h2 id="frozen-conditions">Frozen conditions</h2>
+<ul>
+<li>Model: <code>z-ai/glm-5.2</code> through OpenRouter.</li>
+<li>Provider: SiliconFlow only; fallback disabled.</li>
+<li>Instances: exactly the ten scout instances generated from seed
+2026071201.</li>
+<li>Difficulties: 4.2, 4.8, 5.4, 6.0, and 6.6; two instances per
+level.</li>
+<li>Prompt version: 1.</li>
+<li>Completion cap: 262,144 tokens.</li>
+<li>Temperature: 0.6.</li>
+<li>Reasoning effort: high, with returned reasoning retained
+separately.</li>
+<li>Outcomes: correct completion, silently wrong completion, or loud
+failure.</li>
+<li>Calls: ten, without automatic retries.</li>
+<li>Hard spend ceiling: USD 12.</li>
+</ul>
+<p>The OpenRouter credential exposed during the preceding scout must be
+rotated before collection. The run must stop on a provider mismatch,
+call cap, or spend cap.</p>
+<h2 id="readout">Readout</h2>
+<p>Report outcomes and spend for all ten calls, plus paired outcome
+transitions from the 32K scout. The follow-up clears the reliability
+gate only if no more than two calls fail loudly. Confidence analysis
+remains unavailable unless the completed calls also contain at least two
+correct and two silently wrong answers. No focus batch is implied by
+either condition.</p>
+</body>
+</html>

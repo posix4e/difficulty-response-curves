@@ -13,6 +13,7 @@ gates, and are not part of the runtime.
 - [Concise paper](paper/paper.pdf)
 - [Frozen MiniMax protocol](research/studies/minimax-confidence-v1.md)
 - [GLM-5.2 frontier scout and result](research/studies/glm-5.2-frontier-pilot-v1.md)
+- [Registered GLM-5.2 256K reliability follow-up](research/studies/glm-5.2-frontier-256k-siliconflow-v1.md)
 - [Field journal](docs/journal.html)
 - [Next-step runbook](NEXT.md)
 
