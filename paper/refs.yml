@@ -50,3 +50,36 @@ shojaee2025illusion:
     type: repository
     title: arXiv
   serial-number: "2506.06941"
+
+jiang2023blender:
+  type: article
+  title: "LLM-Blender: Ensembling Large Language Models with Pairwise Ranking and Generative Fusion"
+  author: ["Jiang, Dongfu", "Ren, Xiang", "Lin, Bill Yuchen"]
+  date: 2023
+  parent:
+    type: proceedings
+    title: Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics
+  serial-number: "10.18653/v1/2023.acl-long.792"
+
+wang2024moa:
+  type: article
+  title: Mixture-of-Agents Enhances Large Language Model Capabilities
+  author: ["Wang, Junlin", "Wang, Jue", "Athiwaratkun, Ben", "Zhang, Ce", "Zou, James"]
+  date: 2024
+  parent:
+    type: repository
+    title: arXiv
+  serial-number: "2406.04692"
+
+dean2013tail:
+  type: article
+  title: The Tail at Scale
+  author: ["Dean, Jeffrey", "Barroso, Luiz Andre"]
+  date: 2013
+  parent:
+    type: periodical
+    title: Communications of the ACM
+    volume: 56
+    issue: 2
+  pages: 74-80
+  serial-number: "10.1145/2408776.2408794"

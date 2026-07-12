@@ -38,6 +38,10 @@ class Job:
     sample_idx: int
     stage: str
     temperature: float | None = None
+    stop_correct: int = 0
+    stop_silent_wrong: int = 0
+    required_provider_endpoint: str = ""
+    stream_telemetry: bool = False
 
 
 @dataclass
@@ -46,6 +50,8 @@ class _ModelState:
     active: int = 0
     streak: int = 0
     stopped: str = ""  # non-empty = stop reason
+    correct: int = 0
+    silent_wrong: int = 0
 
 
 async def run_jobs(
@@ -65,10 +71,16 @@ async def run_jobs(
     for job in jobs:
         queues.setdefault(job.model_id, deque()).append(job)
     states = {m: _ModelState() for m in queues}
+    for model_id, q in queues.items():
+        if q:
+            counts = store.outcome_counts(q[0].stage, model_id)
+            states[model_id].correct = counts["correct"]
+            states[model_id].silent_wrong = counts["silent_wrong"]
     active_tasks: dict[asyncio.Task, tuple[Job, str]] = {}
     done_count = 0
     total = len(jobs)
     last_report = 0
+    run_stage = jobs[0].stage if jobs else None
 
     def fallback_est(model_id: str) -> int:
         cfg = models[model_id]
@@ -103,8 +115,35 @@ async def run_jobs(
                 result: CallResult = task.result()
             except Exception as e:  # defensive: record as error_api
                 result = CallResult(error=f"scheduler exception: {type(e).__name__}: {e}")
-            _record(store, models[job.model_id], job, result)
+            outcome = _record(store, models[job.model_id], job, result)
             budget.note_cost(job.model_id, result.cost_microdollars)
+            if outcome == "pass":
+                st.correct += 1
+            elif outcome == "fail_wrong":
+                st.silent_wrong += 1
+            if (
+                job.required_provider_endpoint
+                and not result.error
+                and result.provider_endpoint != job.required_provider_endpoint
+            ):
+                st.stopped = (
+                    f"protocol deviation: expected {job.required_provider_endpoint}, "
+                    f"received {result.provider_endpoint or 'no endpoint'}"
+                )
+                queues[job.model_id].clear()
+                log(f"[protocol] {job.model_id} stopped: {st.stopped}")
+            elif (
+                job.stop_correct
+                and job.stop_silent_wrong
+                and st.correct >= job.stop_correct
+                and st.silent_wrong >= job.stop_silent_wrong
+            ):
+                st.stopped = (
+                    f"label target reached: {st.correct} correct, "
+                    f"{st.silent_wrong} silently wrong"
+                )
+                queues[job.model_id].clear()
+                log(f"[protocol] {job.model_id} stopped: {st.stopped}")
             if result.error or result.attempts > 1:
                 st.limit = max(2, st.limit // 2)
                 st.streak = 0
@@ -115,23 +154,31 @@ async def run_jobs(
             done_count += 1
             if done_count - last_report >= 25 or done_count == total:
                 last_report = done_count
-                s = budget.summary()
+                s = budget.summary(run_stage)
                 log(
                     f"[{datetime.now().strftime('%H:%M:%S')}] {done_count}/{total} done, "
-                    f"${s['spent_usd']:.2f} spent (${s['inflight_reserved_usd']:.2f} reserved)"
+                    f"${s['stage_spent_usd']:.2f} stage spend "
+                    f"(${s['inflight_reserved_usd']:.2f} reserved)"
                 )
         dispatch()
 
     stopped = {m: st.stopped for m, st in states.items() if st.stopped}
-    return {"done": done_count, "total": total, "stopped": stopped, "spent": budget.summary()}
+    return {
+        "done": done_count,
+        "total": total,
+        "stopped": stopped,
+        "spent": budget.summary(run_stage),
+    }
 
 
 async def _run_one(client: TRClient, cfg: ModelCfg, job: Job) -> CallResult:
     prompt = families.render_prompt(job.inst)
-    return await client.call(cfg, prompt, temperature=job.temperature)
+    return await client.call(
+        cfg, prompt, temperature=job.temperature, stream_telemetry=job.stream_telemetry
+    )
 
 
-def _record(store: Store, cfg: ModelCfg, job: Job, result: CallResult) -> None:
+def _record(store: Store, cfg: ModelCfg, job: Job, result: CallResult) -> str:
     prompt = families.render_prompt(job.inst)
     if result.error:
         outcome = "error_api"
@@ -141,11 +188,16 @@ def _record(store: Store, cfg: ModelCfg, job: Job, result: CallResult) -> None:
         parsed = parse.extract_parsed(job.inst, result.text or "")
     pinned = 1 if cfg.provider_only else 0
     mismatch = 0
-    if pinned and result.provider_endpoint and "@" in result.provider_endpoint:
-        provider = result.provider_endpoint.split("@", 1)[1].split("/", 1)[0]
-        mismatch = 0 if provider in cfg.provider_only else 1
+    if pinned and result.provider_endpoint:
+        if "@" in result.provider_endpoint:
+            provider = result.provider_endpoint.split("@", 1)[1].split("/", 1)[0]
+        elif "/" in result.provider_endpoint:
+            provider = result.provider_endpoint.rsplit("/", 1)[-1]
+        else:
+            provider = result.provider_endpoint
+        mismatch = 0 if provider.casefold() in {p.casefold() for p in cfg.provider_only} else 1
     now = datetime.now(timezone.utc)
-    store.record_call(
+    call_id = store.record_call(
         {
             "instance_id": job.inst.instance_id,
             "model_id": job.model_id,
@@ -160,6 +212,7 @@ def _record(store: Store, cfg: ModelCfg, job: Job, result: CallResult) -> None:
                     "temperature": job.temperature,
                     "provider_only": list(cfg.provider_only),
                     "thinking_budget": cfg.thinking_budget or None,
+                    "stream_telemetry": job.stream_telemetry,
                 }
             ),
             "response_text": result.text if not result.error else result.error,
@@ -178,7 +231,14 @@ def _record(store: Store, cfg: ModelCfg, job: Job, result: CallResult) -> None:
             "http_status": result.http_status,
             "attempt": result.attempts,
             "latency_ms": result.latency_ms,
+            "ttft_ms": result.ttft_ms,
+            "first_reasoning_ms": result.first_reasoning_ms,
+            "first_answer_ms": result.first_answer_ms,
+            "stream_duration_ms": result.stream_duration_ms,
+            "observed_chars": result.observed_chars,
             "ts_start": (now).isoformat(timespec="seconds"),
             "ts_end": now.isoformat(timespec="seconds"),
         }
     )
+    store.record_stream_events(call_id, result.stream_events)
+    return outcome

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Trace-triggered speculative execution architecture</title>
+  <desc id="desc">A GLM primary streams through a risk monitor. Safe traces continue to verification. Persistent risk pauses side effects and launches Grok and OpenAI challengers. The first verified answer wins and remaining calls are cancelled. If none verifies, a council judge is used.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#51606f"/>
+    </marker>
+    <style>
+      .node{fill:#fff;stroke:#51606f;stroke-width:2;rx:12}
+      .primary{fill:#eef6ff;stroke:#2b6cb0}
+      .risk{fill:#fff7e8;stroke:#b7791f}
+      .hedge{fill:#edf9f4;stroke:#176b51}
+      .judge{fill:#f6f0ff;stroke:#7353a6}
+      .edge{fill:none;stroke:#51606f;stroke-width:2;marker-end:url(#arrow)}
+      .dash{stroke-dasharray:7 6}
+      text{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#1f2933}
+      .label{font-size:18px;font-weight:650;text-anchor:middle}
+      .small{font-size:14px;text-anchor:middle;fill:#51606f}
+      .edgeLabel{font-size:13px;font-weight:600;fill:#51606f}
+    </style>
+  </defs>
+  <rect x="30" y="190" width="130" height="70" class="node"/>
+  <text x="95" y="220" class="label">Task context</text>
+  <text x="95" y="243" class="small">prompt, tools, files</text>
+
+  <rect x="210" y="190" width="140" height="70" class="node primary"/>
+  <text x="280" y="220" class="label">GLM primary</text>
+  <text x="280" y="243" class="small">stream reasoning</text>
+
+  <rect x="400" y="180" width="165" height="90" class="node risk"/>
+  <text x="482.5" y="211" class="label">Live risk policy</text>
+  <text x="482.5" y="234" class="small">markers + repetition</text>
+  <text x="482.5" y="254" class="small">persistence threshold</text>
+
+  <rect x="640" y="35" width="145" height="62" class="node hedge"/>
+  <text x="712.5" y="62" class="label">Grok</text>
+  <text x="712.5" y="83" class="small">fast challenger</text>
+  <rect x="640" y="125" width="145" height="62" class="node hedge"/>
+  <text x="712.5" y="152" class="label">OpenAI</text>
+  <text x="712.5" y="173" class="small">frontier challenger</text>
+  <rect x="630" y="220" width="165" height="72" class="node hedge"/>
+  <text x="712.5" y="249" class="label">Verifier</text>
+  <text x="712.5" y="272" class="small">task certificate/tests</text>
+
+  <rect x="630" y="355" width="165" height="70" class="node judge"/>
+  <text x="712.5" y="384" class="label">Council judge</text>
+  <text x="712.5" y="407" class="small">exception path</text>
+
+  <rect x="840" y="220" width="95" height="72" class="node primary"/>
+  <text x="887.5" y="249" class="label">Winner</text>
+  <text x="887.5" y="272" class="small">commit once</text>
+
+  <path d="M160 225 H210" class="edge"/>
+  <path d="M350 225 H400" class="edge"/>
+  <path d="M565 225 H630" class="edge"/>
+  <text x="579" y="214" class="edgeLabel">safe</text>
+  <path d="M795 256 H840" class="edge"/>
+
+  <path d="M520 180 C555 115 585 66 640 66" class="edge"/>
+  <path d="M545 190 C580 174 595 156 640 156" class="edge"/>
+  <text x="545" y="48" class="edgeLabel">risk trigger</text>
+  <path d="M712 97 V220" class="edge"/>
+  <path d="M742 187 V220" class="edge"/>
+
+  <path d="M712 292 V355" class="edge dash"/>
+  <text x="725" y="329" class="edgeLabel">none accepted</text>
+  <path d="M795 390 C855 390 887 350 887 292" class="edge"/>
+  <text x="820" y="380" class="edgeLabel">verify again</text>
+
+  <text x="480" y="466" class="small">After a verified winner: request cancellation of unfinished calls; record cancellation and billed usage separately.</text>
+</svg>

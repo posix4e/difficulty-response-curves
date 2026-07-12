@@ -11,8 +11,11 @@ logistic difficulty–response curves. Each model gets a datasheet: a frontier
 **x50** (the difficulty where its pass rate crosses one half) and a sharpness
 **a**, both with cluster-bootstrap confidence intervals.
 
+- **Living research programme**: [`research/program.md`](research/program.md) · **Frozen MiniMax protocol**: [`research/studies/minimax-confidence-v1.md`](research/studies/minimax-confidence-v1.md) · **Speculative-council protocol**: [`research/studies/speculative-council-v0.md`](research/studies/speculative-council-v0.md)
 - **Paper**: [`paper/paper.pdf`](paper/paper.pdf) · **Site**: https://posix4e.github.io/difficulty-response-curves/
-- **Raw data**: every API call, released as JSONL.gz in [Releases](../../releases) with a sha256 manifest.
+- **Raw data**: every published API call is available in [`data/exports`](data/exports)
+  as JSONL.gz and a SQLite snapshot with a sha256 manifest. No GitHub Release is
+  claimed while the research programme remains preliminary.
 - **Everything below is reproducible**: `analysis/run_analysis.py` regenerates
   every number in the paper from the raw data; the abstract's numbers are read
   from `analysis/numbers.json` at compile time, not typed in.
@@ -43,12 +46,51 @@ are never repeated (idempotency key in SQLite). Failed transport calls retry
 on the next run. Every call records tokens, cost in microdollars, and the
 provider endpoint that actually served it.
 
+## Trace-triggered speculative execution
+
+`drc hedge` starts one trace-visible primary, launches challengers only after
+persistent live-risk markers or primary verification failure, elects the first
+externally verified answer, and requests cancellation of unfinished calls.
+Council synthesis is an optional exception path, not the default.
+
+```bash
+.venv/bin/drc hedge \
+    --prompt-file task.md \
+    --primary or/glm-5 \
+    --challenger or/grok-4-fast \
+    --challenger or/gpt-5.5 \
+    --verify-command './verify-answer' \
+    --cap 5 --out data/hedge/run.json --dry-run
+```
+
+The dry run checks model configuration and worst-case authorisation without
+making calls. Remove `--dry-run` only after supplying a real verifier. The CLI
+rejects unverified first-answer-wins unless `--accept-first` is explicitly
+selected. Cancellation requests, transport closure, and reported billed usage
+remain separate accounting events.
+
+The complete registered comparison is also executable:
+
+```bash
+.venv/bin/drc council-experiment \
+    --prompt-file task.md --task-id example-1 \
+    --verify-command './verify-answer' \
+    --fixed-delay-ms 30000 --cap 20 --dry-run
+```
+
+It runs GLM-only, always-on council, fixed-delay hedge, and trace-triggered
+hedge arms in deterministic random order, with candidate worktrees available
+through `WorktreeLaneManager`. The frozen v0 policy has already failed its
+zero-spend replay gate: it caught every historical failure but fired on 87.2%
+of correct completions, producing 94.4% fan-out. The live branch therefore did
+not run. See [`analysis/speculative-replay.json`](analysis/speculative-replay.json).
+
 ## What is in the box
 
 | path | what |
 |---|---|
 | `src/drc/tasks/` | instance generators + verifiers (pure, no I/O): satisfiable-only 3-SAT with certificate scoring; depth-controlled DAG arithmetic |
-| `src/drc/runner/` | async runner: AIMD concurrency, provider pinning, budget guard with in-flight reserve, SQLite store |
+| `src/drc/runner/` | async runner plus trace-triggered speculative controller: AIMD concurrency, provider pinning, budget guard, verifier-gated winner election, cancellation accounting, SQLite store |
 | `src/drc/stats/` | penalized 2PL+lapse MLE, stratified cluster bootstrap, variance decomposition (C2), token-effort peak (C3), reliability (C1) |
 | `src/drc/adaptive/` | bracket-then-refine frontier search (C4), simulator + live runner |
 | `configs/` | model roster (prices, pins, caps), difficulty grids, stage designs |
@@ -73,10 +115,11 @@ provider endpoint that actually served it.
 ## Tests
 
 ```bash
-.venv/bin/python -m pytest    # 37 tests: solver vs brute force, parse fixtures,
-                              # fit recovery on synthetic data, budget caps, kill/resume
+.venv/bin/python -m pytest
 ```
 
 ## License
 
-MIT. Cite the paper if you use the instrument.
+Code is MIT licensed. Research text and released study data are CC BY 4.0,
+subject to provider terms. See [`LICENSE`](LICENSE) and
+[`LICENSE-RESEARCH.md`](LICENSE-RESEARCH.md).

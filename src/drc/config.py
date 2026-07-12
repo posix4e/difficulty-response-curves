@@ -114,6 +114,10 @@ class StageCfg:
     window_width: int = -1  # restrict backbone k to center +/- this (-1 = all levels)
     temperature: float | None = None
     master_seed: int = 20260704
+    stop_correct: int = 0
+    stop_silent_wrong: int = 0
+    required_provider_endpoint: str = ""
+    stream_telemetry: bool = False
 
 
 def load_stages(models: dict[str, ModelCfg], path: Path | None = None) -> dict[str, StageCfg]:
@@ -144,6 +148,10 @@ def load_stages(models: dict[str, ModelCfg], path: Path | None = None) -> dict[s
             window_width=s.get("window_width", -1),
             temperature=s.get("temperature"),
             master_seed=s.get("master_seed", 20260704),
+            stop_correct=s.get("stop_correct", 0),
+            stop_silent_wrong=s.get("stop_silent_wrong", 0),
+            required_provider_endpoint=s.get("required_provider_endpoint", ""),
+            stream_telemetry=s.get("stream_telemetry", False),
         )
     return out
 

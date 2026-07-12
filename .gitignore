@@ -8,3 +8,4 @@ data/*.sqlite-shm
 .pytest_cache/
 .DS_Store
 paper/*.pdf.tmp
+tmp/

@@ -389,6 +389,61 @@ window_width = 1
 focus_from = "data/focus-percall.json"
 master_seed = 20260709
 
+# ---- MiniMax frontier-confidence v1: public protocol committed 2026-07-12 ----
+# Sentinel stages are six calls each and share fixed instances. Their combined
+# caps plus the primary stage preserve the USD 40 prospective ceiling.
+[stages.minimax-confidence-sentinel-pre]
+grid = "sat-n20-ext"
+set_name = "minimax-confidence-sentinel-v1"
+models = ["or/minimax-m2.5"]
+n_instances = 2
+k = 1
+cap_usd = 1.0
+window_width = 1
+focus_from = "data/focus-percall.json"
+master_seed = 20260712
+required_provider_endpoint = "openrouter/Parasail"
+
+[stages.minimax-confidence-v1]
+grid = "sat-n20-ext"
+set_name = "minimax-confidence-v1"
+models = ["or/minimax-m2.5"]
+n_instances = 20
+k = 10
+cap_usd = 38.0
+window_width = 1
+focus_from = "data/focus-percall.json"
+master_seed = 20260712
+stop_correct = 60
+stop_silent_wrong = 60
+required_provider_endpoint = "openrouter/Parasail"
+
+[stages.minimax-confidence-sentinel-post]
+grid = "sat-n20-ext"
+set_name = "minimax-confidence-sentinel-v1"
+models = ["or/minimax-m2.5"]
+n_instances = 2
+k = 1
+cap_usd = 1.0
+window_width = 1
+focus_from = "data/focus-percall.json"
+master_seed = 20260712
+required_provider_endpoint = "openrouter/Parasail"
+
+# Configured but forbidden to run unless the one-look prospective gate passes.
+[stages.minimax-confidence-stream-smoke]
+grid = "sat-n20-ext"
+set_name = "minimax-confidence-stream-v1"
+models = ["or/minimax-m2.5"]
+n_instances = 2
+k = 10
+cap_usd = 10.0
+window_width = 1
+focus_from = "data/focus-percall.json"
+master_seed = 20260713
+required_provider_endpoint = "openrouter/Parasail"
+stream_telemetry = true
+
 # phase 2 dial gate: does the pipeline-programs dial produce a sloping
 # frontier for the live fleet? cheap rung first; closer added post-probe.
 [stages.code-pilot-r1or]

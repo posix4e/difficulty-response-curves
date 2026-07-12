@@ -21,7 +21,7 @@
   #v(0.6em)
   #text(size: 10.5pt)[alex newman]\
   #text(size: 9pt, fill: rgb("#444444"))[posix4e\@gmail.com · code, data and generators: #link("https://github.com/posix4e/difficulty-response-curves")[github.com/posix4e/difficulty-response-curves]]\
-  #text(size: 9.5pt, style: "italic", fill: rgb("#8a6d00"))[Working notes — a living document reporting what we have learnt so far. Measurements are ongoing; corrections are published in place and kept in the text as part of the findings. Last updated 6 July 2026.]
+  #text(size: 9.5pt, style: "italic", fill: rgb("#8a6d00"))[Working notes — a living document reporting what we have learnt so far. Measurements are ongoing; corrections are published in place and kept in the text as part of the findings. Last updated 12 July 2026.]
 ]
 #v(1em)
 
@@ -599,6 +599,75 @@ bought one conditioned *yes*: where answers are unique, two cheap
 samples grade each other, and the certificate can sometimes be minted
 from agreement.
 
+== Next registered control: a council that races <speculative-council>
+
+The result above waits for two completed cheap answers. A conventional
+model council goes further: launch several models, then rank, vote, or fuse
+their completed outputs. LLM-Blender ranks and fuses candidates
+@jiang2023blender; Mixture-of-Agents passes one layer's reports into the next
+@wang2024moa. Both spend parallel work to buy a stronger combined answer.
+That is sensible when answer quality is the only objective. It is a poor
+default when one good, checkable answer is enough and tail latency matters.
+
+The next protocol therefore turns the trace from a retrospective score into
+a control signal. Begin with one trace-visible GLM primary. Over a rolling
+window, count the same small family of backtracking, hedging, give-up, and
+repetition markers already audited above. A single nervous word does nothing;
+persistent risk pauses external side effects, checkpoints the reproducible
+task state, and launches a fast Grok lane plus an OpenAI lane. The first
+candidate that passes the task's external certificate wins. Only then does
+the controller request cancellation of unfinished calls. If nobody verifies,
+the completed reports may enter a council judge as an exception path.
+
+#figure(
+  image("figs/speculative-council.svg", width: 100%),
+  caption: [Prospective architecture. The council is a fallback after a
+  verifier-gated speculative race, not the default fan-out.],
+)
+
+The systems ancestor is the hedged request: issue a secondary copy when a
+primary request looks slow, accept the first result, and cancel the replicas
+@dean2013tail. Our proposed experiment changes the trigger, not the principle.
+It asks whether deterioration in the primary's unfolding reasoning launches
+the hedge earlier and more selectively than a fixed timer. Four frozen arms
+make the question identifiable: GLM only, always-on council, a matched-rate
+fixed-delay hedge, and the trace-triggered hedge. Correctness is a gate;
+among non-inferior arms the endpoints are p95 time and billed cost per verified
+success.
+
+The implementation landed before the data were read: `drc hedge`, the full
+four-arm `drc council-experiment`, deterministic arm ordering, isolated Git
+worktrees, verifier-gated election, worst-case authorisation below the cap,
+and separate records for cancellation requested and provider-reported usage.
+Then the zero-spend replay closed version 0. Across 89 historical calls with
+visible reasoning, the trigger fired on 84: all 12 silently wrong completions,
+all 38 loud failures, and *34 of 39 correct completions*. Perfect failure
+recall bought an 87.2 per cent false-hedge rate and 94.4 per cent fan-out. The
+controller had become an always-on council with extra steps. A fixed timer
+matched to the same launch rate also caught every failure.
+
+The old export has no native chunks, so the replay repeats at 20, 40, 80, and
+160 words per observation. Every setting fails. Coarsening cuts false hedges
+from 89.7 to 51.3 per cent, but also cuts failure recall from 100 to 88 per
+cent; none reaches the registered 40 per cent ceiling.
+
+#figure(
+  grid(
+    columns: (1fr, 1fr), gutter: 10pt,
+    image("figs/speculative-replay.svg", width: 100%),
+    image("figs/speculative-replay-sensitivity.svg", width: 100%),
+  ),
+  caption: [Frozen v0 replay. Trigger position and chunk size are proxies;
+  historical traces had no timestamped chunks. Every sensitivity setting
+  fails the non-timing gate.],
+)
+
+That missing clock censors the registered fifteen-second warning endpoint;
+the proportional timing proxy is diagnostic only. It does not rescue the
+policy: the false-hedge gate already failed, so the live comparison stops with
+zero new API spend and the threshold is not retuned. Closing a stream remains
+no evidence that billing stopped; we simply did not need to close one.
+
 = Positioning
 
 Item response theory and adaptive testing are the toolbox, borrowed with
@@ -615,11 +684,12 @@ honest zero floor.
 
 No mechanism. No physics vocabulary — nobody's water is freezing, nothing is
 critical, there is no order parameter hiding in section five. No entropy
-tea-leaves, no early-warning prophecy. Whether trace contents can grade
-*individual answers* stopped being future work when we checked
-(@round2: real signal, cannot route); whether the effort peak gives early
-warning under distribution shift is checkable; whether any of this connects
-to a mechanism is somebody else's paper. The restraint is the brand.
+tea-leaves, and no claim that this live trace policy gives useful early
+warning. Whether trace contents can grade *individual answers* stopped being
+future work when we checked (@round2: real signal, cannot route); the frozen
+persistent trigger then failed against a matched-rate timer by escalating
+almost everything. Whether any of this connects to a mechanism is somebody
+else's paper. The restraint is the brand.
 
 = Limitations
 
