@@ -16,6 +16,7 @@ import argparse
 from collections import defaultdict
 import gzip
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
@@ -27,7 +28,7 @@ from typing import Iterable
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.special import logit
+from scipy.special import expit, logit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -45,6 +46,7 @@ from drc.stats.confidence import (  # noqa: E402
     predict_ridge_logistic,
     protocol_request_matches,
     risk_coverage,
+    stopping_reason,
 )
 from drc.stats.tracefeat import extra_features, features  # noqa: E402
 from drc.stats.twopl import InstanceObs, fit_with_lapse_guard  # noqa: E402
@@ -54,6 +56,13 @@ STUDY = "minimax-confidence-v1"
 MODEL = "or/minimax-m2.5"
 PROVIDER = "openrouter/Parasail"
 SET_NAME = "percall"
+PROSPECTIVE_SET = "minimax-confidence-v1"
+PROSPECTIVE_STAGE = "minimax-confidence-v1"
+SENTINEL_SET = "minimax-confidence-sentinel-v1"
+SENTINEL_STAGES = (
+    "minimax-confidence-sentinel-pre",
+    "minimax-confidence-sentinel-post",
+)
 CAP_TOKENS = 65536
 EXPECTED_LEVELS = (6.3, 6.6, 6.9)
 TRACE_FEATURES = [
@@ -93,7 +102,13 @@ def _visible_trace(text: str) -> str | None:
     return trace if len(trace) >= 200 else None
 
 
-def load_cohort(db: Path) -> list[dict]:
+def load_cohort(
+    db: Path,
+    *,
+    set_name: str = SET_NAME,
+    stages: tuple[str, ...] | None = None,
+    expected_levels: tuple[float, ...] = EXPECTED_LEVELS,
+) -> list[dict]:
     con = sqlite3.connect(db)
     con.row_factory = sqlite3.Row
     query = """
@@ -105,18 +120,25 @@ def load_cohort(db: Path) -> list[dict]:
                c.ts_start, c.ts_end, i.level_idx, i.level_value, i.set_name,
                i.family
         FROM calls c JOIN instances i USING(instance_id)
-        WHERE c.model_id=? AND c.provider_endpoint=? AND i.set_name=?
+        WHERE c.model_id=? AND i.set_name=?
           AND i.family='sat'
         ORDER BY c.call_id
     """
-    rows = [dict(row) for row in con.execute(query, (MODEL, PROVIDER, SET_NAME))]
+    rows = [dict(row) for row in con.execute(query, (MODEL, set_name))]
     con.close()
+    if stages is not None:
+        rows = [row for row in rows if row["stage"] in stages]
     if not rows:
-        raise RuntimeError("MiniMax confidence cohort is empty")
+        raise RuntimeError(f"MiniMax confidence cohort is empty for set {set_name}")
     levels = tuple(sorted({round(float(r["level_value"]), 1) for r in rows}))
-    if levels != EXPECTED_LEVELS:
-        raise RuntimeError(f"cohort levels changed: {levels}, expected {EXPECTED_LEVELS}")
+    if levels != expected_levels:
+        raise RuntimeError(f"cohort levels changed: {levels}, expected {expected_levels}")
     for row in rows:
+        if row["provider_endpoint"] != PROVIDER or row["provider_mismatch"]:
+            raise RuntimeError(
+                f"call {row['call_id']} violates provider continuity: "
+                f"{row['provider_endpoint']!r}"
+            )
         if not protocol_request_matches(row["request_json"], "parasail", CAP_TOKENS):
             raise RuntimeError(f"call {row['call_id']} violates the frozen provider/cap protocol")
         row["outcome_class"] = outcome_class(str(row["outcome"]))
@@ -267,6 +289,134 @@ def feature_diagnostics(rows: list[dict]) -> dict:
     return out
 
 
+def frozen_predictions(rows: list[dict], frozen: dict) -> tuple[np.ndarray, np.ndarray]:
+    """Apply the registered curve and confidence coefficients without refitting."""
+    curve = frozen["curve"]
+    levels = np.asarray([r["level_value"] for r in rows], dtype=float)
+    prior = (1 - float(curve["lapse"])) * expit(
+        float(curve["a"]) * (float(curve["b"]) - levels)
+    )
+    prior = np.clip(prior, 1e-5, 1 - 1e-5)
+    for row, value in zip(rows, prior):
+        row["curve_logit"] = float(logit(value))
+    design = DesignState(**frozen["design"])
+    prediction = predict_ridge_logistic(
+        apply_design(rows, design), np.asarray(frozen["weights"], dtype=float)
+    )
+    return prior, prediction
+
+
+def prospective_one_look(args: argparse.Namespace) -> int:
+    """Run the single registered prospective read after a hard stop."""
+    frozen = json.loads(args.frozen.read_text())
+    if frozen.get("status") != "frozen_after_retrospective_gate":
+        raise RuntimeError("prospective model is not a registered frozen model")
+
+    rows = load_cohort(
+        args.db, set_name=PROSPECTIVE_SET, stages=(PROSPECTIVE_STAGE,)
+    )
+    sentinels = load_cohort(
+        args.db, set_name=SENTINEL_SET, stages=SENTINEL_STAGES
+    )
+    sentinel_counts = {
+        stage: sum(row["stage"] == stage for row in sentinels)
+        for stage in SENTINEL_STAGES
+    }
+    if any(sentinel_counts[stage] < 6 for stage in SENTINEL_STAGES):
+        raise RuntimeError(f"both six-call sentinels are required: {sentinel_counts}")
+
+    completed = [r for r in rows if r["outcome_class"] != "loud_failure"]
+    counts = {
+        "all_calls": len(rows),
+        "correct_completed": sum(r["outcome_class"] == "correct_completed" for r in rows),
+        "silently_wrong_completed": sum(
+            r["outcome_class"] == "silently_wrong_completed" for r in rows
+        ),
+        "loud_failure": sum(r["outcome_class"] == "loud_failure" for r in rows),
+        "instances_completed": len({r["instance_id"] for r in completed}),
+    }
+    main_spend = sum(r["cost_microdollars"] or 0 for r in rows) / 1_000_000
+    reason = stopping_reason(
+        counts["correct_completed"],
+        counts["silently_wrong_completed"],
+        counts["all_calls"],
+        main_spend,
+        max_spend_usd=38.0,
+    )
+    if reason is None:
+        raise RuntimeError(
+            "prospective run has not reached its label, call, or spend stop; "
+            "the registered one-look analysis is locked"
+        )
+    if not completed or len({r["label"] for r in completed}) < 2:
+        raise RuntimeError("prospective completed cohort lacks both outcome classes")
+
+    prior, prediction = frozen_predictions(completed, frozen)
+    for row, p0, p1 in zip(completed, prior, prediction):
+        row["pred_curve"] = float(p0)
+        row["pred_frozen"] = float(p1)
+    metrics = metric_summary([r["label"] for r in completed], prediction, prior)
+    lo, hi = clustered_brier_skill_ci(
+        completed, "pred_frozen", "pred_curve", B=args.bootstrap
+    )
+    metrics["brier_skill_ci95"] = [round(lo, 6), round(hi, 6)]
+    metrics["risk_coverage"] = risk_coverage(
+        [r["label"] for r in completed], prediction
+    )
+    gate = {
+        "brier_skill_at_least_0_10": metrics["brier_skill_vs_curve"] >= 0.10,
+        "brier_skill_ci_excludes_zero": lo > 0,
+        "auc_at_least_0_75": metrics["auc"] >= 0.75,
+    }
+    gate["pass"] = all(gate.values())
+
+    prediction_path = ROOT / "analysis" / "confidence-minimax-prospective-predictions.jsonl"
+    write_jsonl(prediction_path, ({
+        "call_id": row["call_id"],
+        "instance_id_hash": hashlib.sha256(row["instance_id"].encode()).hexdigest(),
+        "level_value": row["level_value"],
+        "outcome_class": row["outcome_class"],
+        "label": row["label"],
+        "pred_curve": row["pred_curve"],
+        "pred_frozen": row["pred_frozen"],
+    } for row in completed))
+    report = {
+        "study": STUDY,
+        "status": "prospective_single_analysis_complete",
+        "claim_status": "Supported" if gate["pass"] else "Not supported",
+        "stopping_reason": reason,
+        "cohort": {
+            "model": MODEL,
+            "provider_endpoint": PROVIDER,
+            "set_name": PROSPECTIVE_SET,
+            "levels": list(EXPECTED_LEVELS),
+            "max_completion_tokens": CAP_TOKENS,
+            "counts": counts,
+            "sentinel_counts": sentinel_counts,
+        },
+        "frozen_model": {
+            "path": str(args.frozen.relative_to(ROOT)),
+            "sha256": sha256_file(args.frozen),
+            "model_class": frozen["model_class"],
+        },
+        "metrics": metrics,
+        "prospective_gate": gate,
+        "provenance": {
+            "code_git_sha": git_sha(),
+            "source_db_sha256": sha256_file(args.db),
+            "bootstrap_replicates": args.bootstrap,
+            "predictions": str(prediction_path.relative_to(ROOT)),
+            "prospective_spend_usd": round(main_spend, 6),
+            "sentinel_spend_usd": round(
+                sum(r["cost_microdollars"] or 0 for r in sentinels) / 1_000_000, 6
+            ),
+        },
+    }
+    args.prospective_out.write_text(json.dumps(report, indent=2) + "\n")
+    print(json.dumps(report, indent=2))
+    return 0
+
+
 def _json_value(value):
     if isinstance(value, (np.floating, np.integer)):
         return value.item()
@@ -277,11 +427,24 @@ def _json_value(value):
 
 def write_jsonl(path: Path, rows: Iterable[dict], gzip_output: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    opener = gzip.open if gzip_output else open
-    with opener(path, "wt", encoding="utf-8") as f:
+    if gzip_output:
+        raw = path.open("wb")
+        compressed = gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0)
+        stream = io.TextIOWrapper(compressed, encoding="utf-8")
+    else:
+        raw = None
+        compressed = None
+        stream = path.open("w", encoding="utf-8")
+    try:
         for row in rows:
             clean = {key: _json_value(value) for key, value in row.items()}
-            f.write(json.dumps(clean, sort_keys=True) + "\n")
+            stream.write(json.dumps(clean, sort_keys=True) + "\n")
+    finally:
+        stream.close()
+        if compressed is not None and not compressed.closed:
+            compressed.close()
+        if raw is not None and not raw.closed:
+            raw.close()
 
 
 def make_figures(rows: list[dict], metrics: dict, out_dir: Path) -> list[str]:
@@ -340,7 +503,19 @@ def main() -> int:
     parser.add_argument("--db", type=Path, default=ROOT / "data" / "drc.sqlite")
     parser.add_argument("--out", type=Path, default=ROOT / "analysis" / "confidence-minimax.json")
     parser.add_argument("--bootstrap", type=int, default=2000)
+    parser.add_argument("--prospective-one-look", action="store_true")
+    parser.add_argument(
+        "--frozen", type=Path,
+        default=ROOT / "analysis" / "confidence-minimax-frozen.json",
+    )
+    parser.add_argument(
+        "--prospective-out", type=Path,
+        default=ROOT / "analysis" / "confidence-minimax-prospective.json",
+    )
     args = parser.parse_args()
+
+    if args.prospective_one_look:
+        return prospective_one_look(args)
 
     all_rows = load_cohort(args.db)
     completed = [r for r in all_rows if r["outcome_class"] != "loud_failure"]

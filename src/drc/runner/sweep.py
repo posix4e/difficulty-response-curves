@@ -79,6 +79,10 @@ def plan_jobs(
                             sample_idx=s,
                             stage=stage.name,
                             temperature=stage.temperature,
+                            stop_correct=stage.stop_correct,
+                            stop_silent_wrong=stage.stop_silent_wrong,
+                            required_provider_endpoint=stage.required_provider_endpoint,
+                            stream_telemetry=stage.stream_telemetry,
                         )
                     )
     return jobs

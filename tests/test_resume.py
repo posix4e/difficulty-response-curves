@@ -3,6 +3,7 @@ retries only error_api rows. Uses an httpx MockTransport standing in for
 TrustedRouter."""
 
 import json
+from dataclasses import replace
 
 import httpx
 import pytest
@@ -98,4 +99,37 @@ async def test_budget_stops_dispatch(tmp_path):
     summary = await run_jobs(jobs, {"mock/model": MODEL}, client, store, guard, log=lambda *_: None)
     assert summary["stopped"]  # model stopped on budget
     assert summary["done"] < 12
+    await client.aclose()
+
+
+async def test_required_provider_endpoint_stops_new_dispatch(tmp_path):
+    store = Store(tmp_path / "t.sqlite")
+    stage = replace(STAGE, n_instances=6, required_provider_endpoint="openrouter/Parasail")
+    guard = BudgetGuard(store, {"teststage": 50.0})
+    transport, _ = _mock_transport()
+    client = TRClient("k", transport=transport)
+    jobs = plan_jobs(stage, {"g": GRID}, {"mock/model": MODEL}, store)
+    summary = await run_jobs(jobs, {"mock/model": MODEL}, client, store, guard, log=lambda *_: None)
+    assert "protocol deviation" in summary["stopped"]["mock/model"]
+    assert summary["done"] < 36
+    await client.aclose()
+
+
+async def test_label_target_stops_new_dispatch(tmp_path, monkeypatch):
+    store = Store(tmp_path / "t.sqlite")
+    stage = replace(STAGE, n_instances=6, stop_correct=1, stop_silent_wrong=1)
+    guard = BudgetGuard(store, {"teststage": 50.0})
+    transport, _ = _mock_transport()
+    client = TRClient("k", transport=transport)
+    seen = {"n": 0}
+
+    def alternating(*_args, **_kwargs):
+        seen["n"] += 1
+        return "pass" if seen["n"] % 2 else "fail_wrong"
+
+    monkeypatch.setattr("drc.runner.scheduler.parse.classify", alternating)
+    jobs = plan_jobs(stage, {"g": GRID}, {"mock/model": MODEL}, store)
+    summary = await run_jobs(jobs, {"mock/model": MODEL}, client, store, guard, log=lambda *_: None)
+    assert "label target reached" in summary["stopped"]["mock/model"]
+    assert summary["done"] < 36
     await client.aclose()

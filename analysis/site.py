@@ -206,7 +206,7 @@ footer a {{ color:var(--green-2); }}
 a {{ color:var(--green-2); }}
 </style>"""
 
-NAV = [("index.html", "Overview"), ("method.html", "The Method"),
+NAV = [("research.html", "Research Programme"), ("index.html", "Overview"), ("method.html", "The Method"),
        ("findings.html", "Findings 1–4"), ("traces.html", "5 · Traces"),
        ("pipes.html", "6 · The Pipes"), ("router.html", "7 · The Router"),
        ("routing2.html", "8 · No Referee"), ("consistency.html", "9 · Ask Twice"),
@@ -816,6 +816,7 @@ HEADER_FULL = f"""<header>
     mechanically checkable answers, error bars on everything, all data and tools released below.</p>
   </div>
   <div class="links">
+    <a href="research.html">Follow the live research</a>
     <a href="paper.pdf">Read the paper (PDF)</a>
     <a class="ghost" href="https://github.com/posix4e/difficulty-response-curves">Code &amp; generators</a>
     <a class="ghost" href="index.html#data">Raw data</a>

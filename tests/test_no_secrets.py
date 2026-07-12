@@ -10,6 +10,7 @@ mention the prefix) don't trip it.
 
 import re
 import subprocess
+import gzip
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +29,12 @@ def test_no_gateway_keys_in_tracked_files():
     for path in tracked_files():
         if not path.is_file():
             continue
-        if KEY.search(path.read_bytes()):
+        raw = path.read_bytes()
+        if path.suffix == ".gz":
+            try:
+                raw = gzip.decompress(raw)
+            except (gzip.BadGzipFile, EOFError):
+                pass
+        if KEY.search(raw):
             offenders.append(str(path.relative_to(ROOT)))
     assert not offenders, f"gateway key material in tracked files: {offenders}"

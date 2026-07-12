@@ -1,0 +1,97 @@
+{
+  "study": "minimax-confidence-v1",
+  "status": "frozen_after_retrospective_gate",
+  "model_class": "metadata",
+  "cohort": {
+    "model": "or/minimax-m2.5",
+    "provider_endpoint": "openrouter/Parasail",
+    "set_name": "percall",
+    "levels": [
+      6.3,
+      6.6,
+      6.9
+    ],
+    "max_completion_tokens": 65536
+  },
+  "curve": {
+    "b": 7.9,
+    "a": 0.7271572291979341,
+    "lapse": 0.015050126812428068,
+    "x50": 7.857969795456387
+  },
+  "design": {
+    "base_features": [
+      "curve_logit",
+      "log_completion_tokens",
+      "log_reasoning_tokens",
+      "cap_fraction",
+      "log_latency_ms",
+      "log_effective_billed_tps",
+      "attempt",
+      "finish_stop",
+      "finish_other"
+    ],
+    "expanded_features": [
+      "curve_logit",
+      "log_completion_tokens",
+      "log_reasoning_tokens",
+      "cap_fraction",
+      "log_latency_ms",
+      "log_effective_billed_tps",
+      "attempt",
+      "finish_stop",
+      "finish_other"
+    ],
+    "medians": [
+      0.892138209768432,
+      10.506655319476549,
+      10.29694755351686,
+      0.5578155517578125,
+      13.259937434043037,
+      4.355597175747401,
+      1.0,
+      1.0,
+      0.0
+    ],
+    "means": [
+      0.9088137408380376,
+      10.57610214097138,
+      10.3668967386139,
+      0.6310105267693015,
+      13.179054256763317,
+      4.318922305427432,
+      1.1647058823529413,
+      1.0,
+      0.0
+    ],
+    "scales": [
+      0.17699592208928105,
+      0.3367761710856913,
+      0.35508820741688213,
+      0.20081634743545548,
+      0.4744400142635148,
+      0.3136959131518046,
+      0.4296937027705804,
+      1.0,
+      1.0
+    ],
+    "missing_features": []
+  },
+  "weights": [
+    -0.2715830694642033,
+    -0.4176314315220992,
+    -1.062714816548322,
+    -0.5739972998959251,
+    -0.054592902682733625,
+    -0.3537750216354586,
+    -0.21986254699224547,
+    0.0,
+    0.0,
+    1.6620396400034214
+  ],
+  "provenance": {
+    "code_git_sha": "b0beb0727c551fc606d73684ff9d93e1812fb6ef",
+    "source_db_sha256": "8ae3048f5804554ce6507800082e9a1e28ef1e4a756ff938323c2eb8fb4e29f0",
+    "training_rows": 85
+  }
+}

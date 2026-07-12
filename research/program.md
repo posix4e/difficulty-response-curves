@@ -31,8 +31,8 @@ normally, and detecting a call that failed loudly.
 | Status | Claim | Current reading |
 |---|---|---|
 | **Supported** | Difficulty curves provide a useful baseline probability. | The existing instrument estimates a frontier and sharpness from fresh, mechanically graded tasks. |
-| **Exploratory** | MiniMax trace texture ranks silently wrong calls. | A previously held-out trace judge reached AUC 0.93, but its false-alarm rate was 31%. This is a lead, not a calibrated-confidence result. |
-| **Exploratory** | Billing and serving metadata add information at the frontier. | Existing calls record billed tokens, latency, attempts, route, finish reason, and correctness. Their incremental value over the curve has not yet been measured prospectively. |
+| **Not supported** | The frozen trace dictionary improves calibrated confidence retrospectively. | Trace-only AUROC was 0.671 and Brier skill was 7.4%; its clustered interval crossed zero. The earlier AUC 0.93 trace judge did not transfer into a strong calibrated score under the frozen v1 comparison. |
+| **Exploratory** | Billing and serving metadata add information at the frontier. | Metadata-only AUROC was 0.852 and Brier skill was 36.9% over the cross-fitted curve prior. This passed the retrospective spend gate but still requires prospective validation. |
 | **Prospective** | A frozen combined score improves probability calibration. | The MiniMax v1 protocol specifies the comparison, endpoints, stopping rule, and spend gate before any new calls. |
 | **Censored** | End-to-end billed tokens per second measures generation speed. | It does not: the denominator includes queueing, retries, transport, and provider overhead. Streaming telemetry is required for an observed output rate. |
 
@@ -54,6 +54,31 @@ normally, and detecting a call that failed loudly.
    rate.
 
 The complete frozen protocol is [MiniMax confidence v1](minimax-confidence-protocol.html).
+
+## Retrospective checkpoint: gate passed
+
+The v1 retrospective cohort contains 145 calls on 30 generated instances: 61
+correct completions, 24 silently wrong completions, and 60 loud failures. No
+new calls were made for this analysis.
+
+The selected metadata-only score reached AUROC 0.852 and Brier skill 0.369
+relative to the cross-fitted curve prior. The 95% instance-cluster bootstrap
+interval for Brier skill was 0.115 to 0.576. At 50% coverage, retaining the
+calls with the highest out-of-fold confidence kept 40 of 43 answers correct.
+
+The simplest reading is also the most interesting. Silently wrong completions
+used 54.7k billed tokens on average versus 36.1k for correct completions and
+took 756 seconds versus 524 seconds. Effective billed tokens per second barely
+moved: 77.4 for wrong and 77.7 for correct. MiniMax did not become slower when
+it went wrong; it kept thinking for longer. The frozen prospective model is
+therefore metadata-only. This remains an exploratory finding until the fresh
+one-look batch reports.
+
+![Retrospective model comparison; dashed lines show the frozen spend-gate thresholds.](figs/confidence-minimax-ablation.svg)
+
+Reproducibility: [result JSON](data/confidence-minimax.json) ·
+[compact study table](data/minimax-confidence-v1.jsonl.gz) ·
+[raw trace artifact](data/minimax-confidence-v1-traces.jsonl.gz).
 
 ## Why this differs from a confidence heuristic
 

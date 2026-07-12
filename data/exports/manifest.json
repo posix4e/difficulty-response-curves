@@ -1,22 +1,40 @@
 {
   "instances.jsonl.gz": {
-    "sha256": "321952000e02fb9712b00436484caf657a7828cb35331bd0d5120862968c8785",
-    "bytes": 368327
+    "rows": 1505,
+    "sha256": "069d72f5c7b9b3023265ba7ea4ebd14faadcf734a8deb1eed7ecd6a1e779a372",
+    "bytes": 461336
   },
   "calls.jsonl.gz": {
-    "sha256": "5040998f7f952a8e02c72dc25ced268a0e374f043032dbc4712682d5d0cf3016",
-    "bytes": 6055592
+    "rows": 5823,
+    "sha256": "1ed80db2702d963a7d6dab27e7e46eb2cde1af1ead50852da462efd22a7c1e6d",
+    "bytes": 15362073
   },
   "fits.jsonl.gz": {
-    "sha256": "50139851d53ef6bba61d693eeac091671b63dc52d48c31ed3ae998d638f575d0",
-    "bytes": 36
+    "rows": 0,
+    "sha256": "471bca732c742e1b5e345b262c55c05c700029e1bd52440c7c5a9aefc5d3d518",
+    "bytes": 25
+  },
+  "stream_events.jsonl.gz": {
+    "rows": 0,
+    "sha256": "471bca732c742e1b5e345b262c55c05c700029e1bd52440c7c5a9aefc5d3d518",
+    "bytes": 25
   },
   "drc.sqlite.gz": {
-    "sha256": "6f6ebfbf216e0c955d8bb649e2d1ebb8c27e5290ed3ce1d02e96cb932519fd1e",
-    "bytes": 6558261
+    "sha256": "eb9eda2e84b8e3db7158a8149bba005ada65f266234e0c0231438f523c13ec49",
+    "bytes": 15881365
   },
   "ledger.txt": {
-    "sha256": "e2888b0ac9fb87dadea8d8c775e94af5ce695807970b6be4db3dce02b67bd40d",
-    "bytes": 4662
+    "sha256": "7e798c9961b1b391d170c116a1abf6ed0aec998d4362604090a12d5e135acb51",
+    "bytes": 6659
+  },
+  "minimax-confidence-v1-traces.jsonl.gz": {
+    "rows": 145,
+    "sha256": "1502f7186117ab8c83e650a84214a966b6692f2801e3dc07567c52771f51fcbc",
+    "bytes": 2916377
+  },
+  "minimax-confidence-v1.jsonl.gz": {
+    "rows": 145,
+    "sha256": "1399f24ff14129bd2aa3308c13ef429a8e5902fd35f400c114a4c25083a7b966",
+    "bytes": 23602
   }
 }

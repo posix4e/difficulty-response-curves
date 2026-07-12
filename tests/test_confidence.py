@@ -110,3 +110,23 @@ def test_cross_fitted_curve_never_sees_held_out_instance(monkeypatch):
     for fold, training_groups in enumerate(observed_training_groups):
         held_out = {iid for iid, assigned in folds.items() if assigned == fold}
         assert training_groups.isdisjoint(held_out)
+
+
+def test_frozen_prediction_does_not_refit(monkeypatch):
+    import analysis.confidence as analysis_confidence
+
+    rows = [{"level_value": 6.3, "x": 0.0}, {"level_value": 6.9, "x": 2.0}]
+    _, state = fit_design(rows, ["curve_logit", "x"])
+    frozen = {
+        "curve": {"b": 6.6, "a": 2.0, "lapse": 0.05},
+        "design": state.as_dict(),
+        "weights": [0.0] * (len(state.expanded_features) + 1),
+    }
+    monkeypatch.setattr(
+        analysis_confidence,
+        "fit_curve",
+        lambda _rows: (_ for _ in ()).throw(AssertionError("must remain frozen")),
+    )
+    prior, prediction = analysis_confidence.frozen_predictions(rows, frozen)
+    assert prior[0] > prior[1]
+    assert np.allclose(prediction, 0.5)

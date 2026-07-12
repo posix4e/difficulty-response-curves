@@ -1,0 +1,825 @@
+{
+  "study": "minimax-confidence-v1",
+  "status": "exploratory_retrospective",
+  "claim_status": "Exploratory",
+  "cohort": {
+    "model": "or/minimax-m2.5",
+    "provider_endpoint": "openrouter/Parasail",
+    "set_name": "percall",
+    "levels": [
+      6.3,
+      6.6,
+      6.9
+    ],
+    "max_completion_tokens": 65536,
+    "counts": {
+      "all_calls": 145,
+      "correct_completed": 61,
+      "silently_wrong_completed": 24,
+      "loud_failure": 60,
+      "visible_trace_completed": 51,
+      "instances_completed": 30
+    }
+  },
+  "feature_groups": {
+    "metadata": [
+      "log_completion_tokens",
+      "log_reasoning_tokens",
+      "cap_fraction",
+      "log_latency_ms",
+      "log_effective_billed_tps",
+      "attempt",
+      "finish_stop",
+      "finish_other"
+    ],
+    "trace": [
+      "rep_tail",
+      "bt_tail",
+      "hedge_tail",
+      "rep_full",
+      "bt_full",
+      "wait_tail",
+      "hedge_ans",
+      "giveup_full",
+      "flip",
+      "qmark_tail",
+      "rep_tail_k4",
+      "wait_full",
+      "bt_last10",
+      "neg_tail",
+      "len_ratio",
+      "trace_visible"
+    ]
+  },
+  "metrics": {
+    "curve": {
+      "brier": 0.211932,
+      "brier_skill_vs_curve": 0.0,
+      "log_loss": 0.618004,
+      "auc": 0.376708,
+      "brier_skill_ci95": [
+        0.0,
+        0.0
+      ],
+      "risk_coverage": [
+        {
+          "coverage": 0.25,
+          "n": 22,
+          "accuracy": 0.545455,
+          "mean_confidence": 0.765307
+        },
+        {
+          "coverage": 0.5,
+          "n": 43,
+          "accuracy": 0.674419,
+          "mean_confidence": 0.748956
+        },
+        {
+          "coverage": 0.75,
+          "n": 64,
+          "accuracy": 0.671875,
+          "mean_confidence": 0.732441
+        },
+        {
+          "coverage": 1.0,
+          "n": 85,
+          "accuracy": 0.717647,
+          "mean_confidence": 0.713703
+        }
+      ]
+    },
+    "metadata": {
+      "brier": 0.133781,
+      "brier_skill_vs_curve": 0.368756,
+      "log_loss": 0.429132,
+      "auc": 0.851776,
+      "brier_skill_ci95": [
+        0.115024,
+        0.576252
+      ],
+      "risk_coverage": [
+        {
+          "coverage": 0.25,
+          "n": 22,
+          "accuracy": 0.954545,
+          "mean_confidence": 0.983427
+        },
+        {
+          "coverage": 0.5,
+          "n": 43,
+          "accuracy": 0.930233,
+          "mean_confidence": 0.955532
+        },
+        {
+          "coverage": 0.75,
+          "n": 64,
+          "accuracy": 0.859375,
+          "mean_confidence": 0.86617
+        },
+        {
+          "coverage": 1.0,
+          "n": 85,
+          "accuracy": 0.717647,
+          "mean_confidence": 0.709698
+        }
+      ]
+    },
+    "trace": {
+      "brier": 0.196264,
+      "brier_skill_vs_curve": 0.073929,
+      "log_loss": 0.598281,
+      "auc": 0.671107,
+      "brier_skill_ci95": [
+        -0.182776,
+        0.281211
+      ],
+      "risk_coverage": [
+        {
+          "coverage": 0.25,
+          "n": 22,
+          "accuracy": 0.954545,
+          "mean_confidence": 0.984602
+        },
+        {
+          "coverage": 0.5,
+          "n": 43,
+          "accuracy": 0.837209,
+          "mean_confidence": 0.894022
+        },
+        {
+          "coverage": 0.75,
+          "n": 64,
+          "accuracy": 0.71875,
+          "mean_confidence": 0.802481
+        },
+        {
+          "coverage": 1.0,
+          "n": 85,
+          "accuracy": 0.717647,
+          "mean_confidence": 0.694802
+        }
+      ]
+    },
+    "combined": {
+      "brier": 0.134792,
+      "brier_skill_vs_curve": 0.363987,
+      "log_loss": 0.45148,
+      "auc": 0.85041,
+      "brier_skill_ci95": [
+        0.100727,
+        0.58744
+      ],
+      "risk_coverage": [
+        {
+          "coverage": 0.25,
+          "n": 22,
+          "accuracy": 0.954545,
+          "mean_confidence": 0.994067
+        },
+        {
+          "coverage": 0.5,
+          "n": 43,
+          "accuracy": 0.930233,
+          "mean_confidence": 0.971415
+        },
+        {
+          "coverage": 0.75,
+          "n": 64,
+          "accuracy": 0.859375,
+          "mean_confidence": 0.871625
+        },
+        {
+          "coverage": 1.0,
+          "n": 85,
+          "accuracy": 0.717647,
+          "mean_confidence": 0.701092
+        }
+      ]
+    }
+  },
+  "diagnostics": {
+    "feature_summaries": {
+      "completion_tokens": {
+        "correct": {
+          "n": 61,
+          "mean": 36105.590164,
+          "median": 33929.0
+        },
+        "silent_wrong": {
+          "n": 24,
+          "mean": 54693.375,
+          "median": 55676.5
+        }
+      },
+      "reasoning_tokens": {
+        "correct": {
+          "n": 61,
+          "mean": 29041.672131,
+          "median": 27119.0
+        },
+        "silent_wrong": {
+          "n": 24,
+          "mean": 45720.458333,
+          "median": 45718.0
+        }
+      },
+      "latency_ms": {
+        "correct": {
+          "n": 61,
+          "mean": 523979.546309,
+          "median": 440617.4025
+        },
+        "silent_wrong": {
+          "n": 24,
+          "mean": 755594.779401,
+          "median": 772348.542354
+        }
+      },
+      "effective_billed_tps": {
+        "correct": {
+          "n": 61,
+          "mean": 77.741599,
+          "median": 78.899267
+        },
+        "silent_wrong": {
+          "n": 24,
+          "mean": 77.37852,
+          "median": 74.343387
+        }
+      }
+    },
+    "forward_stage_holdout": {
+      "available": true,
+      "train_stage": "percall-minimax-or",
+      "test_stage": "percall-minimax-or2",
+      "n_train": 49,
+      "n_test": 36,
+      "n_test_silent_wrong": 6,
+      "metrics": {
+        "brier": 0.092209,
+        "brier_skill_vs_curve": 0.491291,
+        "log_loss": 0.314297,
+        "auc": 0.95
+      }
+    },
+    "note": "Forward holdout is secondary and has six silently wrong test calls; prospective validation remains required."
+  },
+  "folds": {
+    "metadata": [
+      {
+        "fold": 0,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.853894055123476,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other"
+        ]
+      },
+      {
+        "fold": 1,
+        "n_train": 67,
+        "n_test": 18,
+        "curve_x50": 7.857946117543126,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other"
+        ]
+      },
+      {
+        "fold": 2,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.844361094464652,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other"
+        ]
+      },
+      {
+        "fold": 3,
+        "n_train": 69,
+        "n_test": 16,
+        "curve_x50": 7.882739906973375,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other"
+        ]
+      },
+      {
+        "fold": 4,
+        "n_train": 64,
+        "n_test": 21,
+        "curve_x50": 7.794225611830482,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other"
+        ]
+      }
+    ],
+    "trace": [
+      {
+        "fold": 0,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.853894055123476,
+        "expanded_features": [
+          "curve_logit",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 1,
+        "n_train": 67,
+        "n_test": 18,
+        "curve_x50": 7.857946117543126,
+        "expanded_features": [
+          "curve_logit",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 2,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.844361094464652,
+        "expanded_features": [
+          "curve_logit",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 3,
+        "n_train": 69,
+        "n_test": 16,
+        "curve_x50": 7.882739906973375,
+        "expanded_features": [
+          "curve_logit",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 4,
+        "n_train": 64,
+        "n_test": 21,
+        "curve_x50": 7.794225611830482,
+        "expanded_features": [
+          "curve_logit",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      }
+    ],
+    "combined": [
+      {
+        "fold": 0,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.853894055123476,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 1,
+        "n_train": 67,
+        "n_test": 18,
+        "curve_x50": 7.857946117543126,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 2,
+        "n_train": 70,
+        "n_test": 15,
+        "curve_x50": 7.844361094464652,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 3,
+        "n_train": 69,
+        "n_test": 16,
+        "curve_x50": 7.882739906973375,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      },
+      {
+        "fold": 4,
+        "n_train": 64,
+        "n_test": 21,
+        "curve_x50": 7.794225611830482,
+        "expanded_features": [
+          "curve_logit",
+          "log_completion_tokens",
+          "log_reasoning_tokens",
+          "cap_fraction",
+          "log_latency_ms",
+          "log_effective_billed_tps",
+          "attempt",
+          "finish_stop",
+          "finish_other",
+          "rep_tail",
+          "rep_tail__missing",
+          "bt_tail",
+          "bt_tail__missing",
+          "hedge_tail",
+          "hedge_tail__missing",
+          "rep_full",
+          "rep_full__missing",
+          "bt_full",
+          "bt_full__missing",
+          "wait_tail",
+          "wait_tail__missing",
+          "hedge_ans",
+          "hedge_ans__missing",
+          "giveup_full",
+          "giveup_full__missing",
+          "flip",
+          "flip__missing",
+          "qmark_tail",
+          "qmark_tail__missing",
+          "rep_tail_k4",
+          "rep_tail_k4__missing",
+          "wait_full",
+          "wait_full__missing",
+          "bt_last10",
+          "bt_last10__missing",
+          "neg_tail",
+          "neg_tail__missing",
+          "len_ratio",
+          "len_ratio__missing",
+          "trace_visible"
+        ]
+      }
+    ]
+  },
+  "retrospective_gate": {
+    "minimum_silent_wrong": true,
+    "auc_at_least_0_75": true,
+    "brier_skill_at_least_0_10": true,
+    "selected_model_class": "metadata",
+    "pass": true
+  },
+  "provenance": {
+    "code_git_sha": "b0beb0727c551fc606d73684ff9d93e1812fb6ef",
+    "source_db_sha256": "8ae3048f5804554ce6507800082e9a1e28ef1e4a756ff938323c2eb8fb4e29f0",
+    "bootstrap_replicates": 2000,
+    "compact_export": "data/exports/minimax-confidence-v1.jsonl.gz",
+    "compact_export_sha256": "1399f24ff14129bd2aa3308c13ef429a8e5902fd35f400c114a4c25083a7b966",
+    "trace_export": "data/exports/minimax-confidence-v1-traces.jsonl.gz",
+    "trace_export_sha256": "1502f7186117ab8c83e650a84214a966b6692f2801e3dc07567c52771f51fcbc",
+    "predictions": "analysis/confidence-minimax-predictions.jsonl",
+    "figures": [
+      "analysis/confidence-minimax-calibration.svg",
+      "analysis/confidence-minimax-risk-coverage.svg",
+      "analysis/confidence-minimax-ablation.svg"
+    ],
+    "recorded_spend_usd": 9.908874,
+    "new_spend_usd": 0.0
+  },
+  "frozen_model": "analysis/confidence-minimax-frozen.json"
+}

@@ -58,12 +58,25 @@ CREATE TABLE IF NOT EXISTS calls (
   http_status INTEGER,
   attempt INTEGER NOT NULL DEFAULT 1,
   latency_ms REAL,
+  ttft_ms REAL,
+  first_reasoning_ms REAL,
+  first_answer_ms REAL,
+  stream_duration_ms REAL,
+  observed_chars INTEGER,
   ts_start TEXT,
   ts_end TEXT,
   UNIQUE(model_id, instance_id, sample_idx, prompt_version, stage)
 );
 CREATE INDEX IF NOT EXISTS idx_calls_model_stage ON calls(model_id, stage);
 CREATE INDEX IF NOT EXISTS idx_calls_instance ON calls(instance_id);
+CREATE TABLE IF NOT EXISTS stream_events (
+  call_id INTEGER NOT NULL REFERENCES calls(call_id),
+  seq INTEGER NOT NULL,
+  elapsed_ms REAL NOT NULL,
+  channel TEXT NOT NULL,
+  char_count INTEGER NOT NULL,
+  PRIMARY KEY(call_id, seq)
+);
 CREATE TABLE IF NOT EXISTS fits (
   fit_id INTEGER PRIMARY KEY AUTOINCREMENT,
   model_id TEXT NOT NULL,
@@ -91,7 +104,22 @@ class Store:
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA synchronous=NORMAL")
         self.conn.executescript(SCHEMA)
+        self._migrate_calls()
         self.conn.commit()
+
+    def _migrate_calls(self) -> None:
+        """Add opt-in telemetry columns to stores created before protocol v1."""
+        existing = {row[1] for row in self.conn.execute("PRAGMA table_info(calls)")}
+        additions = {
+            "ttft_ms": "REAL",
+            "first_reasoning_ms": "REAL",
+            "first_answer_ms": "REAL",
+            "stream_duration_ms": "REAL",
+            "observed_chars": "INTEGER",
+        }
+        for name, sql_type in additions.items():
+            if name not in existing:
+                self.conn.execute(f"ALTER TABLE calls ADD COLUMN {name} {sql_type}")
 
     def close(self) -> None:
         self.conn.close()
@@ -139,7 +167,7 @@ class Store:
         )
         return {(r[0], r[1], r[2]) for r in cur.fetchall()}
 
-    def record_call(self, row: dict[str, Any]) -> None:
+    def record_call(self, row: dict[str, Any]) -> int:
         cols = ",".join(row)
         placeholders = ",".join(":" + c for c in row)
         with self._lock:
@@ -147,6 +175,35 @@ class Store:
                 f"INSERT OR IGNORE INTO calls ({cols}) VALUES ({placeholders})", row
             )
             self.conn.commit()
+            found = self.conn.execute(
+                """SELECT call_id FROM calls WHERE model_id=? AND instance_id=?
+                   AND sample_idx=? AND prompt_version=? AND stage=?""",
+                (row["model_id"], row["instance_id"], row["sample_idx"], row["prompt_version"], row["stage"]),
+            ).fetchone()
+            if found is None:
+                raise RuntimeError("recorded call could not be resolved")
+            return int(found[0])
+
+    def record_stream_events(self, call_id: int, events: list[dict[str, Any]]) -> None:
+        if not events:
+            return
+        rows = [dict(event, call_id=call_id) for event in events]
+        with self._lock:
+            self.conn.executemany(
+                """INSERT OR REPLACE INTO stream_events
+                   (call_id, seq, elapsed_ms, channel, char_count)
+                   VALUES (:call_id, :seq, :elapsed_ms, :channel, :char_count)""",
+                rows,
+            )
+            self.conn.commit()
+
+    def outcome_counts(self, stage: str, model_id: str) -> dict[str, int]:
+        row = self.conn.execute(
+            """SELECT SUM(outcome='pass'), SUM(outcome='fail_wrong'), COUNT(*)
+               FROM calls WHERE stage=? AND model_id=? AND outcome != 'error_api'""",
+            (stage, model_id),
+        ).fetchone()
+        return {"correct": int(row[0] or 0), "silent_wrong": int(row[1] or 0), "recorded": int(row[2] or 0)}
 
     def spent_microdollars(self, stage: str | None = None) -> int:
         if stage:
@@ -200,10 +257,13 @@ class Store:
         if where:
             q += f" WHERE {where}"
         import gzip
+        import io
 
         n = 0
-        with gzip.open(out_path, "wt") as f:
-            for row in self.conn.execute(q, args):
-                f.write(json.dumps(dict(row), default=str) + "\n")
-                n += 1
+        with out_path.open("wb") as raw:
+            with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed:
+                with io.TextIOWrapper(compressed, encoding="utf-8") as f:
+                    for row in self.conn.execute(q, args):
+                        f.write(json.dumps(dict(row), default=str) + "\n")
+                        n += 1
         return n

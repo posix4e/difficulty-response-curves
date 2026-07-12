@@ -13,7 +13,9 @@ logistic difficulty–response curves. Each model gets a datasheet: a frontier
 
 - **Living research programme**: [`research/program.md`](research/program.md) · **Frozen MiniMax protocol**: [`research/studies/minimax-confidence-v1.md`](research/studies/minimax-confidence-v1.md)
 - **Paper**: [`paper/paper.pdf`](paper/paper.pdf) · **Site**: https://posix4e.github.io/difficulty-response-curves/
-- **Raw data**: every API call, released as JSONL.gz in [Releases](../../releases) with a sha256 manifest.
+- **Raw data**: every published API call is available in [`data/exports`](data/exports)
+  as JSONL.gz and a SQLite snapshot with a sha256 manifest. No GitHub Release is
+  claimed while the research programme remains preliminary.
 - **Everything below is reproducible**: `analysis/run_analysis.py` regenerates
   every number in the paper from the raw data; the abstract's numbers are read
   from `analysis/numbers.json` at compile time, not typed in.

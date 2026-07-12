@@ -53,6 +53,8 @@ def cmd_run_stage(args) -> int:
         _log(f"unknown stage {args.stage!r}; have: {', '.join(stages)}")
         return 2
     stage = stages[args.stage]
+    if args.stream_telemetry:
+        stage.stream_telemetry = True
     store = _store()
     guard = BudgetGuard(store, _stage_caps(stages))
     jobs = plan_jobs(stage, grids, models, store)
@@ -144,16 +146,30 @@ def cmd_gate(args) -> int:
 
 def cmd_budget(_args) -> int:
     store = _store()
-    total = store.spent_microdollars() / 1e6
-    _log(f"{'stage':<20} {'model':<40} {'calls':>6} {'$':>8} {'avg_out':>8} {'pass':>5} {'parse':>5} {'trunc':>5} {'err':>4}")
+    _log(_ledger_text(store).rstrip())
+    return 0
+
+
+def _ledger_text(store: Store) -> str:
+    lines = [
+        f"{'stage':<24} {'model':<40} {'calls':>6} {'$':>8} {'avg_out':>8} "
+        f"{'pass':>5} {'parse':>5} {'trunc':>5} {'err':>4}"
+    ]
     for row in store.ledger():
-        _log(
-            f"{row['stage']:<20} {row['model_id']:<40} {row['n_calls']:>6} "
+        lines.append(
+            f"{row['stage']:<24} {row['model_id']:<40} {row['n_calls']:>6} "
             f"{(row['micro'] or 0)/1e6:>8.2f} {row['avg_out'] or 0:>8.0f} "
             f"{row['n_pass'] or 0:>5} {row['n_parse'] or 0:>5} {row['n_trunc'] or 0:>5} {row['n_err'] or 0:>4}"
         )
-    _log(f"\nTOTAL: ${total:.2f} of $300.00")
-    return 0
+    recorded = sum((row["micro"] or 0) for row in store.ledger()) / 1e6
+    trusted_router = store.spent_microdollars() / 1e6
+    lines += [
+        "",
+        f"RECORDED ALL SOURCES: ${recorded:.2f}",
+        f"TRUSTEDROUTER-CAPPED LEDGER: ${trusted_router:.2f} of $300.00",
+        "Unrecorded or deleted diagnostic calls are not included; see the field journal.",
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def cmd_fit(args) -> int:
@@ -201,6 +217,7 @@ def cmd_sweep(args) -> int:
         name=args.stage, grid=args.grid, set_name=args.set_name,
         models=[args.model], n_instances=args.instances, k=args.k,
         cap_usd=args.cap, temperature=args.temperature,
+        stream_telemetry=args.stream_telemetry,
     )
     store = _store()
     guard = BudgetGuard(store, {args.stage: args.cap})
@@ -221,7 +238,10 @@ def cmd_export(args) -> int:
     store = _store()
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    import gzip
     import hashlib
+    import shutil
+    import sqlite3
 
     manifest = {}
     n = store.export_jsonl("instances", out_dir / "instances.jsonl.gz", "set_name != 'smoke'")
@@ -233,10 +253,33 @@ def cmd_export(args) -> int:
     manifest["calls.jsonl.gz"] = {"rows": n}
     n = store.export_jsonl("fits", out_dir / "fits.jsonl.gz")
     manifest["fits.jsonl.gz"] = {"rows": n}
-    for name in list(manifest):
-        h = hashlib.sha256((out_dir / name).read_bytes()).hexdigest()
-        manifest[name]["sha256"] = h
-        manifest[name]["bytes"] = (out_dir / name).stat().st_size
+
+    n = store.export_jsonl("stream_events", out_dir / "stream_events.jsonl.gz")
+    manifest["stream_events.jsonl.gz"] = {"rows": n}
+
+    snapshot = out_dir / ".drc.snapshot.sqlite"
+    if snapshot.exists():
+        snapshot.unlink()
+    target = sqlite3.connect(snapshot)
+    try:
+        store.conn.backup(target)
+    finally:
+        target.close()
+    with snapshot.open("rb") as src, (out_dir / "drc.sqlite.gz").open("wb") as raw:
+        with gzip.GzipFile(filename="drc.sqlite", mode="wb", fileobj=raw, mtime=0) as dst:
+            shutil.copyfileobj(src, dst)
+    snapshot.unlink()
+    (out_dir / "ledger.txt").write_text(_ledger_text(store))
+
+    for path in sorted(out_dir.iterdir()):
+        if not path.is_file() or path.name == "manifest.json" or path.name.startswith("."):
+            continue
+        entry = manifest.setdefault(path.name, {})
+        if path.name.endswith(".jsonl.gz") and "rows" not in entry:
+            with gzip.open(path, "rt", encoding="utf-8") as f:
+                entry["rows"] = sum(1 for _ in f)
+        entry["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+        entry["bytes"] = path.stat().st_size
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
     _log(json.dumps(manifest, indent=2))
     return 0
@@ -249,6 +292,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("run-stage", help="run a stage from configs/stages.toml")
     p.add_argument("stage")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--stream-telemetry", action="store_true", help="capture opt-in SSE timing events")
     p.set_defaults(fn=cmd_run_stage)
 
     p = sub.add_parser("gate", help="post-stage checkpoint report + focus file")
@@ -280,6 +324,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--stage", default="adhoc")
     p.add_argument("--temperature", type=float, default=None)
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--stream-telemetry", action="store_true", help="capture opt-in SSE timing events")
     p.set_defaults(fn=cmd_sweep)
 
     p = sub.add_parser("export", help="export JSONL.gz + sha256 manifest")
