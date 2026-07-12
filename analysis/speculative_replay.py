@@ -75,6 +75,25 @@ def make_figure(rows: list[dict], path: Path) -> None:
     plt.close(fig)
 
 
+def make_sensitivity_figure(sensitivity: list[dict], path: Path) -> None:
+    chunks = [row["chunk_words"] for row in sensitivity]
+    fig, ax = plt.subplots(figsize=(6.8, 4.2))
+    ax.plot(chunks, [row["failure_recall"] for row in sensitivity], marker="o", label="failure recall", color="#176b51")
+    ax.plot(chunks, [row["correct_false_hedge_rate"] for row in sensitivity], marker="o", label="correct false hedges", color="#9b2c2c")
+    ax.plot(chunks, [row["launch_rate"] for row in sensitivity], marker="o", label="all-call fan-out", color="#2b6cb0")
+    ax.axhline(.40, color="#9b2c2c", linestyle="--", linewidth=1, label="false-hedge ceiling")
+    ax.set(
+        xlabel="proxy observation size (reasoning words)",
+        ylabel="rate",
+        ylim=(0, 1.03),
+        title="Proxy replay is sensitive to chunking but fails every gate",
+    )
+    ax.legend(frameon=False, loc="lower left")
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -90,24 +109,45 @@ def main() -> int:
         default=ROOT / "analysis" / "speculative-replay.json",
     )
     parser.add_argument("--chunk-words", type=int, default=40)
+    parser.add_argument("--sensitivity-chunks", default="20,40,80,160")
     args = parser.parse_args()
 
     compact = {row["call_id"]: row for row in read_gzip_jsonl(args.compact)}
     raw_rows = read_gzip_jsonl(args.traces)
-    replay_rows = []
-    for raw in raw_rows:
-        reasoning = visible_reasoning(raw.get("response_text") or "")
-        if not reasoning or raw["call_id"] not in compact:
-            continue
-        replay = replay_reasoning(
-            reasoning, policy_factory, chunk_words=args.chunk_words
-        )
-        replay_rows.append(prepare_replay_row(raw, compact[raw["call_id"]], replay))
+    def build_rows(chunk_words: int) -> list[dict]:
+        rows = []
+        for raw in raw_rows:
+            reasoning = visible_reasoning(raw.get("response_text") or "")
+            if not reasoning or raw["call_id"] not in compact:
+                continue
+            replay = replay_reasoning(
+                reasoning, policy_factory, chunk_words=chunk_words
+            )
+            rows.append(prepare_replay_row(raw, compact[raw["call_id"]], replay))
+        return rows
+
+    replay_rows = build_rows(args.chunk_words)
+    sensitivity = []
+    for chunk_words in [int(value) for value in args.sensitivity_chunks.split(",")]:
+        rows = replay_rows if chunk_words == args.chunk_words else build_rows(chunk_words)
+        summary = summarize_replay(rows)
+        rates = summary["trace_trigger"]
+        sensitivity.append({
+            "chunk_words": chunk_words,
+            "launch_rate": rates["launch_rate"],
+            "failure_recall": rates["failure_recall"],
+            "correct_false_hedge_rate": rates["correct_false_hedge_rate"],
+            "non_timing_gate_pass": all(summary["non_timing_conditions"].values()),
+        })
 
     predictions = ROOT / "analysis" / "speculative-replay-predictions.jsonl"
     figure = ROOT / "analysis" / "speculative-replay.svg"
+    sensitivity_figure = ROOT / "analysis" / "speculative-replay-sensitivity.svg"
     write_predictions(predictions, replay_rows)
     make_figure(replay_rows, figure)
+    make_sensitivity_figure(sensitivity, sensitivity_figure)
+    results = summarize_replay(replay_rows)
+    results["proxy_chunk_sensitivity"] = sensitivity
     report = {
         "study": "speculative-council-v0",
         "claim_status": "Censored",
@@ -119,7 +159,7 @@ def main() -> int:
             "window_words": 320,
             "proxy_chunk_words": args.chunk_words,
         },
-        "results": summarize_replay(replay_rows),
+        "results": results,
         "provenance": {
             "code_git_sha": git_sha(),
             "traces": str(args.traces.relative_to(ROOT)),
@@ -129,6 +169,7 @@ def main() -> int:
             "predictions": str(predictions.relative_to(ROOT)),
             "predictions_sha256": sha256(predictions),
             "figure": str(figure.relative_to(ROOT)),
+            "sensitivity_figure": str(sensitivity_figure.relative_to(ROOT)),
             "new_spend_usd": 0.0,
         },
     }
