@@ -13,6 +13,8 @@ import sys
 
 import matplotlib.pyplot as plt
 
+plt.rcParams["svg.hashsalt"] = "speculative-council-v0"
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -27,6 +29,13 @@ from drc.stats.speculative_replay import (  # noqa: E402
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def save_svg(fig: plt.Figure, path: Path) -> None:
+    """Write a deterministic, whitespace-clean SVG for reproducible builds."""
+    fig.savefig(path, metadata={"Date": None})
+    lines = path.read_text().splitlines()
+    path.write_text("\n".join(line.rstrip() for line in lines) + "\n")
 
 
 def read_gzip_jsonl(path: Path) -> list[dict]:
@@ -71,7 +80,7 @@ def make_figure(rows: list[dict], path: Path) -> None:
     )
     ax.legend(frameon=False)
     fig.tight_layout()
-    fig.savefig(path)
+    save_svg(fig, path)
     plt.close(fig)
 
 
@@ -90,7 +99,7 @@ def make_sensitivity_figure(sensitivity: list[dict], path: Path) -> None:
     )
     ax.legend(frameon=False, loc="lower left")
     fig.tight_layout()
-    fig.savefig(path)
+    save_svg(fig, path)
     plt.close(fig)
 
 

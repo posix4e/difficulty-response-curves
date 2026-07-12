@@ -40,7 +40,7 @@ instead of waiting to combine every answer.
 | **Not supported** | The frozen trace dictionary improves calibrated confidence retrospectively. | Trace-only AUROC was 0.671 and Brier skill was 7.4%; its clustered interval crossed zero. The earlier AUC 0.93 trace judge did not transfer into a strong calibrated score under the frozen v1 comparison. |
 | **Exploratory** | Billing and serving metadata add information at the frontier. | Metadata-only AUROC was 0.852 and Brier skill was 36.9% over the cross-fitted curve prior. This passed the retrospective spend gate but still requires prospective validation. |
 | **Prospective** | A frozen combined score improves probability calibration. | The MiniMax v1 protocol specifies the comparison, endpoints, stopping rule, and spend gate before any new calls. |
-| **Prospective** | Trace risk can control conditional model fan-out. | The v0 speculative-council protocol freezes an auditable live-risk policy and compares it with GLM-only, always-on council, and matched-rate fixed-delay hedging. No live spend is authorised yet. |
+| **Not supported** | The frozen v0 trace-risk policy can control selective model fan-out. | In zero-spend replay it caught every failure but also fired on 34 of 39 correct completions: 87.2% false hedges and 94.4% total fan-out. A matched-rate fixed timer also caught every failure. The live branch stopped. |
 | **Censored** | End-to-end billed tokens per second measures generation speed. | It does not: the denominator includes queueing, retries, transport, and provider overhead. Streaming telemetry is required for an observed output rate. |
 
 ## Study sequence
@@ -59,10 +59,10 @@ instead of waiting to combine every answer.
    prospective confidence result passes. Measure time to first token,
    reasoning and answer channel timing, inter-chunk gaps, and observed output
    rate.
-5. **Control study.** Independently replay timestamped traces through a frozen
-   live-risk policy. Only after a separate gate and budget registration should
-   the harness compare conditional fan-out with an ordinary always-on model
-   council and a matched-rate time-only hedge.
+5. **Control study.** Replay traces through a frozen live-risk policy before
+   spending. The available historical traces were not timestamped, so timing
+   remained censored; the non-timing gate failed on false hedges and stopped
+   the live council branch.
 
 Protocols: [MiniMax confidence v1](minimax-confidence-protocol.html) ·
 [trace-triggered speculative councils v0](speculative-council-protocol.html).
@@ -142,11 +142,46 @@ This design borrows answer aggregation from
 [LLM-Blender](https://aclanthology.org/2023.acl-long.792/) and
 [Mixture-of-Agents](https://arxiv.org/abs/2406.04692), but its systems shape is
 closer to the hedged requests in
-[The Tail at Scale](https://research.google/pubs/the-tail-at-scale/). The new
-hypothesis is that trace deterioration can replace a fixed delay as the hedge
-trigger. That remains **Prospective** until an offline replay beats a
-matched-rate time-only trigger and a separately budgeted live comparison
-passes.
+[The Tail at Scale](https://research.google/pubs/the-tail-at-scale/). The v0
+hypothesis was that trace deterioration could replace a fixed delay as the
+hedge trigger. The frozen replay did not support it: its perfect failure recall
+came from escalating almost everything, and the matched timer achieved the
+same failure recall. Better live signals remain a research possibility, but
+v0 is closed rather than retuned.
+
+## Speculative council v0 replay: gate failed
+
+The public harness was completed before the replay: all four registered arms,
+deterministic arm ordering, structured handoff, worktree isolation, external
+verification, worst-case cost admission, durable result schema, and explicit
+unknown-usage accounting for cancelled calls. The zero-spend replay then
+applied the frozen live-risk score in 40-word proxy chunks to the 89 historical
+calls with visible reasoning traces.
+
+It triggered on 84 of 89 calls. Failure recall was 1.000: all 12 silently wrong
+completions and all 38 loud failures fired. But 34 of 39 correct completions
+also fired, a false-hedge rate of 0.872 against the registered ceiling of 0.40.
+The resulting 0.944 launch rate is operationally an always-on council wearing
+a trace label. A fixed timer matched to that launch rate also reached 1.000
+failure recall.
+
+Because the old export lacks native chunks, the replay was repeated at 20,
+40, 80, and 160 words per proxy observation. Every setting failed. At 20 words
+the trigger recalled 1.000 of failures with 0.897 false hedges; at 160 words
+false hedges fell only to 0.513 while failure recall fell to 0.880. No proxy
+chunking choice reached the registered 0.40 ceiling.
+
+![The frozen v0 policy fires early on failures and correct calls alike. Trigger position is a word-fraction proxy because historical chunks were not timestamped.](figs/speculative-replay.svg)
+
+The historical export has no streamed chunk timestamps, so the registered
+15-second warning-time condition is **Censored**. A proportional timing proxy
+is reported only as a diagnostic and is not used to pass the gate. The
+non-timing false-hedge condition already fails, so no speculative live calls
+are warranted and no API money was spent. Reproducibility:
+[result JSON](data/speculative-replay.json) ·
+[per-call replay](data/speculative-replay-predictions.jsonl).
+
+![Chunk-size sensitivity changes the trade-off but does not pass the gate.](figs/speculative-replay-sensitivity.svg)
 
 ## Related work
 

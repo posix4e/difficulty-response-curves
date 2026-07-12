@@ -6,10 +6,11 @@ date: "12 July 2026"
 lang: en-GB
 ---
 
-> **Prospective design; no live result.** This document registers a proposed
-> comparison and an executable harness. It does not claim that the trace
-> trigger, the named model order, or cancellation economics work. The frozen
-> MiniMax confidence study is unchanged and continues under its own budget.
+> **Frozen design; replay result: Not supported.** This document registered a
+> proposed comparison before replay. The dated outcome addendum below records
+> the failed zero-spend gate without changing its criteria. No speculative
+> council calls were made. The frozen MiniMax confidence study is unchanged and
+> continues under its own budget.
 
 ## Research question
 
@@ -119,6 +120,35 @@ challengers. Proceed to a live pilot only if all of the following hold:
 Failure stops the live branch and is reported as **Not supported**. A separate
 budget and one-look stopping rule must be registered before any live council
 or hedge calls. No spend is authorised by this v0 document.
+
+## Outcome addendum: 12 July 2026
+
+**Not supported; timing censored; live branch stopped.** The executable policy
+was replayed in frozen 40-word proxy chunks over all 89 historical calls with a
+visible reasoning trace: 39 correct completions, 12 silently wrong completions,
+and 38 loud failures.
+
+- The trigger fired on 84 of 89 calls: 94.4% fan-out.
+- It caught all 50 failures, including every silently wrong completion.
+- It also fired on 34 of 39 correct completions: 87.2% false hedges, above the
+  registered 40% ceiling.
+- A completion-latency timer matched to the 94.4% launch rate also caught every
+  failure.
+
+Sensitivity replays at 20, 40, 80, and 160 words per proxy observation all
+failed the non-timing gate. The coarsest setting reduced false hedges only to
+51.3% while reducing failure recall to 88.0%. The failure is therefore not an
+artifact of the reported 40-word proxy alone.
+
+The old trace export contains full reasoning text but no timestamped chunks.
+Trigger position was therefore replayed by delivered word count, and the
+15-second warning-time condition is **Censored**. A proportional timing proxy
+is published for diagnosis but cannot pass the gate. The false-hedge condition
+fails without it, so the paid live comparison is not run and v0 is not retuned.
+
+Reproducible artifacts: `analysis/speculative_replay.py`,
+`analysis/speculative-replay.json`, and
+`analysis/speculative-replay-predictions.jsonl`. New API spend: USD 0.
 
 ## Safety and accounting invariants
 

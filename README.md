@@ -69,6 +69,22 @@ rejects unverified first-answer-wins unless `--accept-first` is explicitly
 selected. Cancellation requests, transport closure, and reported billed usage
 remain separate accounting events.
 
+The complete registered comparison is also executable:
+
+```bash
+.venv/bin/drc council-experiment \
+    --prompt-file task.md --task-id example-1 \
+    --verify-command './verify-answer' \
+    --fixed-delay-ms 30000 --cap 20 --dry-run
+```
+
+It runs GLM-only, always-on council, fixed-delay hedge, and trace-triggered
+hedge arms in deterministic random order, with candidate worktrees available
+through `WorktreeLaneManager`. The frozen v0 policy has already failed its
+zero-spend replay gate: it caught every historical failure but fired on 87.2%
+of correct completions, producing 94.4% fan-out. The live branch therefore did
+not run. See [`analysis/speculative-replay.json`](analysis/speculative-replay.json).
+
 ## What is in the box
 
 | path | what |

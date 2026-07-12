@@ -635,15 +635,38 @@ fixed-delay hedge, and the trace-triggered hedge. Correctness is a gate;
 among non-inferior arms the endpoints are p95 time and billed cost per verified
 success.
 
-This is a protocol, not a result. Version 0 first replays timestamped traces
-without new calls. It must show early warning on failures, at least fifteen
-seconds of median warning time, and an acceptable false-hedge rate before a
-separately budgeted live comparison. The released `drc hedge` command already
-enforces the important negative space: no shared writable checkout, no winner
-without an external verifier unless the operator explicitly selects an unsafe
-mode, worst-case model authorisation below the cap before launch, and separate
-records for cancellation requested, transport closure, and provider-reported
-usage. Closing a stream is not evidence that billing stopped.
+The implementation landed before the data were read: `drc hedge`, the full
+four-arm `drc council-experiment`, deterministic arm ordering, isolated Git
+worktrees, verifier-gated election, worst-case authorisation below the cap,
+and separate records for cancellation requested and provider-reported usage.
+Then the zero-spend replay closed version 0. Across 89 historical calls with
+visible reasoning, the trigger fired on 84: all 12 silently wrong completions,
+all 38 loud failures, and *34 of 39 correct completions*. Perfect failure
+recall bought an 87.2 per cent false-hedge rate and 94.4 per cent fan-out. The
+controller had become an always-on council with extra steps. A fixed timer
+matched to the same launch rate also caught every failure.
+
+The old export has no native chunks, so the replay repeats at 20, 40, 80, and
+160 words per observation. Every setting fails. Coarsening cuts false hedges
+from 89.7 to 51.3 per cent, but also cuts failure recall from 100 to 88 per
+cent; none reaches the registered 40 per cent ceiling.
+
+#figure(
+  grid(
+    columns: (1fr, 1fr), gutter: 10pt,
+    image("figs/speculative-replay.svg", width: 100%),
+    image("figs/speculative-replay-sensitivity.svg", width: 100%),
+  ),
+  caption: [Frozen v0 replay. Trigger position and chunk size are proxies;
+  historical traces had no timestamped chunks. Every sensitivity setting
+  fails the non-timing gate.],
+)
+
+That missing clock censors the registered fifteen-second warning endpoint;
+the proportional timing proxy is diagnostic only. It does not rescue the
+policy: the false-hedge gate already failed, so the live comparison stops with
+zero new API spend and the threshold is not retuned. Closing a stream remains
+no evidence that billing stopped; we simply did not need to close one.
 
 = Positioning
 
@@ -661,12 +684,12 @@ honest zero floor.
 
 No mechanism. No physics vocabulary — nobody's water is freezing, nothing is
 critical, there is no order parameter hiding in section five. No entropy
-tea-leaves, and no claim yet that a live trace policy gives useful early
+tea-leaves, and no claim that this live trace policy gives useful early
 warning. Whether trace contents can grade *individual answers* stopped being
-future work when we checked (@round2: real signal, cannot route); whether a
-persistent trace trigger beats a matched-rate timer is now registered and
-checkable; whether any of this connects to a mechanism is somebody else's
-paper. The restraint is the brand.
+future work when we checked (@round2: real signal, cannot route); the frozen
+persistent trigger then failed against a matched-rate timer by escalating
+almost everything. Whether any of this connects to a mechanism is somebody
+else's paper. The restraint is the brand.
 
 = Limitations
 

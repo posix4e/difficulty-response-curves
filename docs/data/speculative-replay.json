@@ -1,0 +1,92 @@
+{
+  "study": "speculative-council-v0",
+  "claim_status": "Censored",
+  "mode": "untimestamped_word_chunk_proxy_replay",
+  "policy": {
+    "threshold": 4.0,
+    "persistence": 2,
+    "min_words": 80,
+    "window_words": 320,
+    "proxy_chunk_words": 40
+  },
+  "results": {
+    "status": "Censored",
+    "reason": "historical exports have full traces but no timestamped chunks; the registered 15-second warning-time condition cannot be evaluated",
+    "counts": {
+      "eligible": 89,
+      "correct": 39,
+      "silently_wrong": 12,
+      "loud_failure": 38,
+      "failures": 50,
+      "triggered": 84
+    },
+    "trace_trigger": {
+      "launch_rate": 0.94382,
+      "failure_recall": 1.0,
+      "silent_wrong_recall": 1.0,
+      "loud_failure_recall": 1.0,
+      "correct_false_hedge_rate": 0.871795,
+      "median_trigger_fraction": 0.231056,
+      "median_proxy_warning_ms": 580499.416,
+      "timing_label": "Proxy only: latency multiplied by remaining trace fraction."
+    },
+    "matched_fixed_delay": {
+      "available": true,
+      "delay_ms": 284038.975,
+      "launch_rate": 0.94382,
+      "failure_recall": 1.0,
+      "note": "Matched using end-to-end completion latency; this is a retrospective proxy, not a live timer result."
+    },
+    "non_timing_conditions": {
+      "at_least_30_eligible": true,
+      "at_least_10_failures": true,
+      "failure_trigger_recall_at_least_0_60": true,
+      "correct_false_hedge_at_most_0_40": false
+    },
+    "gate_pass": false,
+    "proxy_chunk_sensitivity": [
+      {
+        "chunk_words": 20,
+        "launch_rate": 0.955056,
+        "failure_recall": 1.0,
+        "correct_false_hedge_rate": 0.897436,
+        "non_timing_gate_pass": false
+      },
+      {
+        "chunk_words": 40,
+        "launch_rate": 0.94382,
+        "failure_recall": 1.0,
+        "correct_false_hedge_rate": 0.871795,
+        "non_timing_gate_pass": false
+      },
+      {
+        "chunk_words": 80,
+        "launch_rate": 0.865169,
+        "failure_recall": 0.98,
+        "correct_false_hedge_rate": 0.717949,
+        "non_timing_gate_pass": false
+      },
+      {
+        "chunk_words": 160,
+        "launch_rate": 0.719101,
+        "failure_recall": 0.88,
+        "correct_false_hedge_rate": 0.512821,
+        "non_timing_gate_pass": false
+      }
+    ]
+  },
+  "provenance": {
+    "code_git_sha": "ce04076c74c9480efe1a66e72383462908e84edb",
+    "traces": "data/exports/minimax-confidence-v1-traces.jsonl.gz",
+    "traces_sha256": "1502f7186117ab8c83e650a84214a966b6692f2801e3dc07567c52771f51fcbc",
+    "compact": "data/exports/minimax-confidence-v1.jsonl.gz",
+    "compact_sha256": "1399f24ff14129bd2aa3308c13ef429a8e5902fd35f400c114a4c25083a7b966",
+    "predictions": "analysis/speculative-replay-predictions.jsonl",
+    "predictions_sha256": "afaba8d12132355293d21e46aff2f8afcfbe0779b6a45fdc6549fa1dedbc3b0a",
+    "figure": "analysis/speculative-replay.svg",
+    "figure_sha256": "2bb10052fd327f2fab4006d26c02fcb6c0edc1cfc177506221f57508c225bb3c",
+    "sensitivity_figure": "analysis/speculative-replay-sensitivity.svg",
+    "sensitivity_figure_sha256": "a9e27b25e5aa66d24fd21f9278abdab9140a4bfcbab3f8bedfd31ed99ac8e7d6",
+    "new_spend_usd": 0.0
+  }
+}
