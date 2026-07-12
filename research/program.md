@@ -1,209 +1,271 @@
 ---
-title: "Confidence and Control at the Model Frontier"
-subtitle: "A living research programme for difficulty-response curves"
+title: "Can a model tell when it is wrong?"
+subtitle: "A living study of confidence signals at the MiniMax frontier"
 author: "Alex Newman"
 date: "12 July 2026"
 lang: en-GB
 ---
 
-> **Status: ongoing, preliminary, and not peer reviewed.** This page is a
-> research programme, not a finished paper. It records what is exploratory,
-> what has been specified prospectively, and what evidence would change the
-> current view.
+<nav class="page-nav" aria-label="Research links">
+  <a href="index.html">Main project</a>
+  <a href="journal.html">Field journal</a>
+  <a href="paper.pdf">Paper</a>
+  <a href="minimax-confidence-protocol.html">MiniMax protocol</a>
+</nav>
 
-## The question
+::: {.notice}
+**Living research · preliminary · not peer reviewed**
 
-Difficulty-response curves estimate the probability that a model succeeds as
-a task gets harder. The next question is whether information produced during a
-single call can improve that probability:
+This page separates what the data already support from what is still being
+tested. Detailed methods live in the protocols and paper.
+:::
 
-> Can reasoning traces, billing metadata, latency, or throughput improve a
-> calibrated probability of correctness beyond the difficulty curve itself?
+::: {.answer}
+## The short answer
 
-MiniMax-M2.5 is the first deep dive. Its existing visible-trace frontier lane
-contains correct answers, silently wrong answers, and conspicuous truncations.
-That makes it possible to distinguish two operational problems that are often
-blurred together: detecting an answer that is wrong despite completing
-normally, and detecting a call that failed loudly.
+**Difficulty is a useful starting point. Billing and timing metadata may make
+that estimate better. The words in a model's reasoning trace did not.**
 
-The next control question follows directly: if an unfolding trace looks risky,
-should the harness wait for a confidence score, or use that signal immediately
-to launch a second model? We call the latter **trace-triggered speculative
-execution**. It is related to a model council, but it races verified candidates
-instead of waiting to combine every answer.
+A fresh, prospectively registered MiniMax study is now testing whether the
+metadata result holds up. A separate idea—launching backup models when the
+trace looks troubled—failed its no-spend gate and was stopped.
+:::
 
-## Current evidence
+## The problem in one minute
 
-| Status | Claim | Current reading |
-|---|---|---|
-| **Supported** | Difficulty curves provide a useful baseline probability. | The existing instrument estimates a frontier and sharpness from fresh, mechanically graded tasks. |
-| **Not supported** | The frozen trace dictionary improves calibrated confidence retrospectively. | Trace-only AUROC was 0.671 and Brier skill was 7.4%; its clustered interval crossed zero. The earlier AUC 0.93 trace judge did not transfer into a strong calibrated score under the frozen v1 comparison. |
-| **Exploratory** | Billing and serving metadata add information at the frontier. | Metadata-only AUROC was 0.852 and Brier skill was 36.9% over the cross-fitted curve prior. This passed the retrospective spend gate but still requires prospective validation. |
-| **Prospective** | A frozen combined score improves probability calibration. | The MiniMax v1 protocol specifies the comparison, endpoints, stopping rule, and spend gate before any new calls. |
-| **Not supported** | The frozen v0 trace-risk policy can control selective model fan-out. | In zero-spend replay it caught every failure but also fired on 34 of 39 correct completions: 87.2% false hedges and 94.4% total fan-out. A matched-rate fixed timer also caught every failure. The live branch stopped. |
-| **Censored** | End-to-end billed tokens per second measures generation speed. | It does not: the denominator includes queueing, retries, transport, and provider overhead. Streaming telemetry is required for an observed output rate. |
+Suppose a model answers a hard question. We want a number such as:
 
-## Study sequence
+> There is a 72% chance this answer is correct.
 
-1. **Retrospective calibration.** Treat all existing MiniMax calls as
-   exploratory for this new question. Compare a curve-only prior with
-   metadata-only, trace-only, and combined confidence models using
-   instance-grouped out-of-sample predictions.
-2. **Spend gate.** Spend nothing unless the retrospective cohort contains at
-   least 20 silently wrong calls, the best frozen model reaches AUROC 0.75,
-   and its Brier skill over the curve prior is at least 10%.
-3. **Prospective validation.** If the gate passes, evaluate the frozen score
-   once on fresh instances. Stop after at least 60 correct and 60 silently
-   wrong completed calls, or at 600 calls / USD 40.
-4. **Streaming feasibility.** Reserve at most USD 10. Proceed only if the
-   prospective confidence result passes. Measure time to first token,
-   reasoning and answer channel timing, inter-chunk gaps, and observed output
-   rate.
-5. **Control study.** Replay traces through a frozen live-risk policy before
-   spending. The available historical traces were not timestamped, so timing
-   remained censored; the non-timing gate failed on false hedges and stopped
-   the live council branch.
+A difficulty-response curve supplies the first estimate: easier tasks should
+receive higher confidence than harder ones. But two equally hard calls can
+unfold very differently. One may finish cleanly; another may consume its whole
+token budget, repeat itself, or backtrack for minutes.
 
-Protocols: [MiniMax confidence v1](minimax-confidence-protocol.html) ·
-[trace-triggered speculative councils v0](speculative-council-protocol.html).
+This project asks whether those call-level signals improve the probability of
+correctness **for this particular answer**.
 
-## Retrospective checkpoint: gate passed
+::: {.summary-grid}
+::: {.summary-card .supported}
+### Supported — the baseline
 
-The v1 retrospective cohort contains 145 calls on 30 generated instances: 61
-correct completions, 24 silently wrong completions, and 60 loud failures. No
-new calls were made for this analysis.
+Task difficulty gives a useful prior probability of success.
+:::
 
-The selected metadata-only score reached AUROC 0.852 and Brier skill 0.369
-relative to the cross-fitted curve prior. The 95% instance-cluster bootstrap
-interval for Brier skill was 0.115 to 0.576. At 50% coverage, retaining the
-calls with the highest out-of-fold confidence kept 40 of 43 answers correct.
+::: {.summary-card .exploratory}
+### Exploratory — metadata
 
-The simplest reading is also the most interesting. Silently wrong completions
-used 54.7k billed tokens on average versus 36.1k for correct completions and
-took 756 seconds versus 524 seconds. Effective billed tokens per second barely
-moved: 77.4 for wrong and 77.7 for correct. MiniMax did not become slower when
-it went wrong; it kept thinking for longer. The frozen prospective model is
-therefore metadata-only. This remains an exploratory finding until the fresh
-one-look batch reports.
+Token use and elapsed time predicted mistakes in old MiniMax calls. Fresh
+validation is under way.
+:::
 
-![Retrospective model comparison; dashed lines show the frozen spend-gate thresholds.](figs/confidence-minimax-ablation.svg)
+::: {.summary-card .not-supported}
+### Not supported — trace words
 
-Reproducibility: [result JSON](data/confidence-minimax.json) ·
-[compact study table](data/minimax-confidence-v1.jsonl.gz) ·
-[raw trace artifact](data/minimax-confidence-v1-traces.jsonl.gz).
+The frozen dictionary of hedging, repetition, backtracking, and give-up
+language did not produce a reliable confidence score.
+:::
 
-## Why this differs from a confidence heuristic
+::: {.summary-card .not-supported}
+### Not supported — automatic fan-out
 
-The primary endpoint is the Brier score: the mean squared error of the stated
-probability. A useful score must improve probability calibration, not merely
-rank failures. AUROC, log loss, calibration plots, and risk-coverage curves are
-secondary views. All folds are grouped by generated instance so repeated
-samples from the same puzzle cannot leak across training and evaluation.
+The frozen warning policy launched backup models on almost every call, so its
+paid experiment was cancelled before spending.
+:::
+:::
 
-The model, route, provider, token cap, prompt version, and frontier window are
-fixed. Correct completed answers and silently wrong completed answers form the
-confidence task. Truncations, parse failures, refusals, timeouts, and API errors
-are a separate loud-failure outcome.
+## What exactly counts as failure?
 
-## From confidence to control
+The study keeps three outcomes separate:
 
-A conventional model council pays for several completed answers and then
-votes, ranks, critiques, or synthesises them. That can improve quality, but it
-usually pays the full fan-out latency and token bill. The proposed speculative
-controller starts with one trace-visible primary and makes two separate
-decisions:
+1. **Correct completion.** The model finishes and the answer passes the task's
+   mechanical checker.
+2. **Silent error.** The model finishes normally, but the answer is wrong.
+3. **Loud failure.** The call truncates, refuses, times out, fails to parse, or
+   returns an API error.
 
-1. **Launch:** persistent trace risk pauses external side effects, checkpoints
-   the reproducible task context, and starts Grok and OpenAI challengers in
-   isolated lanes.
-2. **Accept:** the first candidate that passes a task-specific verifier wins;
-   unfinished calls receive cancellation requests. If no candidate verifies,
-   the system may enter a council-synthesis exception path.
+The confidence question compares correct completions with silent errors. Loud
+failures are operationally important, but they are modelled separately because
+they already announce themselves.
 
-![One primary, conditional fan-out, verifier-gated winner election, and a council fallback.](figs/speculative-council.svg)
+The primary score is the **Brier score**, which measures the squared error of a
+stated probability. A useful confidence model must improve probability
+calibration, not merely put failures near the top of a ranking. Repeated calls
+from the same generated puzzle are always kept in the same evaluation fold.
 
-| Ordinary model council | Trace-triggered speculative controller |
-|---|---|
-| Launches several models by default | Launches challengers only after persistent risk or primary rejection |
-| Waits to aggregate completed answers | Can stop at the first independently verified answer |
-| Optimises ensemble answer quality | Gates quality, then optimises latency and billed work |
-| Uses completed outputs | Uses the primary's unfolding trajectory |
-| Usually pays the full fan-out | Requests cancellation and measures whether billing actually stops |
+## Finding 1: metadata looked promising in old calls
 
-The harness implementation is deliberately strict. `drc hedge` requires an
-external verifier, an acceptance expression, or an explicit unsafe
-`--accept-first` flag. It computes worst-case authorised model cost before
-launch, emits the live marker counts and trigger snapshot, pauses through a
-caller-supplied side-effect hook, copies structured task context without
-sharing hidden chain of thought, and records cancellation separately from
-provider-reported usage.
+The retrospective MiniMax cohort contains **145 calls on 30 generated
+instances**:
 
-This design borrows answer aggregation from
-[LLM-Blender](https://aclanthology.org/2023.acl-long.792/) and
-[Mixture-of-Agents](https://arxiv.org/abs/2406.04692), but its systems shape is
-closer to the hedged requests in
-[The Tail at Scale](https://research.google/pubs/the-tail-at-scale/). The v0
-hypothesis was that trace deterioration could replace a fixed delay as the
-hedge trigger. The frozen replay did not support it: its perfect failure recall
-came from escalating almost everything, and the matched timer achieved the
-same failure recall. Better live signals remain a research possibility, but
-v0 is closed rather than retuned.
+::: {.number-grid}
+::: {.number-card}
+<strong>61</strong>
 
-## Speculative council v0 replay: gate failed
+correct completions
+:::
+::: {.number-card}
+<strong>24</strong>
 
-The public harness was completed before the replay: all four registered arms,
-deterministic arm ordering, structured handoff, worktree isolation, external
-verification, worst-case cost admission, durable result schema, and explicit
-unknown-usage accounting for cancelled calls. The zero-spend replay then
-applied the frozen live-risk score in 40-word proxy chunks to the 89 historical
-calls with visible reasoning traces.
+silent errors
+:::
+::: {.number-card}
+<strong>60</strong>
 
-It triggered on 84 of 89 calls. Failure recall was 1.000: all 12 silently wrong
-completions and all 38 loud failures fired. But 34 of 39 correct completions
-also fired, a false-hedge rate of 0.872 against the registered ceiling of 0.40.
-The resulting 0.944 launch rate is operationally an always-on council wearing
-a trace label. A fixed timer matched to that launch rate also reached 1.000
-failure recall.
+loud failures
+:::
+:::
 
-Because the old export lacks native chunks, the replay was repeated at 20,
-40, 80, and 160 words per proxy observation. Every setting failed. At 20 words
-the trigger recalled 1.000 of failures with 0.897 false hedges; at 160 words
-false hedges fell only to 0.513 while failure recall fell to 0.880. No proxy
-chunking choice reached the registered 0.40 ceiling.
+The selected metadata model reached **AUROC 0.852** and improved Brier score by
+**36.9%** over the difficulty curve alone. Its instance-bootstrap 95% interval
+for that improvement was 11.5% to 57.6%.
 
-![The frozen v0 policy fires early on failures and correct calls alike. Trigger position is a word-fraction proxy because historical chunks were not timestamped.](figs/speculative-replay.svg)
+In plain language: silently wrong completions used about **54,700 billed
+tokens**, compared with **36,100** for correct completions, and took about
+**756 seconds**, compared with **524 seconds**. Their effective billed token
+rates were almost identical. MiniMax did not appear to generate more slowly
+when it was wrong; it simply continued for longer.
 
-The historical export has no streamed chunk timestamps, so the registered
-15-second warning-time condition is **Censored**. A proportional timing proxy
-is reported only as a diagnostic and is not used to pass the gate. The
-non-timing false-hedge condition already fails, so no speculative live calls
-are warranted and no API money was spent. Reproducibility:
-[result JSON](data/speculative-replay.json) ·
-[per-call replay](data/speculative-replay-predictions.jsonl).
+The trace-only model was much weaker: **AUROC 0.671** and **7.4% Brier skill**,
+with an uncertainty interval that crossed zero. The earlier trace-ranking
+result did not transfer into a dependable probability of correctness.
 
-![Chunk-size sensitivity changes the trade-off but does not pass the gate.](figs/speculative-replay-sensitivity.svg)
+![Four retrospective confidence models. Metadata and the combined model clear the exploratory thresholds; trace features alone do not.](figs/confidence-minimax-ablation.svg)
 
-## Related work
+::: {.interpretation}
+### What this result does—and does not—say
 
-This programme sits between dynamic model evaluation, psychometric model
-measurement, and inference-time routing. Generated evaluations such as
-[GSM-Symbolic](https://arxiv.org/abs/2410.05229) and
-[Dynamic Evaluation by Meta Probing Agents](https://proceedings.mlr.press/v235/zhu24m.html)
-reduce dependence on static test banks. [IRT-Router](https://aclanthology.org/2025.acl-long.761/)
-and [RouteLLM](https://arxiv.org/abs/2406.18665) connect estimated difficulty
-or preference to model selection. [Self-Consistency](https://arxiv.org/abs/2203.11171)
-uses agreement across sampled reasoning paths. The present study asks a
-narrower deployment question: after controlling for a model's measured
-difficulty frontier, does its own trace or serving telemetry provide calibrated
-evidence about this particular answer?
+It says metadata is worth a fresh test. It does **not** yet show that the score
+will work on new calls. The old calls were used to choose the model, so this
+finding remains **Exploratory**.
+:::
 
-## Open record
+## Study 1: the fresh MiniMax test is running
 
-The dated [field journal](journal.html) is preserved as process evidence. The
-public protocol is committed before the prospective batch. Results are
-reported whether the gate passes or fails, and a failed gate stops spend rather
-than becoming a new round of feature search.
+The prospective test was frozen before collecting its evaluation calls:
 
-Code is licensed under MIT. Research text and released study data are licensed
-under CC BY 4.0, subject to the terms of the providers that produced model
-responses.
+- one model: `or/minimax-m2.5`;
+- one route: `openrouter/Parasail`;
+- a fixed 65,536-token cap and prompt version;
+- a metadata-only confidence model selected in advance;
+- one final analysis, with no peeking and retuning;
+- stop after at least 60 correct and 60 silently wrong completions, 600 calls,
+  or USD 40—whichever comes first.
+
+The result will count as supported only if Brier skill remains at least 10%,
+its instance-bootstrap 95% interval excludes zero, and AUROC remains at least
+0.75. If it fails, the negative result is the result.
+
+[Read the frozen MiniMax protocol](minimax-confidence-protocol.html) ·
+[Download the exploratory result JSON](data/confidence-minimax.json) ·
+[Download the compact study table](data/minimax-confidence-v1.jsonl.gz)
+
+## Study 2: the trace-triggered backup idea failed
+
+The control idea was simple:
+
+1. Start with a trace-visible primary model.
+2. Watch for persistent backtracking, hedging, repetition, or give-up language.
+3. If risk stays high, pause external side effects and launch challenger models.
+4. Accept only an answer that passes an external verifier; cancel the rest.
+
+This differs from a conventional model council. A council launches several
+models by default and combines completed answers. The proposed controller was
+supposed to launch backups only when needed.
+
+Before making any paid calls, the frozen trigger was replayed over every
+historical call with a visible reasoning trace.
+
+::: {.number-grid .negative-result}
+::: {.number-card}
+<strong>84 / 89</strong>
+
+calls launched backups
+:::
+::: {.number-card}
+<strong>50 / 50</strong>
+
+failures triggered
+:::
+::: {.number-card}
+<strong>34 / 39</strong>
+
+correct calls also triggered
+:::
+::: {.number-card}
+<strong>USD 0</strong>
+
+new API spend
+:::
+:::
+
+The policy caught every failure, but only because it escalated **94.4% of all
+calls**. Its false-hedge rate on correct completions was **87.2%**, far above
+the registered 40% ceiling. A simple timer matched to the same launch rate also
+caught every failure.
+
+Changing the replay observation size did not rescue the policy. Coarser chunks
+reduced false alarms, but also lost failures; every tested setting failed the
+gate.
+
+![Failure recall stays high as replay chunks grow, but false hedges never fall below the registered ceiling.](figs/speculative-replay-sensitivity.svg)
+
+The historical traces lack timestamped chunks, so the promised 15-second
+warning-time test is **Censored**. That missing clock does not change the
+decision: the false-alarm gate already failed. The live branch was stopped and
+the threshold was not retuned.
+
+[Read the frozen design and outcome](speculative-council-protocol.html) ·
+[Download the replay result](data/speculative-replay.json) ·
+[Download per-call replay decisions](data/speculative-replay-predictions.jsonl)
+
+## What to take away today
+
+::: {.claim-list}
+::: {.claim .supported}
+### Supported
+
+Difficulty-response curves provide a useful baseline probability.
+:::
+
+::: {.claim .exploratory}
+### Exploratory
+
+Completion length and elapsed time may improve per-answer confidence for
+MiniMax. The prospective test is still running.
+:::
+
+::: {.claim .not-supported}
+### Not supported
+
+The frozen trace dictionary is not a strong calibrated confidence model, and
+the frozen trace trigger is not a selective backup policy.
+:::
+
+::: {.claim .censored}
+### Censored
+
+End-to-end billed tokens per second is not generation throughput. Queueing,
+retries, and transport are mixed into the denominator; streamed timing is
+needed to measure actual output rate.
+:::
+:::
+
+## The open record
+
+This is intentionally a living research page rather than a polished preprint.
+The [field journal](journal.html) preserves the sequence of questions, mistakes,
+protocol freezes, and negative results. The [paper](paper.pdf) contains the
+broader difficulty-curve work. A conventional preprint will wait for at least
+one prospectively validated result.
+
+The programme connects generated evaluation and dynamic testing
+([GSM-Symbolic](https://arxiv.org/abs/2410.05229),
+[Dynamic Evaluation](https://proceedings.mlr.press/v235/zhu24m.html)) with
+difficulty-aware routing ([IRT-Router](https://aclanthology.org/2025.acl-long.761/),
+[RouteLLM](https://arxiv.org/abs/2406.18665)) and answer agreement
+([Self-Consistency](https://arxiv.org/abs/2203.11171)). Its narrower question
+is whether signals produced during one model call help us trust that call.
+
+Code is MIT licensed. Research text and released study data are CC BY 4.0,
+subject to provider terms.
