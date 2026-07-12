@@ -26,6 +26,7 @@
 #let S = json("../analysis/speculative-replay.json")
 #let G = json("../analysis/glm-existing-data-audit.json")
 #let P = json("../analysis/glm-5.2-frontier-scout-v1.json")
+#let F = json("../analysis/glm-5.2-frontier-256k-siliconflow-v1.json")
 #let counts = C.at("cohort").at("counts")
 #let metadata = C.at("metrics").at("metadata")
 #let trace = C.at("metrics").at("trace")
@@ -175,11 +176,13 @@ located a GLM-5.2 confidence frontier. It is not evidence that GLM-5.2 lacks a
 confidence signal: loud reliability failures dominated before a silent-error
 cohort appeared under this call condition.
 
-A 262,144-token SiliconFlow follow-up on the same instances is registered but
-not started. StreamLake cannot serve that completion allowance, so the design
-changes both cap and provider and cannot identify a cap-only effect. Collection
-has no dollar ceiling but remains bounded to ten calls. It is blocked pending
-rotation of an exposed API credential.
+A 262,144-token SiliconFlow follow-up then ran on the same instances. It spent
+USD #n(F.at("spend").at("actual_usd"), digits: 6) and produced three correct
+completions, three silent errors, and four loud failures. No call truncated;
+the loud failures were one 19-bit answer and three malformed API responses.
+The reliability gate allowed at most two loud failures and therefore failed.
+Provider and cap changed together, so the paired difference is not a cap-only
+effect. Six completed answers are too few for a confidence model.
 
 = A negative control result
 
@@ -241,7 +244,8 @@ transport, retries, and provider overhead.
   [*Censored - GLM*], [The existing GLM pilot is too small and route-confounded
     to identify a confidence result.],
   [*Not supported - GLM-5.2*], [The pinned scout found no silent errors; six of
-    ten calls failed loudly, so the focus batch was stopped.],
+    ten calls failed loudly. The 256K follow-up still had four loud failures
+    and did not clear its reliability gate.],
 )]
 
 The result is deliberately narrow: one model, one provider route, one task

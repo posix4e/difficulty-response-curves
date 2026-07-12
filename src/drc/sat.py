@@ -103,7 +103,7 @@ def generate(seed: int, difficulty: float, variables: int = 20) -> Instance:
 
 
 def parse_assignment(text: str, variables: int) -> tuple[bool, ...] | None:
-    matches = re.findall(r"(?im)^\s*FINAL\s*:\s*([01](?:[\s,]+[01])*)\s*$", text)
+    matches = re.findall(r"(?im)^\s*FINAL\s*:\s*((?:[01][\s,]*)+)\s*$", text)
     if not matches:
         return None
     bits = re.findall(r"[01]", matches[-1])

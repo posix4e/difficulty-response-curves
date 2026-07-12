@@ -163,13 +163,23 @@ class Store:
 
     def study_rows(self, study: str, model_id: str) -> list[dict[str, Any]]:
         rows = self.connection.execute(
-            """SELECT c.*, i.level_value, i.seed
+            """SELECT c.*, i.level_value, i.seed, i.payload_json
                FROM calls c JOIN instances i USING(instance_id)
                WHERE c.stage=? AND c.model_id=?
                ORDER BY c.call_id""",
             (study, model_id),
         )
         return [dict(row) for row in rows]
+
+    def update_score(
+        self, call_id: int, outcome: str, parsed_answer: str | None
+    ) -> None:
+        with self._lock:
+            self.connection.execute(
+                "UPDATE calls SET outcome=?, pass=?, parsed_answer=? WHERE call_id=?",
+                (outcome, int(outcome == "pass"), parsed_answer, call_id),
+            )
+            self.connection.commit()
 
     def all_instances(self, study: str) -> list[dict[str, Any]]:
         return [
