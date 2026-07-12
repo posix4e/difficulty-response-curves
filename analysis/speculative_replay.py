@@ -169,7 +169,9 @@ def main() -> int:
             "predictions": str(predictions.relative_to(ROOT)),
             "predictions_sha256": sha256(predictions),
             "figure": str(figure.relative_to(ROOT)),
+            "figure_sha256": sha256(figure),
             "sensitivity_figure": str(sensitivity_figure.relative_to(ROOT)),
+            "sensitivity_figure_sha256": sha256(sensitivity_figure),
             "new_spend_usd": 0.0,
         },
     }
