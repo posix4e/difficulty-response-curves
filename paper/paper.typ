@@ -25,6 +25,7 @@
 #let C = json("../analysis/confidence-minimax.json")
 #let S = json("../analysis/speculative-replay.json")
 #let G = json("../analysis/glm-existing-data-audit.json")
+#let P = json("../analysis/glm-5.2-frontier-scout-v1.json")
 #let counts = C.at("cohort").at("counts")
 #let metadata = C.at("metrics").at("metadata")
 #let trace = C.at("metrics").at("trace")
@@ -117,7 +118,7 @@ correct completions, #counts.at("silently_wrong_completed") silent errors, and
   spend-gate thresholds.],
 )
 
-#table(
+#block(breakable: false)[#table(
   columns: (1.25fr, 1fr, 1fr, 1fr),
   inset: 6pt,
   stroke: 0.45pt + rgb("#d5d8d2"),
@@ -131,7 +132,7 @@ correct completions, #counts.at("silently_wrong_completed") silent errors, and
   [Combined], [#n(C.at("metrics").at("combined").at("brier"))],
     [#pct(C.at("metrics").at("combined").at("brier_skill_vs_curve"))],
     [#n(C.at("metrics").at("combined").at("auc"))],
-)
+)]
 
 The metadata model's 95% clustered interval for Brier skill was
 [#pct(metadata.at("brier_skill_ci95").at(0)),
@@ -158,6 +159,21 @@ This audit is *Censored*, not a negative model result. It made no new calls and
 spent USD 0. A paid GLM replication would first need an explicit model
 checkpoint, one provider pin, a frontier-local sampling design, and a separate
 budget decision.
+
+== Modern GLM-5.2 scout
+
+We then froze and ran a ten-call frontier scout on `z-ai/glm-5.2`, pinned to
+StreamLake. It spent USD #n(P.at("spend").at("actual_usd"), digits: 6) and
+returned #P.at("counts").at("correct_completed") correct completions, no
+silent errors, and #P.at("counts").at("loud_failure") loud failures. Four
+calls exhausted the 32,768-token cap, one returned 19 assignment bits instead
+of 20, and one ended in a malformed API response.
+
+The registered cohort-discovery gate failed, so the planned thirty-call focus
+batch was not run. This is *Not supported* for the narrow claim that the scout
+located a GLM-5.2 confidence frontier. It is not evidence that GLM-5.2 lacks a
+confidence signal: loud reliability failures dominated before a silent-error
+cohort appeared under this call condition.
 
 = A negative control result
 
@@ -206,7 +222,7 @@ transport, retries, and provider overhead.
 
 = What the work supports today
 
-#table(
+#block(breakable: false)[#table(
   columns: (auto, 1fr),
   inset: 7pt,
   stroke: 0.45pt + rgb("#d5d8d2"),
@@ -218,7 +234,9 @@ transport, retries, and provider overhead.
   [*Censored*], [Warning time and true generation throughput need streamed timing.],
   [*Censored - GLM*], [The existing GLM pilot is too small and route-confounded
     to identify a confidence result.],
-)
+  [*Not supported - GLM-5.2*], [The pinned scout found no silent errors; six of
+    ten calls failed loudly, so the focus batch was stopped.],
+)]
 
 The result is deliberately narrow: one model, one provider route, one task
 family, and a frontier-local difficulty window. It does not establish a

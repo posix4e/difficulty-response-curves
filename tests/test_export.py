@@ -20,6 +20,7 @@ def test_export_separates_compact_metadata_from_raw_text(study_config, tmp_path)
                 "prompt_version": 1,
                 "request_json": "{}",
                 "response_text": "private trace text",
+                "reasoning_text": "private reasoning text",
                 "finish_reason": "stop",
                 "outcome": "pass",
                 "pass": 1,
@@ -34,7 +35,9 @@ def test_export_separates_compact_metadata_from_raw_text(study_config, tmp_path)
     with gzip.open(destination / "traces.jsonl.gz", "rt") as stream:
         trace = json.loads(stream.readline())
     assert "response_text" not in compact
+    assert "reasoning_text" not in compact
     assert trace["response_text"] == "private trace text"
+    assert trace["reasoning_text"] == "private reasoning text"
     assert len(compact["instance_hash"]) == 16
 
 

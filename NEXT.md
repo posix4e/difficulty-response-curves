@@ -111,4 +111,14 @@ confidence replication.
 Do not pool those calls into MiniMax and do not fit a GLM confidence model to
 them. A paid replication requires explicit decisions about the exact GLM
 checkpoint, one pinned provider, frontier levels, stopping counts, and a new
-budget. None of those choices is implied by the current MiniMax authorization.
+budget.
+
+Those decisions were subsequently frozen for a modern `z-ai/glm-5.2` scout.
+The ten-call StreamLake-only scout produced four correct completions, zero
+silent errors, and six loud failures for USD 0.281850. It failed its
+cohort-discovery gate, so the registered thirty-call focus batch was not run.
+
+Do not fit a confidence model to this scout. Any further GLM-5.2 calls require
+a new reliability protocol that decides whether to increase the token cap,
+lower reasoning effort, or change the output contract. That protocol must not
+retroactively reinterpret the completed scout.

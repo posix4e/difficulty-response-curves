@@ -249,6 +249,12 @@ call, so its paid experiment was cancelled before spending.</p>
 contain only five silent errors. They cannot identify a confidence
 replication.</p>
 </section>
+<section id="not-supported-glm-5.2-frontier-scout" class="summary-card not-supported">
+<h3>Not supported — GLM-5.2 frontier scout</h3>
+<p>A new ten-call, provider-pinned scout produced four correct
+completions, no silent errors, and six loud failures. It did not locate
+a confidence cohort.</p>
+</section>
 </div>
 <h2 id="what-exactly-counts-as-failure">What exactly counts as
 failure?</h2>
@@ -358,6 +364,25 @@ lacks a confidence signal. No new calls were made and new spend was USD
 0.</p>
 <p><a href="data/glm-existing-data-audit.json">Download the GLM cohort
 audit</a></p>
+<h3 id="modern-glm-5.2-scout-loud-failures-came-first">Modern GLM-5.2
+scout: loud failures came first</h3>
+<p>A protocol frozen before spending tested <code>z-ai/glm-5.2</code>
+through StreamLake only at five difficulties from 4.2 to 6.6. The
+ten-call scout cost USD 0.281850 and produced four correct completions,
+no silently wrong completed answers, and six loud failures: four
+token-cap truncations, one malformed 19-bit answer, and one malformed
+API response.</p>
+<p>The registered cohort-discovery gate failed. The planned thirty-call
+focus batch was therefore stopped before launch. This result is
+<strong>Not supported</strong> for the narrow claim that the scout
+located a GLM-5.2 confidence frontier. It does not show that GLM-5.2
+lacks confidence signals; it shows that under the frozen 32,768-token
+high-reasoning condition, operational failures appeared before a
+silent-error cohort.</p>
+<p><a href="glm-5.2-frontier-pilot.html">Read the frozen scout and
+result</a> · <a href="data/glm-5.2-frontier-scout-v1.json">Download the
+result JSON</a> · <a href="data/glm-5.2-frontier-scout-v1/calls.jsonl.gz">Download the
+compact calls</a></p>
 <h2 id="study-2-the-trace-triggered-backup-idea-failed">Study 2: the
 trace-triggered backup idea failed</h2>
 <p>The control idea was simple:</p>
@@ -429,8 +454,9 @@ for MiniMax. The prospective test is still running.</p>
 <section id="not-supported" class="claim not-supported">
 <h3>Not supported</h3>
 <p>The frozen trace dictionary is not a strong calibrated confidence
-model, and the frozen trace trigger is not a selective backup
-policy.</p>
+model, and the frozen trace trigger is not a selective backup policy.
+The GLM-5.2 scout also failed to locate a silent-error frontier under
+its frozen call condition.</p>
 </section>
 <section id="censored" class="claim censored">
 <h3>Censored</h3>

@@ -1,6 +1,7 @@
 # GLM-5.2 frontier pilot v1
 
-**Status: Exploratory protocol.** Frozen before the first GLM-5.2 call.
+**Status: Not supported — frontier not located.** Frozen before the first
+GLM-5.2 call; completed on 12 July 2026.
 
 ## Question
 
@@ -43,3 +44,29 @@ confidence experiment remains unauthorized.
 Reasoning text, completion/reasoning tokens, elapsed time, finish reason, and
 provider-reported cost are retained for later feature specification. This
 exploratory pilot cannot establish that any of them predict correctness.
+
+```{=typst}
+#pagebreak()
+```
+
+## Result
+
+The scout stopped at its ten-call cap after spending USD 0.281850. All ten
+calls were pinned to StreamLake with no fallback or provider mismatch.
+
+| Difficulty | Correct | Silent error | Loud failure |
+|---:|---:|---:|---:|
+| 4.2 | 2 | 0 | 0 |
+| 4.8 | 1 | 0 | 1 |
+| 5.4 | 0 | 0 | 2 |
+| 6.0 | 1 | 0 | 1 |
+| 6.6 | 0 | 0 | 2 |
+
+The six loud failures were four token-cap truncations, one 19-bit answer where
+20 bits were required, and one malformed API response. There were no silently
+wrong completed answers and no mixed completed-outcome level. The cohort gate
+failed, so the thirty-call focus stage was not run.
+
+This is not evidence that GLM-5.2 lacks a confidence signal. It shows that
+under the frozen 32,768-token, high-reasoning condition, loud reliability
+failures dominate before this instrument reveals a silent-error frontier.

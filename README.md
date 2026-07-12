@@ -12,6 +12,7 @@ gates, and are not part of the runtime.
 - [Plain-language research page](research/program.md)
 - [Concise paper](paper/paper.pdf)
 - [Frozen MiniMax protocol](research/studies/minimax-confidence-v1.md)
+- [GLM-5.2 frontier scout and result](research/studies/glm-5.2-frontier-pilot-v1.md)
 - [Field journal](docs/journal.html)
 - [Next-step runbook](NEXT.md)
 

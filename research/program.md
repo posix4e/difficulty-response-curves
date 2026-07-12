@@ -79,6 +79,13 @@ paid experiment was cancelled before spending.
 The 14 historical GLM-5 calls span three unpinned providers and contain only
 five silent errors. They cannot identify a confidence replication.
 :::
+
+::: {.summary-card .not-supported}
+### Not supported — GLM-5.2 frontier scout
+
+A new ten-call, provider-pinned scout produced four correct completions, no
+silent errors, and six loud failures. It did not locate a confidence cohort.
+:::
 :::
 
 ## What exactly counts as failure?
@@ -186,6 +193,25 @@ new calls were made and new spend was USD 0.
 
 [Download the GLM cohort audit](data/glm-existing-data-audit.json)
 
+### Modern GLM-5.2 scout: loud failures came first
+
+A protocol frozen before spending tested `z-ai/glm-5.2` through StreamLake
+only at five difficulties from 4.2 to 6.6. The ten-call scout cost USD
+0.281850 and produced four correct completions, no silently wrong completed
+answers, and six loud failures: four token-cap truncations, one malformed
+19-bit answer, and one malformed API response.
+
+The registered cohort-discovery gate failed. The planned thirty-call focus
+batch was therefore stopped before launch. This result is **Not supported**
+for the narrow claim that the scout located a GLM-5.2 confidence frontier. It
+does not show that GLM-5.2 lacks confidence signals; it shows that under the
+frozen 32,768-token high-reasoning condition, operational failures appeared
+before a silent-error cohort.
+
+[Read the frozen scout and result](glm-5.2-frontier-pilot.html) ·
+[Download the result JSON](data/glm-5.2-frontier-scout-v1.json) ·
+[Download the compact calls](data/glm-5.2-frontier-scout-v1/calls.jsonl.gz)
+
 ## Study 2: the trace-triggered backup idea failed
 
 The control idea was simple:
@@ -265,7 +291,8 @@ MiniMax. The prospective test is still running.
 ### Not supported
 
 The frozen trace dictionary is not a strong calibrated confidence model, and
-the frozen trace trigger is not a selective backup policy.
+the frozen trace trigger is not a selective backup policy. The GLM-5.2 scout
+also failed to locate a silent-error frontier under its frozen call condition.
 :::
 
 ::: {.claim .censored}
