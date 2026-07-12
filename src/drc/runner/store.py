@@ -214,6 +214,16 @@ class Store:
         q = "SELECT COALESCE(SUM(cost_microdollars),0) FROM calls WHERE cost_source != 'openrouter'"
         return int(self.conn.execute(q).fetchone()[0])
 
+    def recent_model_costs(self, model_id: str, limit: int = 500) -> list[int]:
+        """Return persisted costs for reserve seeding, newest first."""
+        rows = self.conn.execute(
+            """SELECT cost_microdollars FROM calls
+               WHERE model_id=? AND cost_microdollars > 0
+               ORDER BY call_id DESC LIMIT ?""",
+            (model_id, limit),
+        ).fetchall()
+        return [int(row[0]) for row in rows]
+
     def ledger(self) -> list[dict[str, Any]]:
         cur = self.conn.execute(
             """SELECT stage, model_id, COUNT(*) AS n_calls,

@@ -60,6 +60,17 @@ def test_p95_estimate_tracks_observations(tmp_path):
     assert guard.p95_estimate("m", 5000) >= 100
 
 
+def test_p95_reserve_is_seeded_from_persisted_model_costs(tmp_path):
+    store = _store(tmp_path)
+    store.conn.execute("INSERT OR IGNORE INTO instances (instance_id, family, task_version, set_name, level_idx, level_value, params_json, payload_json, witness_json, seed) VALUES ('i0','sat',1,'t',0,2.0,'{}','{}','[]',0)")
+    for index, micro in enumerate((40_000, 50_000, 60_000, 70_000, 90_000)):
+        row = _fake_call_row("history", "m", micro)
+        row["sample_idx"] = index
+        store.record_call(row)
+    guard = BudgetGuard(store, {})
+    assert guard.p95_estimate("m", 5_000) == 90_000
+
+
 def test_summary_distinguishes_stage_from_global_spend(tmp_path):
     store = _store(tmp_path)
     store.conn.execute("INSERT OR IGNORE INTO instances (instance_id, family, task_version, set_name, level_idx, level_value, params_json, payload_json, witness_json, seed) VALUES ('i0','sat',1,'t',0,2.0,'{}','{}','[]',0)")

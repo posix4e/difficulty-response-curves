@@ -10,6 +10,7 @@ the model's running p95 cost.
 
 from __future__ import annotations
 
+import math
 import threading
 
 from ..config import GLOBAL_CAP_USD, HARD_REFUSE_USD, SOFT_STOP_USD
@@ -29,6 +30,7 @@ class BudgetGuard:
         self._lock = threading.Lock()
         self._inflight: dict[str, int] = {}  # call token -> reserved micro
         self._observed: dict[str, list[int]] = {}  # model -> recent costs
+        self._seeded_models: set[str] = set()
         self._counter = 0
 
     # -- cost estimation ------------------------------------------------------
@@ -41,10 +43,17 @@ class BudgetGuard:
                 del hist[: len(hist) - 500]
 
     def p95_estimate(self, model_id: str, fallback_micro: int) -> int:
+        if model_id not in self._seeded_models:
+            persisted = self.store.recent_model_costs(model_id)
+            with self._lock:
+                if model_id not in self._seeded_models:
+                    self._observed.setdefault(model_id, []).extend(persisted)
+                    self._seeded_models.add(model_id)
         hist = self._observed.get(model_id, [])
         if len(hist) < 5:
             return fallback_micro
-        return sorted(hist)[max(0, int(len(hist) * 0.95) - 1)]
+        index = max(0, math.ceil(len(hist) * 0.95) - 1)
+        return sorted(hist)[index]
 
     # -- admission control ------------------------------------------------------
 
