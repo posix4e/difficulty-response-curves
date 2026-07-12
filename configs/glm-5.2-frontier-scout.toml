@@ -1,0 +1,36 @@
+[study]
+name = "glm-5.2-frontier-scout-v1"
+prompt_version = 1
+database = "data/glm-5.2-frontier-pilot.sqlite"
+concurrency = 2
+collection_locked = false
+
+[model]
+record_id = "or/glm-5.2@streamlake"
+api_model = "z-ai/glm-5.2"
+base_url = "https://openrouter.ai/api/v1"
+key_env = "or"
+provider = "StreamLake"
+max_tokens = 32768
+temperature = 0.6
+reasoning_effort = "high"
+price_in_per_million = 0.42
+price_out_per_million = 1.32
+
+[task]
+variables = 20
+difficulties = [4.2, 4.8, 5.4, 6.0, 6.6]
+instances_per_level = 2
+samples_per_instance = 1
+seed = 2026071201
+
+[stop]
+correct = 10
+silent_wrong = 10
+max_calls = 10
+max_spend_usd = 0.75
+
+[sentinels]
+before_stage = "not-applicable-scout-pre"
+after_stage = "not-applicable-scout-post"
+calls_each = 0

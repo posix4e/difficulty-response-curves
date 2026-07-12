@@ -14,6 +14,8 @@ class ModelConfig:
     key_env: str
     provider: str
     max_tokens: int
+    temperature: float
+    reasoning_effort: str
     price_in_per_million: float
     price_out_per_million: float
 
@@ -78,6 +80,12 @@ class StudyConfig:
             raise ValueError("concurrency must be positive")
         if self.model.max_tokens < 1 or not self.model.provider:
             raise ValueError("model token cap and provider pin are required")
+        if not 0 <= self.model.temperature <= 2:
+            raise ValueError("temperature must be between zero and two")
+        if self.model.reasoning_effort not in {
+            "none", "minimal", "low", "medium", "high", "xhigh", "max"
+        }:
+            raise ValueError("unsupported reasoning effort")
         if self.task.variables < 3 or not self.task.difficulties:
             raise ValueError("SAT task configuration is incomplete")
         if self.task.instances_per_level < 1 or self.task.samples_per_instance < 1:
@@ -108,6 +116,8 @@ def load_config(path: str | Path = "configs/study.toml") -> StudyConfig:
             key_env=str(model["key_env"]),
             provider=str(model["provider"]),
             max_tokens=int(model["max_tokens"]),
+            temperature=float(model.get("temperature", 1.0)),
+            reasoning_effort=str(model.get("reasoning_effort", "medium")),
             price_in_per_million=float(model["price_in_per_million"]),
             price_out_per_million=float(model["price_out_per_million"]),
         ),

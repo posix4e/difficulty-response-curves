@@ -53,6 +53,7 @@ class ProviderResponse:
     provider: str
     usage: Usage
     latency_ms: float
+    reasoning_text: str = ""
     http_status: int = 200
     error: str | None = None
 

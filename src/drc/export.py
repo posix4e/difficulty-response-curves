@@ -57,6 +57,7 @@ def export(config: StudyConfig, destination: str | Path) -> dict[str, Any]:
                 "call_id": int(row["call_id"]),
                 "instance_hash": identifier,
                 "response_text": row.get("response_text") or "",
+                "reasoning_text": row.get("reasoning_text") or "",
             }
         )
 

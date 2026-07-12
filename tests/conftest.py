@@ -22,6 +22,8 @@ def study_config(tmp_path: Path) -> StudyConfig:
             key_env="TEST_OPENROUTER_KEY",
             provider="Parasail",
             max_tokens=100,
+            temperature=1.0,
+            reasoning_effort="medium",
             price_in_per_million=0.30,
             price_out_per_million=1.20,
         ),

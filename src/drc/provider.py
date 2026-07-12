@@ -37,6 +37,11 @@ class OpenRouter:
             "model": self.model.api_model,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": self.model.max_tokens,
+            "temperature": self.model.temperature,
+            "reasoning": {
+                "effort": self.model.reasoning_effort,
+                "exclude": False,
+            },
             "provider": {"only": [self.model.provider], "allow_fallbacks": False},
         }
         start = time.monotonic()
@@ -65,6 +70,9 @@ class OpenRouter:
                     cost_microdollars=int(round(float(cost) * 1_000_000)) if cost is not None else 0,
                 ),
                 latency_ms=(time.monotonic() - start) * 1000,
+                reasoning_text=_text(
+                    message.get("reasoning") or message.get("reasoning_content")
+                ),
                 http_status=response.status_code,
             )
         except Exception as error:  # transport and malformed payload are loud failures

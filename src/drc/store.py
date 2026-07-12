@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS calls (
   prompt_sha256 TEXT,
   request_json TEXT NOT NULL,
   response_text TEXT,
+  reasoning_text TEXT,
   finish_reason TEXT,
   parsed_answer TEXT,
   outcome TEXT NOT NULL,
@@ -82,6 +83,11 @@ class Store:
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA journal_mode=WAL")
         self.connection.executescript(SCHEMA)
+        columns = {
+            str(row[1]) for row in self.connection.execute("PRAGMA table_info(calls)")
+        }
+        if "reasoning_text" not in columns:
+            self.connection.execute("ALTER TABLE calls ADD COLUMN reasoning_text TEXT")
         self.connection.commit()
         self._lock = threading.Lock()
 
