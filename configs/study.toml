@@ -1,0 +1,36 @@
+[study]
+name = "minimax-confidence-v1"
+prompt_version = 1
+database = "data/drc.sqlite"
+concurrency = 4
+collection_locked = true
+
+[model]
+record_id = "or/minimax-m2.5"
+api_model = "minimax/minimax-m2.5"
+base_url = "https://openrouter.ai/api/v1"
+key_env = "OPENROUTER_API_KEY"
+provider = "Parasail"
+max_tokens = 65536
+temperature = 1.0
+reasoning_effort = "medium"
+price_in_per_million = 0.30
+price_out_per_million = 1.20
+
+[task]
+variables = 20
+difficulties = [6.3, 6.6, 6.9]
+instances_per_level = 20
+samples_per_instance = 10
+seed = 20260712
+
+[stop]
+correct = 60
+silent_wrong = 60
+max_calls = 600
+max_spend_usd = 38.0
+
+[sentinels]
+before_stage = "minimax-confidence-sentinel-pre"
+after_stage = "minimax-confidence-sentinel-post"
+calls_each = 6

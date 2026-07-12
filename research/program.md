@@ -7,7 +7,7 @@ lang: en-GB
 ---
 
 <nav class="page-nav" aria-label="Research links">
-  <a href="index.html">Main project</a>
+  <a href="index.html">Research home</a>
   <a href="journal.html">Field journal</a>
   <a href="paper.pdf">Paper</a>
   <a href="minimax-confidence-protocol.html">MiniMax protocol</a>
@@ -71,6 +71,20 @@ language did not produce a reliable confidence score.
 
 The frozen warning policy launched backup models on almost every call, so its
 paid experiment was cancelled before spending.
+:::
+
+::: {.summary-card .censored}
+### Censored — existing GLM calls
+
+The 14 historical GLM-5 calls span three unpinned providers and contain only
+five silent errors. They cannot identify a confidence replication.
+:::
+
+::: {.summary-card .not-supported}
+### Not supported — GLM-5.2 frontier scout
+
+A new ten-call, provider-pinned scout produced four correct completions, no
+silent errors, and six loud failures. It did not locate a confidence cohort.
 :::
 :::
 
@@ -160,6 +174,44 @@ its instance-bootstrap 95% interval excludes zero, and AUROC remains at least
 [Download the exploratory result JSON](data/confidence-minimax.json) ·
 [Download the compact study table](data/minimax-confidence-v1.jsonl.gz)
 
+## GLM replication audit: the old calls are not enough
+
+The released database contains **14 calls on `z-ai/glm-5`**: nine correct
+completions and five silent errors. That is useful reconnaissance, but not a
+replication of the MiniMax confidence result.
+
+Three problems prevent a calibrated comparison:
+
+1. The cohort has five silent errors, below the registered minimum of 20.
+2. Calls were served unpinned across Phala, SiliconFlow, and Z.ai routes.
+3. Correct and wrong calls occupy different difficulty cells; no tested level
+   contains both outcomes, so difficulty and metadata effects are confounded.
+
+The audit is therefore **Censored**, not negative. It says the available data
+cannot answer the question; it does not say GLM lacks a confidence signal. No
+new calls were made and new spend was USD 0.
+
+[Download the GLM cohort audit](data/glm-existing-data-audit.json)
+
+### Modern GLM-5.2 scout: loud failures came first
+
+A protocol frozen before spending tested `z-ai/glm-5.2` through StreamLake
+only at five difficulties from 4.2 to 6.6. The ten-call scout cost USD
+0.281850 and produced four correct completions, no silently wrong completed
+answers, and six loud failures: four token-cap truncations, one malformed
+19-bit answer, and one malformed API response.
+
+The registered cohort-discovery gate failed. The planned thirty-call focus
+batch was therefore stopped before launch. This result is **Not supported**
+for the narrow claim that the scout located a GLM-5.2 confidence frontier. It
+does not show that GLM-5.2 lacks confidence signals; it shows that under the
+frozen 32,768-token high-reasoning condition, operational failures appeared
+before a silent-error cohort.
+
+[Read the frozen scout and result](glm-5.2-frontier-pilot.html) ·
+[Download the result JSON](data/glm-5.2-frontier-scout-v1.json) ·
+[Download the compact calls](data/glm-5.2-frontier-scout-v1/calls.jsonl.gz)
+
 ## Study 2: the trace-triggered backup idea failed
 
 The control idea was simple:
@@ -239,7 +291,8 @@ MiniMax. The prospective test is still running.
 ### Not supported
 
 The frozen trace dictionary is not a strong calibrated confidence model, and
-the frozen trace trigger is not a selective backup policy.
+the frozen trace trigger is not a selective backup policy. The GLM-5.2 scout
+also failed to locate a silent-error frontier under its frozen call condition.
 :::
 
 ::: {.claim .censored}
@@ -247,7 +300,8 @@ the frozen trace trigger is not a selective backup policy.
 
 End-to-end billed tokens per second is not generation throughput. Queueing,
 retries, and transport are mixed into the denominator; streamed timing is
-needed to measure actual output rate.
+needed to measure actual output rate. The existing GLM-5 pilot is also too
+small and route-confounded to serve as a confidence replication.
 :::
 :::
 

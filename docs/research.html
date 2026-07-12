@@ -189,7 +189,7 @@ frontier</p>
 <p class="date">12 July 2026</p>
 </header>
 <nav class="page-nav" aria-label="Research links">
-<a href="index.html">Main project</a> <a href="journal.html">Field
+<a href="index.html">Research home</a> <a href="journal.html">Field
 journal</a> <a href="paper.pdf">Paper</a>
 <a href="minimax-confidence-protocol.html">MiniMax protocol</a>
 </nav>
@@ -242,6 +242,18 @@ give-up language did not produce a reliable confidence score.</p>
 <h3>Not supported — automatic fan-out</h3>
 <p>The frozen warning policy launched backup models on almost every
 call, so its paid experiment was cancelled before spending.</p>
+</section>
+<section id="censored-existing-glm-calls" class="summary-card censored">
+<h3>Censored — existing GLM calls</h3>
+<p>The 14 historical GLM-5 calls span three unpinned providers and
+contain only five silent errors. They cannot identify a confidence
+replication.</p>
+</section>
+<section id="not-supported-glm-5.2-frontier-scout" class="summary-card not-supported">
+<h3>Not supported — GLM-5.2 frontier scout</h3>
+<p>A new ten-call, provider-pinned scout produced four correct
+completions, no silent errors, and six loud failures. It did not locate
+a confidence cohort.</p>
 </section>
 </div>
 <h2 id="what-exactly-counts-as-failure">What exactly counts as
@@ -330,6 +342,47 @@ result.</p>
 protocol</a> · <a href="data/confidence-minimax.json">Download the
 exploratory result JSON</a> · <a href="data/minimax-confidence-v1.jsonl.gz">Download the compact study
 table</a></p>
+<h2 id="glm-replication-audit-the-old-calls-are-not-enough">GLM
+replication audit: the old calls are not enough</h2>
+<p>The released database contains <strong>14 calls on
+<code>z-ai/glm-5</code></strong>: nine correct completions and five
+silent errors. That is useful reconnaissance, but not a replication of
+the MiniMax confidence result.</p>
+<p>Three problems prevent a calibrated comparison:</p>
+<ol type="1">
+<li>The cohort has five silent errors, below the registered minimum of
+20.</li>
+<li>Calls were served unpinned across Phala, SiliconFlow, and Z.ai
+routes.</li>
+<li>Correct and wrong calls occupy different difficulty cells; no tested
+level contains both outcomes, so difficulty and metadata effects are
+confounded.</li>
+</ol>
+<p>The audit is therefore <strong>Censored</strong>, not negative. It
+says the available data cannot answer the question; it does not say GLM
+lacks a confidence signal. No new calls were made and new spend was USD
+0.</p>
+<p><a href="data/glm-existing-data-audit.json">Download the GLM cohort
+audit</a></p>
+<h3 id="modern-glm-5.2-scout-loud-failures-came-first">Modern GLM-5.2
+scout: loud failures came first</h3>
+<p>A protocol frozen before spending tested <code>z-ai/glm-5.2</code>
+through StreamLake only at five difficulties from 4.2 to 6.6. The
+ten-call scout cost USD 0.281850 and produced four correct completions,
+no silently wrong completed answers, and six loud failures: four
+token-cap truncations, one malformed 19-bit answer, and one malformed
+API response.</p>
+<p>The registered cohort-discovery gate failed. The planned thirty-call
+focus batch was therefore stopped before launch. This result is
+<strong>Not supported</strong> for the narrow claim that the scout
+located a GLM-5.2 confidence frontier. It does not show that GLM-5.2
+lacks confidence signals; it shows that under the frozen 32,768-token
+high-reasoning condition, operational failures appeared before a
+silent-error cohort.</p>
+<p><a href="glm-5.2-frontier-pilot.html">Read the frozen scout and
+result</a> · <a href="data/glm-5.2-frontier-scout-v1.json">Download the
+result JSON</a> · <a href="data/glm-5.2-frontier-scout-v1/calls.jsonl.gz">Download the
+compact calls</a></p>
 <h2 id="study-2-the-trace-triggered-backup-idea-failed">Study 2: the
 trace-triggered backup idea failed</h2>
 <p>The control idea was simple:</p>
@@ -401,14 +454,17 @@ for MiniMax. The prospective test is still running.</p>
 <section id="not-supported" class="claim not-supported">
 <h3>Not supported</h3>
 <p>The frozen trace dictionary is not a strong calibrated confidence
-model, and the frozen trace trigger is not a selective backup
-policy.</p>
+model, and the frozen trace trigger is not a selective backup policy.
+The GLM-5.2 scout also failed to locate a silent-error frontier under
+its frozen call condition.</p>
 </section>
 <section id="censored" class="claim censored">
 <h3>Censored</h3>
 <p>End-to-end billed tokens per second is not generation throughput.
 Queueing, retries, and transport are mixed into the denominator;
-streamed timing is needed to measure actual output rate.</p>
+streamed timing is needed to measure actual output rate. The existing
+GLM-5 pilot is also too small and route-confounded to serve as a
+confidence replication.</p>
 </section>
 </div>
 <h2 id="the-open-record">The open record</h2>

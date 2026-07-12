@@ -1,166 +1,144 @@
-"""Config loading: models, grids, stages, API key."""
-
 from __future__ import annotations
 
+from dataclasses import dataclass
 import os
-import re
-import tomllib
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_DIR = REPO_ROOT / "configs"
-DATA_DIR = REPO_ROOT / "data"
-DEFAULT_KEY_PATHS = (
-    os.environ.get("TRUSTEDROUTER_KEY_FILE", ""),
-    str(Path.home() / "src" / ".env-tr"),
-)
+import tomllib
 
 
 @dataclass(frozen=True)
-class ModelCfg:
-    model_id: str  # config key; also the recorded model_id in the store
-    tier: str
-    core: bool
-    api_path: str  # "openai" | "anthropic"
-    price_in: float  # $/1M prompt tokens
-    price_out: float  # $/1M completion tokens
-    max_completion_tokens: int
-    thinking_budget: int = 0
-    provider_only: tuple[str, ...] = ()
-    base_url: str = ""  # non-default gateway (e.g. OpenRouter); "" = TrustedRouter
-    key_env: str = ""  # env var or ~/src/.env-* name for that gateway's key
-    api_model: str = ""  # wire-format model slug if different from model_id
+class ModelConfig:
+    record_id: str
+    api_model: str
+    base_url: str
+    key_env: str
+    provider: str
+    max_tokens: int
+    temperature: float
+    reasoning_effort: str
+    price_in_per_million: float
+    price_out_per_million: float
 
-    def pricetable_microdollars(self, prompt_tokens: int, completion_tokens: int) -> int:
-        # price is $/1M => microdollars/token == price; +10% safety margin
-        raw = prompt_tokens * self.price_in + completion_tokens * self.price_out
+    def key(self) -> str:
+        value = os.environ.get(self.key_env, "").strip()
+        if not value:
+            raise RuntimeError(f"missing API key in {self.key_env}")
+        return value
+
+    def estimated_microdollars(self, prompt_tokens: int, completion_tokens: int) -> int:
+        raw = (
+            prompt_tokens * self.price_in_per_million
+            + completion_tokens * self.price_out_per_million
+        )
         return int(round(raw * 1.10))
 
 
-def load_key() -> str:
-    """Accepts a bare key, or a shell-style env file containing one."""
-    candidates = [os.environ.get("TRUSTEDROUTER_API_KEY", "")]
-    for p in DEFAULT_KEY_PATHS:
-        if p and Path(p).is_file():
-            candidates.append(Path(p).read_text())
-    for text in candidates:
-        m = re.search(r"sk-tr-[A-Za-z0-9_-]+", text)
-        if m:
-            return m.group(0)
-        if text.strip() and "\n" not in text.strip() and "=" not in text:
-            return text.strip()
-    raise RuntimeError(
-        "no API key: set TRUSTEDROUTER_API_KEY, TRUSTEDROUTER_KEY_FILE, or create ~/src/.env-tr"
-    )
-
-
-def load_models(path: Path | None = None) -> dict[str, ModelCfg]:
-    raw = tomllib.loads((path or CONFIG_DIR / "models.toml").read_text())
-    out: dict[str, ModelCfg] = {}
-    for model_id, m in raw["models"].items():
-        out[model_id] = ModelCfg(
-            model_id=model_id,
-            tier=m["tier"],
-            core=m["core"],
-            api_path=m["api_path"],
-            price_in=m["price_in"],
-            price_out=m["price_out"],
-            max_completion_tokens=m["max_completion_tokens"],
-            thinking_budget=m.get("thinking_budget", 0),
-            provider_only=tuple(m.get("provider_only", [])),
-            base_url=m.get("base_url", ""),
-            key_env=m.get("key_env", ""),
-            api_model=m.get("api_model", ""),
-        )
-    return out
+@dataclass(frozen=True)
+class TaskConfig:
+    variables: int
+    difficulties: tuple[float, ...]
+    instances_per_level: int
+    samples_per_instance: int
+    seed: int
 
 
 @dataclass(frozen=True)
-class GridCfg:
+class StopConfig:
+    correct: int
+    silent_wrong: int
+    max_calls: int
+    max_spend_usd: float
+
+    @property
+    def max_spend_microdollars(self) -> int:
+        return int(round(self.max_spend_usd * 1_000_000))
+
+
+@dataclass(frozen=True)
+class SentinelConfig:
+    before_stage: str
+    after_stage: str
+    calls_each: int
+
+
+@dataclass(frozen=True)
+class StudyConfig:
     name: str
-    family: str
-    levels: tuple[float, ...]
-    n_vars: int = 0  # SAT only
+    prompt_version: int
+    database: Path
+    concurrency: int
+    collection_locked: bool
+    model: ModelConfig
+    task: TaskConfig
+    stop: StopConfig
+    sentinels: SentinelConfig
+
+    def validate(self) -> None:
+        if not self.name or self.prompt_version < 1:
+            raise ValueError("study name and positive prompt version are required")
+        if self.concurrency < 1:
+            raise ValueError("concurrency must be positive")
+        if self.model.max_tokens < 1 or not self.model.provider:
+            raise ValueError("model token cap and provider pin are required")
+        if not 0 <= self.model.temperature <= 2:
+            raise ValueError("temperature must be between zero and two")
+        if self.model.reasoning_effort not in {
+            "none", "minimal", "low", "medium", "high", "xhigh", "max"
+        }:
+            raise ValueError("unsupported reasoning effort")
+        if self.task.variables < 3 or not self.task.difficulties:
+            raise ValueError("SAT task configuration is incomplete")
+        if self.task.instances_per_level < 1 or self.task.samples_per_instance < 1:
+            raise ValueError("task replication must be positive")
+        if self.stop.max_calls < 1 or self.stop.max_spend_usd <= 0:
+            raise ValueError("hard call and spend caps are required")
 
 
-def load_grids(path: Path | None = None) -> dict[str, GridCfg]:
-    raw = tomllib.loads((path or CONFIG_DIR / "grids.toml").read_text())
-    return {
-        name: GridCfg(
-            name=name,
-            family=g["family"],
-            levels=tuple(float(x) for x in g["levels"]),
-            n_vars=g.get("n_vars", 0),
-        )
-        for name, g in raw["grids"].items()
-    }
-
-
-@dataclass
-class StageCfg:
-    name: str
-    grid: str
-    set_name: str
-    models: list[str]  # explicit model ids
-    n_instances: int
-    k: int
-    cap_usd: float
-    focus_k: int = 0  # ADDITIONAL samples at focus levels (0 = no focus topup)
-    focus_width: int = 2  # +/- levels around center for the focus topup
-    focus_from: str = ""  # path to focus.json mapping model -> center level_idx
-    c2_k: int = 0  # ADDITIONAL samples at the single center level
-    window_width: int = -1  # restrict backbone k to center +/- this (-1 = all levels)
-    temperature: float | None = None
-    master_seed: int = 20260704
-    stop_correct: int = 0
-    stop_silent_wrong: int = 0
-    required_provider_endpoint: str = ""
-    stream_telemetry: bool = False
-
-
-def load_stages(models: dict[str, ModelCfg], path: Path | None = None) -> dict[str, StageCfg]:
-    raw = tomllib.loads((path or CONFIG_DIR / "stages.toml").read_text())
-    out: dict[str, StageCfg] = {}
-    for name, s in raw["stages"].items():
-        sel = s["models"]
-        if sel == "all":
-            ids = list(models)
-        elif sel == "core":
-            ids = [m for m, c in models.items() if c.core]
-        elif isinstance(sel, str) and sel.startswith("tier:"):
-            ids = [m for m, c in models.items() if c.tier == sel[5:]]
-        else:
-            ids = list(sel)
-        out[name] = StageCfg(
-            name=name,
-            grid=s["grid"],
-            set_name=s["set_name"],
-            models=ids,
-            n_instances=s["n_instances"],
-            k=s["k"],
-            cap_usd=s["cap_usd"],
-            focus_k=s.get("focus_k", 0),
-            focus_width=s.get("focus_width", 2),
-            focus_from=s.get("focus_from", ""),
-            c2_k=s.get("c2_k", 0),
-            window_width=s.get("window_width", -1),
-            temperature=s.get("temperature"),
-            master_seed=s.get("master_seed", 20260704),
-            stop_correct=s.get("stop_correct", 0),
-            stop_silent_wrong=s.get("stop_silent_wrong", 0),
-            required_provider_endpoint=s.get("required_provider_endpoint", ""),
-            stream_telemetry=s.get("stream_telemetry", False),
-        )
-    return out
-
-
-GLOBAL_CAP_USD = 300.0
-# ~$12 of provider-artifact calls (baseten/novita truncations, mixed-provider
-# purges) were deleted from the ledger but cost real money; stops are lowered
-# by a safety margin so true spend stays under the $300 promise.
-# purged-artifact spend measured at ~$12; stops sit that far under the
-# original 290/295 so true spend stays within the $300 promise
-SOFT_STOP_USD = 278.0
-HARD_REFUSE_USD = 283.0
+def load_config(path: str | Path = "configs/study.toml") -> StudyConfig:
+    source = Path(path)
+    raw = tomllib.loads(source.read_text())
+    study, model, task, stop, sentinels = (
+        raw[name] for name in ("study", "model", "task", "stop", "sentinels")
+    )
+    database = Path(study.get("database", "data/drc.sqlite"))
+    if not database.is_absolute():
+        database = (source.parent.parent / database).resolve()
+    config = StudyConfig(
+        name=str(study["name"]),
+        prompt_version=int(study.get("prompt_version", 1)),
+        database=database,
+        concurrency=int(study.get("concurrency", 4)),
+        collection_locked=bool(study.get("collection_locked", False)),
+        model=ModelConfig(
+            record_id=str(model["record_id"]),
+            api_model=str(model["api_model"]),
+            base_url=str(model["base_url"]).rstrip("/"),
+            key_env=str(model["key_env"]),
+            provider=str(model["provider"]),
+            max_tokens=int(model["max_tokens"]),
+            temperature=float(model.get("temperature", 1.0)),
+            reasoning_effort=str(model.get("reasoning_effort", "medium")),
+            price_in_per_million=float(model["price_in_per_million"]),
+            price_out_per_million=float(model["price_out_per_million"]),
+        ),
+        task=TaskConfig(
+            variables=int(task["variables"]),
+            difficulties=tuple(float(value) for value in task["difficulties"]),
+            instances_per_level=int(task["instances_per_level"]),
+            samples_per_instance=int(task["samples_per_instance"]),
+            seed=int(task["seed"]),
+        ),
+        stop=StopConfig(
+            correct=int(stop["correct"]),
+            silent_wrong=int(stop["silent_wrong"]),
+            max_calls=int(stop["max_calls"]),
+            max_spend_usd=float(stop["max_spend_usd"]),
+        ),
+        sentinels=SentinelConfig(
+            before_stage=str(sentinels["before_stage"]),
+            after_stage=str(sentinels["after_stage"]),
+            calls_each=int(sentinels["calls_each"]),
+        ),
+    )
+    config.validate()
+    return config

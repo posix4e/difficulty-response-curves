@@ -400,10 +400,10 @@ and the 15-second warning-time condition is <strong>Censored</strong>. A
 proportional timing proxy is published for diagnosis but cannot pass the
 gate. The false-hedge condition fails without it, so the paid live
 comparison is not run and v0 is not retuned.</p>
-<p>Reproducible artifacts: <code>analysis/speculative_replay.py</code>,
-<code>analysis/speculative-replay.json</code>, and
-<code>analysis/speculative-replay-predictions.jsonl</code>. New API
-spend: USD 0.</p>
+<p>Reproducible artifacts: <code>analysis/speculative-replay.json</code>
+and <code>analysis/speculative-replay-predictions.jsonl</code>. The
+exact replay and harness source remains in Git history at commit
+<code>7cca5c9</code>. New API spend: USD 0.</p>
 <h2 id="safety-and-accounting-invariants">Safety and accounting
 invariants</h2>
 <ul>
@@ -420,9 +420,11 @@ admitted.</li>
 <li>Prompts and handoff context are secret-scanned before public
 release. Raw traces remain a separate checksummed artifact.</li>
 </ul>
-<h2 id="reproducible-interface">Reproducible interface</h2>
-<p>The released harness is <code>drc hedge</code>. A dry run performs
-model/config and worst-case budget admission without making calls:</p>
+<h2 id="archived-implementation">Archived implementation</h2>
+<p>Version 1 released the <code>drc hedge</code> harness and the
+complete four-arm experiment runner before replay. Their dry-run
+interface performed model, verifier, and worst-case budget admission
+without making calls:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">drc</span> hedge <span class="dt">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--prompt-file</span> task.md <span class="dt">\</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> or/glm-5 <span class="dt">\</span></span>
@@ -432,10 +434,12 @@ model/config and worst-case budget admission without making calls:</p>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cap</span> 5 <span class="dt">\</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out</span> data/hedge/run.json <span class="dt">\</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--dry-run</span></span></code></pre></div>
-<p>The result JSON contains the frozen plan, risk snapshot, candidate
-completion records, winner, cancellation requests, and a timestamped
-event log. Provider usage is reported where returned; cancellation
-savings are never inferred from transport closure alone.</p>
+<p>The failed gate closed this branch before live use. Version 2
+therefore removes the speculative controller from the executable product
+surface. The historical commit preserves the implementation for audit,
+while the current CLI offers no hedge or council command. This prevents
+a registered negative experiment from quietly becoming a production
+feature.</p>
 <h2 id="positioning">Positioning</h2>
 <p><a href="https://aclanthology.org/2023.acl-long.792/">LLM-Blender</a>
 ranks and fuses completed outputs, while <a href="https://arxiv.org/abs/2406.04692">Mixture-of-Agents</a> passes

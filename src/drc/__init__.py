@@ -1,3 +1,3 @@
-"""drc: difficulty-response curves for reasoning models."""
+"""Small, auditable tooling for the MiniMax confidence study."""
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"

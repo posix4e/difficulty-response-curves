@@ -1,0 +1,12 @@
+{
+  "calls.jsonl.gz": {
+    "bytes": 603,
+    "rows": 10,
+    "sha256": "f16b0143857b1b0236a343ee9eefcd622d820ca7f1f105ae310c3171ec0da46e"
+  },
+  "traces.jsonl.gz": {
+    "bytes": 102841,
+    "rows": 10,
+    "sha256": "36f5cb531f37025c363fb33d638f748873b5f7176ccfd2a40efb3483bc7a61d1"
+  }
+}

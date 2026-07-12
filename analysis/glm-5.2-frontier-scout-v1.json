@@ -1,0 +1,54 @@
+{
+  "study": "glm-5.2-frontier-scout-v1",
+  "status": "Frontier not located",
+  "claim_status": "Not supported",
+  "model": "z-ai/glm-5.2",
+  "provider": "StreamLake",
+  "provider_pinned": true,
+  "provider_mismatches": 0,
+  "conditions": {
+    "prompt_version": 1,
+    "variables": 20,
+    "max_completion_tokens": 32768,
+    "temperature": 0.6,
+    "reasoning_effort": "high",
+    "difficulties": [4.2, 4.8, 5.4, 6.0, 6.6]
+  },
+  "counts": {
+    "calls": 10,
+    "correct_completed": 4,
+    "silently_wrong_completed": 0,
+    "loud_failure": 6
+  },
+  "loud_failures": {
+    "truncation": 4,
+    "parse_failure": 1,
+    "api_error": 1
+  },
+  "levels": {
+    "4.2": {"calls": 2, "correct": 2, "silent_wrong": 0, "loud": 0},
+    "4.8": {"calls": 2, "correct": 1, "silent_wrong": 0, "loud": 1},
+    "5.4": {"calls": 2, "correct": 0, "silent_wrong": 0, "loud": 2},
+    "6.0": {"calls": 2, "correct": 1, "silent_wrong": 0, "loud": 1},
+    "6.6": {"calls": 2, "correct": 0, "silent_wrong": 0, "loud": 2}
+  },
+  "cohort_discovery_gate": {
+    "at_least_two_mixed_completed_levels": false,
+    "at_least_eight_correct_completed": false,
+    "at_least_eight_silently_wrong_completed": false,
+    "pass": false
+  },
+  "decision": "Do not run the 30-call focus batch. First revise and register a reliability pilot if further GLM-5.2 work is desired.",
+  "spend": {
+    "actual_usd": 0.28185,
+    "scout_cap_usd": 0.75,
+    "authorized_total_pilot_cap_usd": 3.0
+  },
+  "provenance": {
+    "code_commit": "fb0e596",
+    "config_sha256": "8917f38a514d1f9f034a9c6d38ab46ed470967d7b7751be3022ed49c71f611cb",
+    "database_sha256": "4ef2d47a684df7854c93a558fbf48ced25598669b5ffdae5b763a3935cce3562",
+    "compact_export_sha256": "f16b0143857b1b0236a343ee9eefcd622d820ca7f1f105ae310c3171ec0da46e",
+    "trace_export_sha256": "36f5cb531f37025c363fb33d638f748873b5f7176ccfd2a40efb3483bc7a61d1"
+  }
+}
