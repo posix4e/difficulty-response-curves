@@ -130,3 +130,9 @@ token-cap truncation but failed its registered reliability gate of at most two
 loud failures. Because provider and cap changed together, it is not a cap-only
 result. The six completed answers are too few for a confidence model; any
 larger focus study requires a new frozen protocol.
+
+Before another batch, run the separately registered one-call streaming
+transport smoke. It repeats instance `5d09e54e272a57891e26f579` through the
+same pinned SiliconFlow route with SSE, no client read timeout, no fallback,
+and no automatic retry. This smoke tests the collector only; it does not reopen
+or reinterpret the completed ten-call reliability result.

@@ -1,0 +1,36 @@
+[study]
+name = "glm-5.2-streaming-smoke-v1"
+prompt_version = 1
+database = "data/glm-5.2-streaming-smoke.sqlite"
+concurrency = 1
+collection_locked = false
+
+[model]
+record_id = "or/glm-5.2@siliconflow-stream-smoke"
+api_model = "z-ai/glm-5.2"
+base_url = "https://openrouter.ai/api/v1"
+key_env = "or"
+provider = "SiliconFlow"
+max_tokens = 262144
+temperature = 0.6
+reasoning_effort = "high"
+price_in_per_million = 1.302
+price_out_per_million = 4.092
+
+[task]
+variables = 20
+difficulties = [5.4]
+instances_per_level = 1
+samples_per_instance = 1
+seed = 2026271201
+
+[stop]
+correct = 1
+silent_wrong = 1
+max_calls = 1
+max_spend_usd = "unlimited"
+
+[sentinels]
+before_stage = "not-applicable-stream-smoke-pre"
+after_stage = "not-applicable-stream-smoke-post"
+calls_each = 0
