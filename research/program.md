@@ -2,7 +2,7 @@
 title: "Can a model tell when it is wrong?"
 subtitle: "A living study of confidence signals at the MiniMax frontier"
 author: "Alex Newman"
-date: "12 July 2026"
+date: "13 July 2026"
 lang: en-GB
 ---
 
@@ -90,8 +90,15 @@ silent errors, and six loud failures. It did not locate a confidence cohort.
 ::: {.summary-card .not-supported}
 ### Not supported — GLM-5.2 256K reliability
 
-The paired SiliconFlow follow-up eliminated truncation but still produced four
-loud failures, exceeding its registered ceiling of two.
+The paired SiliconFlow follow-up eliminated token-cap truncation but still
+produced four loud failures, exceeding its registered ceiling of two.
+:::
+
+::: {.summary-card .supported}
+### Supported — GLM streaming transport
+
+A registered one-call smoke carried the previously failing instance through a
+complete SiliconFlow stream and retained 29,671 timed events.
 :::
 :::
 
@@ -222,8 +229,8 @@ before a silent-error cohort.
 A 262,144-token reliability follow-up on the same ten instances ran through
 SiliconFlow without fallback or retry. It cost USD 0.662540 and produced three
 correct completions, three silent errors, and four loud failures: one malformed
-19-bit answer and three malformed API responses. No call reached the new token
-cap.
+19-bit answer and three undecodable JSON response bodies. No call reached the
+new token cap.
 
 The reliability gate allowed at most two loud failures, so the result is **Not
 supported**. Compared with the 32K scout, truncations fell from four to zero,
@@ -234,6 +241,30 @@ too few for a confidence model, and no focus batch is authorized.
 [Read the completed 256K follow-up](glm-5.2-frontier-256k-siliconflow.html) ·
 [Download the result JSON](data/glm-5.2-frontier-256k-siliconflow-v1.json) ·
 [Download the compact calls](data/glm-5.2-frontier-256k-siliconflow-v1/calls.jsonl.gz)
+
+### Streaming transport smoke: the long response completed
+
+The next registered step changed the transport, not the task or model
+condition. One previously failing difficulty-5.4 instance was sent to the same
+pinned SiliconFlow route with SSE, a 262,144-token allowance, no client read
+deadline, no fallback, and no retry.
+
+The stream completed normally after **460.111 seconds** with HTTP 200 and
+terminal reason `stop`. The collector retained **29,671 timed events**, the
+generation ID, 29,630 native reasoning tokens, and the final answer. No SSE
+event was rejected. OpenRouter's server-side generation record independently
+confirmed SiliconFlow, streaming, normal completion, and a cost of
+**USD 0.12242427**.
+
+The answer was parseable but wrong. That is a silent error, not a transport
+failure. The registered transport smoke therefore **passed**, while the answer
+does not add a confidence claim. One successful call also does not erase the
+four loud failures in the completed ten-call study or estimate a new transport
+failure rate.
+
+[Read the completed streaming smoke](glm-5.2-streaming-smoke.html) ·
+[Download the result JSON](data/glm-5.2-streaming-smoke-v1.json) ·
+[Download the timed stream events](data/glm-5.2-streaming-smoke-v1/stream-events.jsonl.gz)
 
 ## Study 2: the trace-triggered backup idea failed
 
@@ -300,7 +331,8 @@ the threshold was not retuned.
 ::: {.claim .supported}
 ### Supported
 
-Difficulty-response curves provide a useful baseline probability.
+Difficulty-response curves provide a useful baseline probability. The revised
+collector also carried and recorded one long, provider-pinned GLM stream.
 :::
 
 ::: {.claim .exploratory}

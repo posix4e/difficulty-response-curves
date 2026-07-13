@@ -130,7 +130,7 @@ def rescore(config: StudyConfig) -> dict[str, object]:
     return {"study": config.name, "changed": changed, "status": status.as_dict()}
 
 
-def _request_record(config: StudyConfig) -> str:
+def _request_record(config: StudyConfig, stream_telemetry: bool) -> str:
     return json.dumps(
         {
             "model": config.model.api_model,
@@ -139,6 +139,7 @@ def _request_record(config: StudyConfig) -> str:
             "temperature": config.model.temperature,
             "reasoning_effort": config.model.reasoning_effort,
             "prompt_version": config.prompt_version,
+            "stream_telemetry": stream_telemetry,
         },
         sort_keys=True,
     )
@@ -151,6 +152,7 @@ async def _run_call(
     provider: Provider,
     gate: BudgetGate,
     reserve: int,
+    stream_telemetry: bool,
 ) -> bool:
     started = datetime.now(timezone.utc).isoformat()
     response = await provider.complete(plan.instance.prompt)
@@ -174,18 +176,21 @@ async def _run_call(
     else:
         outcome = "fail_wrong"
 
-    store.record_call(
+    call_id = store.record_call(
         {
             "instance_id": plan.instance.instance_id,
             "model_id": config.model.record_id,
             "sample_idx": plan.sample_index,
             "stage": config.name,
-            "api_path": "openai",
+            "api_path": "openai-stream" if stream_telemetry else "openai",
             "prompt_version": config.prompt_version,
             "prompt_sha256": hashlib.sha256(plan.instance.prompt.encode()).hexdigest(),
-            "request_json": _request_record(config),
-            "response_text": response.text if not response.error else response.error,
+            "request_json": _request_record(config, stream_telemetry),
+            "response_text": response.text,
             "reasoning_text": response.reasoning_text,
+            "error_text": response.error,
+            "raw_response_text": response.raw_response_text,
+            "generation_id": response.generation_id,
             "finish_reason": response.finish_reason,
             "parsed_answer": json.dumps(assignment) if assignment is not None else None,
             "outcome": outcome,
@@ -200,17 +205,27 @@ async def _run_call(
             "provider_mismatch": int(mismatch),
             "http_status": response.http_status,
             "latency_ms": response.latency_ms,
+            "ttft_ms": response.ttft_ms,
+            "first_reasoning_ms": response.first_reasoning_ms,
+            "first_answer_ms": response.first_answer_ms,
+            "stream_duration_ms": response.stream_duration_ms,
             "observed_chars": len(response.text),
             "ts_start": started,
             "ts_end": datetime.now(timezone.utc).isoformat(),
         }
     )
+    if response.stream_events:
+        store.record_stream_events(call_id, response.stream_events)
     return mismatch
 
 
-async def run(config: StudyConfig, provider: Provider | None = None) -> dict[str, object]:
+async def run(
+    config: StudyConfig,
+    provider: Provider | None = None,
+    stream_telemetry: bool = False,
+) -> dict[str, object]:
     own_provider = provider is None
-    provider = provider or OpenRouter(config.model)
+    provider = provider or OpenRouter(config.model, stream_telemetry=stream_telemetry)
     try:
         with Store(config.database) as store:
             plans = build_plan(config)
@@ -242,7 +257,15 @@ async def run(config: StudyConfig, provider: Provider | None = None) -> dict[str
                     break
                 mismatches = await asyncio.gather(
                     *(
-                        _run_call(plan, config, store, provider, gate, reserve)
+                        _run_call(
+                            plan,
+                            config,
+                            store,
+                            provider,
+                            gate,
+                            reserve,
+                            stream_telemetry,
+                        )
                         for plan in batch
                     )
                 )

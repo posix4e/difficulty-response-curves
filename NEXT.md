@@ -130,3 +130,10 @@ token-cap truncation but failed its registered reliability gate of at most two
 loud failures. Because provider and cap changed together, it is not a cap-only
 result. The six completed answers are too few for a confidence model; any
 larger focus study requires a new frozen protocol.
+
+The separately registered one-call streaming transport smoke subsequently
+passed. Instance `5d09e54e272a57891e26f579` completed through the same pinned
+SiliconFlow route in 460.111 seconds with 29,671 stored events, no rejected SSE
+event, no fallback, and no retry. The answer was silently wrong. This verifies
+the revised collector; it does not reopen the completed ten-call reliability
+result or authorize a larger confidence batch.

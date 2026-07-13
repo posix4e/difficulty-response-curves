@@ -22,9 +22,14 @@ fi
 [ -f analysis/glm-existing-data-audit.json ] && cp analysis/glm-existing-data-audit.json docs/data/glm-existing-data-audit.json
 [ -f analysis/glm-5.2-frontier-scout-v1.json ] && cp analysis/glm-5.2-frontier-scout-v1.json docs/data/glm-5.2-frontier-scout-v1.json
 [ -f analysis/glm-5.2-frontier-256k-siliconflow-v1.json ] && cp analysis/glm-5.2-frontier-256k-siliconflow-v1.json docs/data/glm-5.2-frontier-256k-siliconflow-v1.json
+[ -f analysis/glm-5.2-streaming-smoke-v1.json ] && cp analysis/glm-5.2-streaming-smoke-v1.json docs/data/glm-5.2-streaming-smoke-v1.json
 if [ -d data/exports/glm-5.2-frontier-scout-v1 ]; then
   mkdir -p docs/data/glm-5.2-frontier-scout-v1
   cp data/exports/glm-5.2-frontier-scout-v1/* docs/data/glm-5.2-frontier-scout-v1/
+fi
+if [ -d data/exports/glm-5.2-streaming-smoke-v1 ]; then
+  mkdir -p docs/data/glm-5.2-streaming-smoke-v1
+  cp data/exports/glm-5.2-streaming-smoke-v1/* docs/data/glm-5.2-streaming-smoke-v1/
 fi
 if [ -d data/exports/glm-5.2-frontier-256k-siliconflow-v1 ]; then
   mkdir -p docs/data/glm-5.2-frontier-256k-siliconflow-v1
@@ -64,9 +69,15 @@ pandoc research/studies/glm-5.2-frontier-256k-siliconflow-v1.md \
   --metadata title-prefix="Difficulty-Response Curves" \
   --output docs/glm-5.2-frontier-256k-siliconflow.html
 
+pandoc research/studies/glm-5.2-streaming-smoke-v1.md \
+  --resource-path=docs:research:. \
+  --standalone --embed-resources --css research/style.css \
+  --metadata title-prefix="Difficulty-Response Curves" \
+  --output docs/glm-5.2-streaming-smoke.html
+
 # Pandoc's default source-code CSS carries trailing spaces on each generated
 # rule. Keep checked-in HTML clean and deterministic for Git whitespace checks.
-perl -pi -e 's/[ \t]+$//' docs/research.html docs/minimax-confidence-protocol.html docs/speculative-council-protocol.html docs/glm-5.2-frontier-pilot.html docs/glm-5.2-frontier-256k-siliconflow.html
+perl -pi -e 's/[ \t]+$//' docs/research.html docs/minimax-confidence-protocol.html docs/speculative-council-protocol.html docs/glm-5.2-frontier-pilot.html docs/glm-5.2-frontier-256k-siliconflow.html docs/glm-5.2-streaming-smoke.html
 
 # The living research page is the public front door. Historical pages remain
 # addressable, but the old dashboard is no longer the default explanation.
@@ -124,11 +135,23 @@ pandoc research/studies/glm-5.2-frontier-256k-siliconflow-v1.md \
   --variable margin-right=20mm \
   --output output/pdf/glm-5.2-frontier-256k-siliconflow-v1.pdf
 
+pandoc research/studies/glm-5.2-streaming-smoke-v1.md \
+  --resource-path=docs:research:. \
+  --pdf-engine=typst \
+  --variable papersize=a4 \
+  --variable fontsize=9.5pt \
+  --variable margin-top=14mm \
+  --variable margin-bottom=14mm \
+  --variable margin-left=18mm \
+  --variable margin-right=18mm \
+  --output output/pdf/glm-5.2-streaming-smoke-v1.pdf
+
 cp output/pdf/confidence-signals-research-program.pdf docs/research-program.pdf
 cp output/pdf/minimax-confidence-protocol-v1.pdf docs/minimax-confidence-protocol.pdf
 cp output/pdf/speculative-council-protocol-v0.pdf docs/speculative-council-protocol.pdf
 cp output/pdf/glm-5.2-frontier-pilot-v1.pdf docs/glm-5.2-frontier-pilot.pdf
 cp output/pdf/glm-5.2-frontier-256k-siliconflow-v1.pdf docs/glm-5.2-frontier-256k-siliconflow.pdf
+cp output/pdf/glm-5.2-streaming-smoke-v1.pdf docs/glm-5.2-streaming-smoke.pdf
 
 if rg -n "<pending>|PLACEHOLDER|TODO" research/program.md research/studies/*.md; then
   echo "research build contains unresolved placeholders" >&2

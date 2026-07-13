@@ -14,6 +14,7 @@ gates, and are not part of the runtime.
 - [Frozen MiniMax protocol](research/studies/minimax-confidence-v1.md)
 - [GLM-5.2 frontier scout and result](research/studies/glm-5.2-frontier-pilot-v1.md)
 - [GLM-5.2 256K reliability follow-up and result](research/studies/glm-5.2-frontier-256k-siliconflow-v1.md)
+- [GLM-5.2 streaming transport smoke and result](research/studies/glm-5.2-streaming-smoke-v1.md)
 - [Field journal](docs/journal.html)
 - [Next-step runbook](NEXT.md)
 
@@ -62,6 +63,12 @@ drc next       # state the next protocol-authorized action
 drc audit      # recompute released metrics and verify frozen checksums
 drc audit-model --model z-ai/glm-5  # test whether old calls form an eligible cohort
 ```
+
+For long responses, `drc run --stream-telemetry` uses SSE while keeping the
+configured provider pin and fallback policy unchanged. It stores partial
+reasoning and answer text, chunk timing, the OpenRouter generation ID, API
+error details, and malformed SSE events. It does not retry failed calls.
+Buffered collection remains the default.
 
 The checked-in `minimax-confidence-v1` config is deliberately
 `collection_locked = true`. Its batch began under version 1 and must finish

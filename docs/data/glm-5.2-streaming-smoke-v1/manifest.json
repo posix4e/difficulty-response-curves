@@ -1,0 +1,17 @@
+{
+  "calls.jsonl.gz": {
+    "bytes": 220,
+    "rows": 1,
+    "sha256": "0a8e92ec84a00d0c737dbfa70e33a3b72c63c023484ffeadbc0b38e695fe6f19"
+  },
+  "stream-events.jsonl.gz": {
+    "bytes": 325639,
+    "rows": 29671,
+    "sha256": "5d47c6d4c9bdae6a6371f732e5f1647862a343f706353d68213be3f6cc344bd9"
+  },
+  "traces.jsonl.gz": {
+    "bytes": 10240,
+    "rows": 1,
+    "sha256": "d913b0f4e0e94f686bc4b43908e6f93fb58ae7ccd81667f6fb3709fb0bbdad02"
+  }
+}

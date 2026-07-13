@@ -47,7 +47,12 @@ def parser() -> argparse.ArgumentParser:
     commands = root.add_subparsers(dest="command", required=True)
     commands.add_parser("plan", help="show the frozen design without generating tasks")
     commands.add_parser("status", help="show labels, spend, and stopping state")
-    commands.add_parser("run", help="resume collection under hard caps")
+    collection = commands.add_parser("run", help="resume collection under hard caps")
+    collection.add_argument(
+        "--stream-telemetry",
+        action="store_true",
+        help="use SSE and retain chunk timing; provider pin and fallback policy are unchanged",
+    )
     commands.add_parser("rescore", help="reapply the mechanical parser and verifier")
 
     analysis = commands.add_parser("analyze", help="perform the registered one-look analysis")
@@ -84,7 +89,12 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(
                 "collection is locked for this registered study; finish v1 with its original collector"
             )
-        print(json.dumps(asyncio.run(run(config)), indent=2))
+        print(
+            json.dumps(
+                asyncio.run(run(config, stream_telemetry=args.stream_telemetry)),
+                indent=2,
+            )
+        )
         return 0
     if args.command == "rescore":
         print(json.dumps(rescore(config), indent=2))

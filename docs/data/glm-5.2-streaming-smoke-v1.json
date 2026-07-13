@@ -1,0 +1,73 @@
+{
+  "study": "glm-5.2-streaming-smoke-v1",
+  "status": "Transport smoke passed",
+  "claim_status": "Supported",
+  "model": "z-ai/glm-5.2",
+  "resolved_model": "z-ai/glm-5.2-20260616",
+  "provider": "SiliconFlow",
+  "provider_pinned": true,
+  "provider_mismatches": 0,
+  "fallbacks": 0,
+  "automatic_retries": 0,
+  "conditions": {
+    "instance_id": "5d09e54e272a57891e26f579",
+    "difficulty": 5.4,
+    "seed": 2026271201,
+    "prompt_version": 1,
+    "max_completion_tokens": 262144,
+    "temperature": 0.6,
+    "reasoning_effort": "high",
+    "transport": "SSE",
+    "client_read_timeout": null,
+    "max_calls": 1,
+    "max_spend_usd": null
+  },
+  "transport": {
+    "pass": true,
+    "http_status": 200,
+    "finish_reason": "stop",
+    "native_finish_reason": "stop",
+    "cancelled": false,
+    "generation_id_present": true,
+    "generation_id_characters": 35,
+    "latency_ms": 460110.7,
+    "time_to_first_token_ms": 1281.8,
+    "first_reasoning_ms": 1281.8,
+    "first_answer_ms": 459547.8,
+    "last_event_ms": 460107.8,
+    "stream_events": 29671,
+    "reasoning_events": 29629,
+    "answer_events": 42,
+    "rejected_sse_events": 0,
+    "partial_output_retained": false
+  },
+  "answer": {
+    "outcome": "silently_wrong_completed",
+    "answer_characters": 46,
+    "reasoning_characters": 49594
+  },
+  "usage": {
+    "stream_final_native_prompt_tokens": 773,
+    "stream_final_native_completion_tokens": 29672,
+    "stream_final_native_reasoning_tokens": 29630,
+    "generation_record_normalized_prompt_tokens": 335,
+    "generation_record_normalized_completion_tokens": 12887,
+    "cost_usd": 0.12242427
+  },
+  "comparison": {
+    "prior_call_id": 16,
+    "prior_transport": "buffered JSON",
+    "prior_outcome": "api_error",
+    "prior_elapsed_ms": 274400,
+    "interpretation": "The same instance completed over SSE, but a single paired smoke cannot estimate a transport failure rate or reinterpret the completed ten-call reliability study."
+  },
+  "decision": "Use the streaming collector for subsequently registered long GLM calls. Do not treat this one transport success or its silently wrong answer as a confidence result.",
+  "provenance": {
+    "collection_commit": "8a7493f",
+    "config_sha256": "d940fe4318ed574028722bc758270a84bbed17218dc93892ba54be27030cbb05",
+    "database_sha256": "11e57fb2ef3e7b0f0e7440bdbfd12180f254c6c7a79e17865b67777af66ec986",
+    "compact_export_sha256": "0a8e92ec84a00d0c737dbfa70e33a3b72c63c023484ffeadbc0b38e695fe6f19",
+    "stream_events_export_sha256": "5d47c6d4c9bdae6a6371f732e5f1647862a343f706353d68213be3f6cc344bd9",
+    "trace_export_sha256": "d913b0f4e0e94f686bc4b43908e6f93fb58ae7ccd81667f6fb3709fb0bbdad02"
+  }
+}

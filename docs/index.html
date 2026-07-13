@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alex Newman" />
-  <meta name="dcterms.date" content="2026-07-12" />
+  <meta name="dcterms.date" content="2026-07-13" />
   <title>Difficulty-Response
 Curves – Can a model tell when it is wrong?</title>
   <style>
@@ -186,7 +186,7 @@ html { scroll-behavior: auto; }
 <p class="subtitle">A living study of confidence signals at the MiniMax
 frontier</p>
 <p class="author">Alex Newman</p>
-<p class="date">12 July 2026</p>
+<p class="date">13 July 2026</p>
 </header>
 <nav class="page-nav" aria-label="Research links">
 <a href="index.html">Research home</a> <a href="journal.html">Field
@@ -257,9 +257,15 @@ a confidence cohort.</p>
 </section>
 <section id="not-supported-glm-5.2-256k-reliability" class="summary-card not-supported">
 <h3>Not supported — GLM-5.2 256K reliability</h3>
-<p>The paired SiliconFlow follow-up eliminated truncation but still
-produced four loud failures, exceeding its registered ceiling of
+<p>The paired SiliconFlow follow-up eliminated token-cap truncation but
+still produced four loud failures, exceeding its registered ceiling of
 two.</p>
+</section>
+<section id="supported-glm-streaming-transport" class="summary-card supported">
+<h3>Supported — GLM streaming transport</h3>
+<p>A registered one-call smoke carried the previously failing instance
+through a complete SiliconFlow stream and retained 29,671 timed
+events.</p>
 </section>
 </div>
 <h2 id="what-exactly-counts-as-failure">What exactly counts as
@@ -392,8 +398,8 @@ compact calls</a></p>
 <p>A 262,144-token reliability follow-up on the same ten instances ran
 through SiliconFlow without fallback or retry. It cost USD 0.662540 and
 produced three correct completions, three silent errors, and four loud
-failures: one malformed 19-bit answer and three malformed API responses.
-No call reached the new token cap.</p>
+failures: one malformed 19-bit answer and three undecodable JSON
+response bodies. No call reached the new token cap.</p>
 <p>The reliability gate allowed at most two loud failures, so the result
 is <strong>Not supported</strong>. Compared with the 32K scout,
 truncations fell from four to zero, but API failures rose from one to
@@ -404,6 +410,29 @@ model, and no focus batch is authorized.</p>
 256K follow-up</a> · <a href="data/glm-5.2-frontier-256k-siliconflow-v1.json">Download the
 result JSON</a> · <a href="data/glm-5.2-frontier-256k-siliconflow-v1/calls.jsonl.gz">Download
 the compact calls</a></p>
+<h3 id="streaming-transport-smoke-the-long-response-completed">Streaming
+transport smoke: the long response completed</h3>
+<p>The next registered step changed the transport, not the task or model
+condition. One previously failing difficulty-5.4 instance was sent to
+the same pinned SiliconFlow route with SSE, a 262,144-token allowance,
+no client read deadline, no fallback, and no retry.</p>
+<p>The stream completed normally after <strong>460.111 seconds</strong>
+with HTTP 200 and terminal reason <code>stop</code>. The collector
+retained <strong>29,671 timed events</strong>, the generation ID, 29,630
+native reasoning tokens, and the final answer. No SSE event was
+rejected. OpenRouter’s server-side generation record independently
+confirmed SiliconFlow, streaming, normal completion, and a cost of
+<strong>USD 0.12242427</strong>.</p>
+<p>The answer was parseable but wrong. That is a silent error, not a
+transport failure. The registered transport smoke therefore
+<strong>passed</strong>, while the answer does not add a confidence
+claim. One successful call also does not erase the four loud failures in
+the completed ten-call study or estimate a new transport failure
+rate.</p>
+<p><a href="glm-5.2-streaming-smoke.html">Read the completed streaming
+smoke</a> · <a href="data/glm-5.2-streaming-smoke-v1.json">Download the
+result JSON</a> · <a href="data/glm-5.2-streaming-smoke-v1/stream-events.jsonl.gz">Download
+the timed stream events</a></p>
 <h2 id="study-2-the-trace-triggered-backup-idea-failed">Study 2: the
 trace-triggered backup idea failed</h2>
 <p>The control idea was simple:</p>
@@ -465,7 +494,9 @@ replay decisions</a></p>
 <div class="claim-list">
 <section id="supported" class="claim supported">
 <h3>Supported</h3>
-<p>Difficulty-response curves provide a useful baseline probability.</p>
+<p>Difficulty-response curves provide a useful baseline probability. The
+revised collector also carried and recorded one long, provider-pinned
+GLM stream.</p>
 </section>
 <section id="exploratory" class="claim exploratory">
 <h3>Exploratory</h3>

@@ -27,6 +27,7 @@
 #let G = json("../analysis/glm-existing-data-audit.json")
 #let P = json("../analysis/glm-5.2-frontier-scout-v1.json")
 #let F = json("../analysis/glm-5.2-frontier-256k-siliconflow-v1.json")
+#let H = json("../analysis/glm-5.2-streaming-smoke-v1.json")
 #let counts = C.at("cohort").at("counts")
 #let metadata = C.at("metrics").at("metadata")
 #let trace = C.at("metrics").at("trace")
@@ -44,7 +45,7 @@
     Confidence signals at the MiniMax frontier
   ]
   #v(1.1em)
-  Alex Newman #h(1.2em) 12 July 2026
+  Alex Newman #h(1.2em) 13 July 2026
 ]
 
 #v(1.2em)
@@ -178,11 +179,21 @@ cohort appeared under this call condition.
 
 A 262,144-token SiliconFlow follow-up then ran on the same instances. It spent
 USD #n(F.at("spend").at("actual_usd"), digits: 6) and produced three correct
-completions, three silent errors, and four loud failures. No call truncated;
-the loud failures were one 19-bit answer and three malformed API responses.
+completions, three silent errors, and four loud failures. No call reached its
+token cap; the loud failures were one 19-bit answer and three undecodable JSON
+response bodies.
 The reliability gate allowed at most two loud failures and therefore failed.
 Provider and cap changed together, so the paired difference is not a cap-only
 effect. Six completed answers are too few for a confidence model.
+
+A separately registered one-call transport smoke then repeated a previously
+failing instance over SSE. It completed on SiliconFlow in
+#n(H.at("transport").at("latency_ms") / 1000, digits: 3) seconds with terminal
+reason `stop`, no fallback, and no retry. The collector retained
+#H.at("transport").at("stream_events") timed events and rejected none. The
+answer was silently wrong, but the registered transport endpoint passed. This
+single success verifies the collector path; it does not revise the ten-call
+reliability result or establish a confidence signal.
 
 = A negative control result
 
@@ -246,6 +257,8 @@ transport, retries, and provider overhead.
   [*Not supported - GLM-5.2*], [The pinned scout found no silent errors; six of
     ten calls failed loudly. The 256K follow-up still had four loud failures
     and did not clear its reliability gate.],
+  [*Supported - GLM transport*], [One registered SSE smoke completed normally
+    and retained 29,671 timed events without fallback or retry.],
 )]
 
 The result is deliberately narrow: one model, one provider route, one task
