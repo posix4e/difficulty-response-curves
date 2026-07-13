@@ -47,6 +47,14 @@ class Usage:
 
 
 @dataclass(frozen=True)
+class StreamEvent:
+    sequence: int
+    elapsed_ms: float
+    channel: str
+    char_count: int
+
+
+@dataclass(frozen=True)
 class ProviderResponse:
     text: str
     finish_reason: str
@@ -56,6 +64,13 @@ class ProviderResponse:
     reasoning_text: str = ""
     http_status: int = 200
     error: str | None = None
+    raw_response_text: str = ""
+    generation_id: str = ""
+    stream_events: tuple[StreamEvent, ...] = ()
+    ttft_ms: float | None = None
+    first_reasoning_ms: float | None = None
+    first_answer_ms: float | None = None
+    stream_duration_ms: float | None = None
 
 
 @dataclass(frozen=True)

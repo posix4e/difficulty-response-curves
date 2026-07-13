@@ -63,6 +63,12 @@ drc audit      # recompute released metrics and verify frozen checksums
 drc audit-model --model z-ai/glm-5  # test whether old calls form an eligible cohort
 ```
 
+For long responses, `drc run --stream-telemetry` uses SSE while keeping the
+configured provider pin and fallback policy unchanged. It stores partial
+reasoning and answer text, chunk timing, the OpenRouter generation ID, API
+error details, and malformed SSE events. It does not retry failed calls.
+Buffered collection remains the default.
+
 The checked-in `minimax-confidence-v1` config is deliberately
 `collection_locked = true`. Its batch began under version 1 and must finish
 under that exact collector. Version 2 may analyze it after the post-sentinel

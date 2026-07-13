@@ -6,7 +6,7 @@ import sqlite3
 import threading
 from typing import Any, Iterable
 
-from .types import Instance, StudyStatus
+from .types import Instance, StreamEvent, StudyStatus
 
 
 SCHEMA = """
@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS calls (
   request_json TEXT NOT NULL,
   response_text TEXT,
   reasoning_text TEXT,
+  error_text TEXT,
+  raw_response_text TEXT,
+  generation_id TEXT,
   finish_reason TEXT,
   parsed_answer TEXT,
   outcome TEXT NOT NULL,
@@ -86,8 +89,17 @@ class Store:
         columns = {
             str(row[1]) for row in self.connection.execute("PRAGMA table_info(calls)")
         }
-        if "reasoning_text" not in columns:
-            self.connection.execute("ALTER TABLE calls ADD COLUMN reasoning_text TEXT")
+        migrations = {
+            "reasoning_text": "TEXT",
+            "error_text": "TEXT",
+            "raw_response_text": "TEXT",
+            "generation_id": "TEXT",
+        }
+        for name, declaration in migrations.items():
+            if name not in columns:
+                self.connection.execute(
+                    f"ALTER TABLE calls ADD COLUMN {name} {declaration}"
+                )
         self.connection.commit()
         self._lock = threading.Lock()
 
@@ -142,6 +154,24 @@ class Store:
             cursor = self.connection.execute(sql, tuple(row[column] for column in columns))
             self.connection.commit()
             return int(cursor.lastrowid)
+
+    def record_stream_events(
+        self, call_id: int, events: Iterable[StreamEvent]
+    ) -> None:
+        rows = [
+            (call_id, event.sequence, event.elapsed_ms, event.channel, event.char_count)
+            for event in events
+        ]
+        if not rows:
+            return
+        with self._lock:
+            self.connection.executemany(
+                """INSERT OR REPLACE INTO stream_events
+                   (call_id, seq, elapsed_ms, channel, char_count)
+                   VALUES (?, ?, ?, ?, ?)""",
+                rows,
+            )
+            self.connection.commit()
 
     def status(self, study: str, model_id: str) -> StudyStatus:
         row = self.connection.execute(

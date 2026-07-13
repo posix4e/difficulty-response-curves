@@ -1,5 +1,6 @@
 from drc.sat import generate
 from drc.store import Store
+from drc.types import StreamEvent
 
 
 def call_row(instance_id: str, sample: int, outcome: str, cost: int = 10) -> dict:
@@ -56,3 +57,26 @@ def test_route_status_detects_protocol_deviations(tmp_path):
             "mismatches": 1,
             "unpinned": 1,
         }
+
+
+def test_store_retains_stream_event_order_and_channels(tmp_path):
+    instance = generate(6, 2.0, 6)
+    with Store(tmp_path / "calls.sqlite") as store:
+        store.add_instance(instance, "study", 0)
+        call_id = store.record_call(call_row(instance.instance_id, 0, "pass"))
+        store.record_stream_events(
+            call_id,
+            (
+                StreamEvent(0, 12.5, "reasoning", 7),
+                StreamEvent(1, 19.0, "answer", 3),
+            ),
+        )
+        rows = store.connection.execute(
+            "SELECT seq, elapsed_ms, channel, char_count "
+            "FROM stream_events WHERE call_id=? ORDER BY seq",
+            (call_id,),
+        ).fetchall()
+        assert [tuple(row) for row in rows] == [
+            (0, 12.5, "reasoning", 7),
+            (1, 19.0, "answer", 3),
+        ]
