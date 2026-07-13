@@ -201,6 +201,16 @@ class Store:
         )
         return [dict(row) for row in rows]
 
+    def study_stream_events(self, study: str, model_id: str) -> list[dict[str, Any]]:
+        rows = self.connection.execute(
+            """SELECT s.call_id, s.seq, s.elapsed_ms, s.channel, s.char_count
+               FROM stream_events s JOIN calls c USING(call_id)
+               WHERE c.stage=? AND c.model_id=?
+               ORDER BY s.call_id, s.seq""",
+            (study, model_id),
+        )
+        return [dict(row) for row in rows]
+
     def update_score(
         self, call_id: int, outcome: str, parsed_answer: str | None
     ) -> None:

@@ -33,6 +33,7 @@ def export(config: StudyConfig, destination: str | Path) -> dict[str, Any]:
     target.mkdir(parents=True, exist_ok=True)
     with Store(config.database) as store:
         calls = store.study_rows(config.name, config.model.record_id)
+        stream_events = store.study_stream_events(config.name, config.model.record_id)
 
     compact = []
     traces = []
@@ -63,6 +64,7 @@ def export(config: StudyConfig, destination: str | Path) -> dict[str, Any]:
 
     files = {
         "calls.jsonl.gz": compact,
+        "stream-events.jsonl.gz": stream_events,
         "traces.jsonl.gz": traces,
     }
     manifest = {}

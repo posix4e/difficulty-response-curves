@@ -14,7 +14,7 @@ gates, and are not part of the runtime.
 - [Frozen MiniMax protocol](research/studies/minimax-confidence-v1.md)
 - [GLM-5.2 frontier scout and result](research/studies/glm-5.2-frontier-pilot-v1.md)
 - [GLM-5.2 256K reliability follow-up and result](research/studies/glm-5.2-frontier-256k-siliconflow-v1.md)
-- [GLM-5.2 streaming transport smoke](research/studies/glm-5.2-streaming-smoke-v1.md)
+- [GLM-5.2 streaming transport smoke and result](research/studies/glm-5.2-streaming-smoke-v1.md)
 - [Field journal](docs/journal.html)
 - [Next-step runbook](NEXT.md)
 
